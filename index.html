@@ -33,7 +33,18 @@
 <meta name="twitter:image" content="https://codefrydev.in/images/IconCodefrydev.svg" />
 
 <style>
-:root { --glass: rgba(15,15,15,0.7); }
+:root { 
+  --glass: rgba(15, 15, 15, 0.75);
+  --glass-light: rgba(255, 255, 255, 0.1);
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
 
 * {
   margin: 0;
@@ -43,8 +54,8 @@
 }
 
 body {
-  background: black;
-  font-family: system-ui, sans-serif;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   overflow: hidden;
 }
 
@@ -61,55 +72,518 @@ video, canvas {
 
 #panel {
   position: fixed;
-  bottom: 14px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - 24px);
-  max-width: 420px;
+  width: calc(100% - 32px);
+  max-width: 480px;
   background: var(--glass);
-  backdrop-filter: blur(16px);
-  border-radius: 18px;
-  padding: 14px;
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-light);
+  border-radius: 24px;
+  padding: 20px;
   color: white;
   z-index: 10;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 #topBar {
   position: fixed;
-  top: 12px;
-  right: 12px;
+  top: 16px;
+  right: 16px;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   z-index: 10;
 }
 
 .iconBtn {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: var(--glass);
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid var(--glass-light);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 18px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.iconBtn:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.iconBtn:active {
+  transform: scale(0.95);
 }
 
 .hidden { display: none !important; }
 
-.row { display: flex; gap: 10px; margin-bottom: 10px; }
-label { width: 70px; font-size: 12px; opacity: .7; }
+.row { 
+  display: flex; 
+  gap: 12px; 
+  margin-bottom: 14px;
+  align-items: center;
+}
 
-input[type="range"], input[type="file"] { flex: 1; color: white; }
+label { 
+  width: 80px; 
+  font-size: 13px; 
+  opacity: 0.85;
+  font-weight: 500;
+}
+
+input[type="range"] { 
+  flex: 1; 
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+  -webkit-appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4);
+  transition: all 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  background: var(--primary-dark);
+}
+
+input[type="file"] { 
+  flex: 1; 
+  color: white;
+  font-size: 13px;
+  padding: 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-light);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+input[type="file"]:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
 
 button {
   flex: 1;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 14px 20px;
+  border-radius: 14px;
   border: none;
-  background: #222;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
   color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid var(--glass-light);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.1) 100%);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button.primary {
+  background: var(--gradient-3);
+  border: none;
+}
+
+button.primary:hover {
+  background: linear-gradient(135deg, #3d9bf0 0%, #00d9f5 100%);
+}
+
+button.success {
+  background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+  border: none;
+}
+
+button.success:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+button.danger {
+  background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+  border: none;
+}
+
+button.danger:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+button:disabled,
+button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: none !important;
+}
+
+button:disabled::before,
+button.disabled::before {
+  display: none;
+}
+
+button:disabled:hover,
+button.disabled:hover {
+  transform: none !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  box-shadow: none !important;
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  margin: 16px 0;
+}
+
+/* Share Link Styles */
+#shareLinkContainer {
+  margin-top: 12px;
+  padding: 16px;
+  background: rgba(14, 165, 233, 0.1);
+  border-radius: 16px;
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(14, 165, 233, 0);
+  }
+}
+
+#shareLinkContainer.hidden {
+  display: none;
+}
+
+#shareLinkLabel {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-bottom: 8px;
+  display: block;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#shareLink {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#shareLinkInput {
+  flex: 1;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  border-radius: 12px;
+  color: white;
+  font-size: 13px;
+  font-family: 'Courier New', monospace;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+#shareLinkInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+}
+
+#copyBtn {
+  padding: 10px 16px;
+  background: var(--gradient-3);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+#copyBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+}
+
+#copyBtn:active {
+  transform: scale(0.95);
+}
+
+#copyBtn.copied {
+  background: var(--success);
+  animation: checkmark 0.3s ease;
+}
+
+@keyframes checkmark {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+#shareId {
+  font-size: 13px;
+  opacity: 0.9;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  text-align: center;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+#shareId.success {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+#shareId.error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+#shareId.warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fcd34d;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* First Screen Styles */
+#firstScreen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0f0f23 100%);
+  z-index: 1000;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#firstScreen h2 {
+  color: white;
+  margin-bottom: 40px;
+  font-size: 32px;
+  font-weight: 700;
+  background: var(--gradient-3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  animation: slideDown 0.6s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#firstScreen .button-group {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#firstScreen button {
+  padding: 20px 48px;
+  font-size: 18px;
+  font-weight: 700;
+  border-radius: 20px;
+  min-width: 180px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+#hostSelectBtn {
+  background: var(--gradient-3);
+}
+
+#joinSelectBtn {
+  background: var(--gradient-1);
+}
+
+/* Join Screen Styles */
+#joinScreen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0f0f23 100%);
+  z-index: 1000;
+  padding: 20px;
+}
+
+#joinScreen h2 {
+  color: white;
+  margin-bottom: 24px;
+  font-size: 28px;
+  font-weight: 700;
+  background: var(--gradient-1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+}
+
+#joinScreen .form-container {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+#joinKeyInput {
+  padding: 14px 18px;
+  font-size: 15px;
+  width: 100%;
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-light);
+  border-radius: 14px;
+  color: white;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+#joinKeyInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+  background: rgba(15, 15, 15, 0.85);
+}
+
+#joinKeyInput::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+#joinKeyBtn {
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  width: 100%;
+  background: var(--gradient-1);
+  border: none;
+  border-radius: 14px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+#joinKeyBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+#joinKeyBtn:active {
+  transform: translateY(0);
+}
+
+#backToFirstBtn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: var(--glass);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid var(--glass-light);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 10px 16px;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+#backToFirstBtn:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateX(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+#backToFirstBtn:active {
+  transform: translateX(-1px);
 }
 
 /* Viewer */
@@ -129,21 +603,24 @@ button {
 <body>
 
 <!-- FIRST SCREEN: Host/Join selection -->
-<div id="firstScreen" style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:black;z-index:1000;">
-  <h2 style="color:white;margin-bottom:24px;">Welcome to AR Wall Drawing</h2>
-  <div style="display:flex;gap:20px;">
-    <button id="hostSelectBtn" style="padding:18px 36px;font-size:1.2em;">📡 Host</button>
-    <button id="joinSelectBtn" style="padding:18px 36px;font-size:1.2em;">🔗 Join</button>
+<div id="firstScreen">
+  <h2>Welcome to Muraly</h2>
+  <div class="button-group">
+    <button id="hostSelectBtn">📡 Host Session</button>
+    <button id="joinSelectBtn">🔗 Join Session</button>
   </div>
 </div>
 
 <!-- JOIN SCREEN: Enter key -->
-<div id="joinScreen" class="hidden" style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:black;z-index:1000;">
-  <h2 style="color:white;margin-bottom:18px;">Join a Session</h2>
-  <input id="joinKeyInput" type="text" placeholder="Enter Share ID" style="padding:12px;font-size:1.1em;width:220px;margin-bottom:18px;">
-  <button id="joinKeyBtn" style="padding:12px 28px;font-size:1.1em;">Join</button>
-  <button id="backToFirstBtn" style="margin-top:18px;background:none;border:none;color:#aaa;">Back</button>
+<div id="joinScreen" class="hidden">
+  <h2>Join a Session</h2>
+  <div class="form-container">
+    <input id="joinKeyInput" type="text" placeholder="Enter Share ID or Link">
+    <button id="joinKeyBtn">Join Session</button>
+  </div>
+  
 </div>
+<button id="backToFirstBtn">← Back</button>
 
 <!-- HOST AR -->
 <video id="camera" autoplay playsinline></video>
@@ -178,11 +655,19 @@ button {
   <hr style="opacity:.2">
 
   <div class="row">
-    <button id="hostBtn">📡 Host</button>
-    <button id="joinBtn">🔗 Join</button>
+    <button id="hostBtn" class="primary">📡 Host</button>
+    
   </div>
 
-  <div id="shareId" style="font-size:12px;opacity:.7"></div>
+  <div id="shareLinkContainer" class="hidden">
+    <label id="shareLinkLabel">Share this link to invite others:</label>
+    <div id="shareLink">
+      <input type="text" id="shareLinkInput" readonly>
+      <button id="copyBtn">Copy</button>
+    </div>
+  </div>
+
+  <div id="shareId"></div>
 </div>
 
 <!-- VIEWER -->
@@ -214,6 +699,7 @@ const backToFirstBtn = document.getElementById("backToFirstBtn");
 function showHostScreen() {
   firstScreen.classList.add("hidden");
   joinScreen.classList.add("hidden");
+  backToFirstBtn.classList.add("hidden");
   camera.classList.remove("hidden");
   overlayCanvas.classList.remove("hidden");
   gridCanvas.classList.remove("hidden");
@@ -226,24 +712,26 @@ function showHostScreen() {
 function showJoinScreen() {
   firstScreen.classList.add("hidden");
   joinScreen.classList.remove("hidden");
+  backToFirstBtn.classList.remove("hidden");
   joinKeyInput.value = "";
   joinKeyInput.focus();
 }
 
 function doJoin() {
-  const id = joinKeyInput.value.trim();
-  if (!id) {
+  const idOrLink = joinKeyInput.value.trim();
+  if (!idOrLink) {
     joinKeyInput.focus();
     return;
   }
   joinScreen.classList.add("hidden");
+  backToFirstBtn.classList.add("hidden");
   // Show host UI while waiting for stream
   camera.classList.remove("hidden");
   overlayCanvas.classList.remove("hidden");
   gridCanvas.classList.remove("hidden");
   panel.classList.remove("hidden");
   topBar.classList.remove("hidden");
-  join(id);
+  join(idOrLink);
 }
 
 hostSelectBtn.onclick = showHostScreen;
@@ -252,20 +740,13 @@ joinKeyBtn.onclick = doJoin;
 joinKeyInput.addEventListener("keydown", e => { if (e.key === "Enter") doJoin(); });
 backToFirstBtn.onclick = () => {
   joinScreen.classList.add("hidden");
+  backToFirstBtn.classList.add("hidden");
   firstScreen.classList.remove("hidden");
 };
 
 // Panel buttons
 document.getElementById("hostBtn").onclick = host;
-document.getElementById("joinBtn").onclick = () => {
-  if (peer) {
-    peer.destroy();
-    peer = null;
-  }
-  stopHosting();
-  shareId.textContent = "";
-  showJoinScreen();
-};
+
 
 // Hide all main UI at start
 camera.classList.add("hidden");
@@ -273,6 +754,7 @@ overlayCanvas.classList.add("hidden");
 gridCanvas.classList.add("hidden");
 panel.classList.add("hidden");
 topBar.classList.add("hidden");
+backToFirstBtn.classList.add("hidden");
 
 /* ================= CANVAS ================= */
 const ctx = overlayCanvas.getContext("2d");
@@ -337,15 +819,26 @@ fullscreenBtn.onclick = () => {
     : document.documentElement.requestFullscreen();
 };
 
-/* ================= DOUBLE TAP UI ================= */
+/* ================= DOUBLE TAP/CLICK UI ================= */
 let lastTap = 0;
-overlayCanvas.addEventListener("touchend", () => {
+overlayCanvas.addEventListener("touchend", (e) => {
   const now = Date.now();
-  if (now - lastTap < 300) {
+  if (now - lastTap < 300 && e.touches.length === 0) {
     panel.classList.toggle("hidden");
     topBar.classList.toggle("hidden");
   }
   lastTap = now;
+  // Reset gesture state when all touches end
+  if (e.touches.length === 0) {
+    g = null;
+  }
+});
+
+// Double-click for desktop/mouse users
+overlayCanvas.addEventListener("dblclick", (e) => {
+  e.preventDefault();
+  panel.classList.toggle("hidden");
+  topBar.classList.toggle("hidden");
 });
 
 /* ================= GESTURES ================= */
@@ -376,9 +869,92 @@ overlayCanvas.addEventListener("touchmove", e => {
   }
 },{ passive:false });
 
+
 function dist(t){return Math.hypot(t[1].clientX-t[0].clientX,t[1].clientY-t[0].clientY);}
 function ang(t){return Math.atan2(t[1].clientY-t[0].clientY,t[1].clientX-t[0].clientX);}
 function center(t){let x=0,y=0;t.forEach(p=>{x+=p.clientX;y+=p.clientY});return{x:x/t.length,y:y/t.length};}
+
+/* ================= MOUSE GESTURES ================= */
+let mouseG = null;
+let isMouseDown = false;
+
+overlayCanvas.addEventListener("mousedown", e => {
+  if (locked) return;
+  isMouseDown = true;
+  const startX = e.clientX;
+  const startY = e.clientY;
+  mouseG = {
+    startPos: { ...pos },
+    startScale: scale,
+    startRot: rot,
+    startX: startX,
+    startY: startY,
+    isRotating: e.shiftKey || e.button === 2, // Shift key or right mouse button for rotation
+    lastAngle: 0
+  };
+  e.preventDefault();
+});
+
+overlayCanvas.addEventListener("mousemove", e => {
+  if (locked || !mouseG || !isMouseDown) return;
+  e.preventDefault();
+  
+  const dx = e.clientX - mouseG.startX;
+  const dy = e.clientY - mouseG.startY;
+  
+  if (mouseG.isRotating) {
+    // Rotation: calculate angle from center
+    const centerX = mouseG.startPos.x;
+    const centerY = mouseG.startPos.y;
+    const angle1 = Math.atan2(mouseG.startY - centerY, mouseG.startX - centerX);
+    const angle2 = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+    const deltaAngle = angle2 - angle1;
+    rot = mouseG.startRot + deltaAngle;
+  } else {
+    // Translation: move the image
+    pos.x = mouseG.startPos.x + dx;
+    pos.y = mouseG.startPos.y + dy;
+  }
+});
+
+overlayCanvas.addEventListener("mouseup", e => {
+  isMouseDown = false;
+  mouseG = null;
+});
+
+overlayCanvas.addEventListener("mouseleave", () => {
+  isMouseDown = false;
+  mouseG = null;
+});
+
+// Mouse wheel for scaling
+overlayCanvas.addEventListener("wheel", e => {
+  if (locked) return;
+  e.preventDefault();
+  
+  const delta = e.deltaY > 0 ? 0.9 : 1.1; // Zoom out or zoom in
+  const newScale = scale * delta;
+  
+  // Limit scale range
+  if (newScale >= 0.1 && newScale <= 10) {
+    // Scale from mouse position
+    const rect = overlayCanvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    // Calculate scale relative to mouse position
+    const scaleChange = newScale / scale;
+    pos.x = mouseX - (mouseX - pos.x) * scaleChange;
+    pos.y = mouseY - (mouseY - pos.y) * scaleChange;
+    
+    scale = newScale;
+  }
+}, { passive: false });
+
+// Prevent context menu on right click (for rotation)
+overlayCanvas.addEventListener("contextmenu", e => {
+  e.preventDefault();
+});
 
 /* ================= GRID ================= */
 function drawGrid() {
@@ -515,8 +1091,17 @@ function stopHosting() {
     resizeHandler = null;
   }
   isHosting = false;
-  shareId.textContent = "Sharing stopped";
-  shareId.style.color = "#ef4444";
+  shareId.textContent = "";
+  shareId.className = "";
+  document.getElementById("shareLinkContainer").classList.add("hidden");
+  document.getElementById("shareLinkInput").value = "";
+  
+  // Re-enable host button
+  const hostBtn = document.getElementById("hostBtn");
+  if (hostBtn) {
+    hostBtn.disabled = false;
+    hostBtn.classList.remove("disabled");
+  }
 }
 
 function host() {
@@ -537,7 +1122,14 @@ function host() {
   
   isHosting = true;
   shareId.textContent = "Starting host...";
-  shareId.style.color = "#fbbf24";
+  shareId.className = "warning";
+  
+  // Disable host button
+  const hostBtn = document.getElementById("hostBtn");
+  if (hostBtn) {
+    hostBtn.disabled = true;
+    hostBtn.classList.add("disabled");
+  }
   
   peer = new Peer({
     debug: 2,
@@ -550,8 +1142,16 @@ function host() {
   });
   
   peer.on("open", async (id) => {
-    shareId.textContent = "Share ID: " + id;
-    shareId.style.color = "#4ade80";
+    // Generate shareable link
+    const shareLink = `${window.location.origin}${window.location.pathname}?join=${id}`;
+    const shareLinkInput = document.getElementById("shareLinkInput");
+    const shareLinkContainer = document.getElementById("shareLinkContainer");
+    
+    shareLinkInput.value = shareLink;
+    shareLinkContainer.classList.remove("hidden");
+    
+    shareId.textContent = `Session ID: ${id}`;
+    shareId.className = "success";
     
     try {
       // Check if device is mobile or if getDisplayMedia is not available
@@ -571,7 +1171,8 @@ function host() {
         hostStream = createCompositeStream();
         canvasStream = hostStream;
         
-        shareId.textContent = "Share ID: " + id + " (Mobile Mode)";
+        shareId.textContent = `Session ID: ${id} (Mobile Mode)`;
+        shareId.className = "success";
         
       } else {
         // Desktop: Use screen sharing
@@ -593,7 +1194,15 @@ function host() {
       console.error("Error getting media stream:", err);
       isHosting = false;
       shareId.textContent = "Error: Could not start sharing";
-      shareId.style.color = "#ef4444";
+      shareId.className = "error";
+      document.getElementById("shareLinkContainer").classList.add("hidden");
+      
+      // Re-enable host button on error
+      const hostBtn = document.getElementById("hostBtn");
+      if (hostBtn) {
+        hostBtn.disabled = false;
+        hostBtn.classList.remove("disabled");
+      }
       
       if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
         alert("Permission denied. Please allow camera/screen sharing access.");
@@ -608,8 +1217,16 @@ function host() {
   peer.on("error", (err) => {
     console.error("Peer error:", err);
     shareId.textContent = "Error: " + err.message;
-    shareId.style.color = "#ef4444";
+    shareId.className = "error";
+    document.getElementById("shareLinkContainer").classList.add("hidden");
     isHosting = false;
+    
+    // Re-enable host button on error
+    const hostBtn = document.getElementById("hostBtn");
+    if (hostBtn) {
+      hostBtn.disabled = false;
+      hostBtn.classList.remove("disabled");
+    }
   });
   
   peer.on("call", (incomingCall) => {
@@ -631,16 +1248,27 @@ function host() {
   });
 }
 
-function join(id) {
+function join(idOrLink) {
   // Clean up any existing peer
   if (peer) {
     peer.destroy();
   }
   
-  if (!id || id.trim() === "") {
-    alert("Please enter a valid Share ID");
+  // Extract ID from link if it's a full URL
+  let id = idOrLink.trim();
+  if (id.includes('?join=')) {
+    id = id.split('?join=')[1].split('&')[0];
+  } else if (id.includes('join=')) {
+    id = id.split('join=')[1].split('&')[0];
+  }
+  
+  if (!id || id === "") {
+    alert("Please enter a valid Share ID or Link");
     return;
   }
+  
+  shareId.textContent = "Connecting...";
+  shareId.className = "warning";
   
   peer = new Peer({
     debug: 2,
@@ -685,39 +1313,55 @@ function join(id) {
         call.on("close", () => {
           console.log("Call closed");
           stream.getTracks().forEach(track => track.stop());
-          alert("Connection to host lost");
-          location.reload();
+          shareId.textContent = "Connection lost";
+          shareId.className = "error";
+          setTimeout(() => {
+            alert("Connection to host lost");
+            location.reload();
+          }, 500);
         });
         
         call.on("error", (err) => {
           console.error("Call error:", err);
           stream.getTracks().forEach(track => track.stop());
-          alert("Connection error: " + err.message);
-          location.reload();
+          shareId.textContent = "Connection error";
+          shareId.className = "error";
+          setTimeout(() => {
+            alert("Connection error: " + err.message);
+            location.reload();
+          }, 500);
         });
       } catch (err) {
         console.error("Error initiating call:", err);
         stream.getTracks().forEach(track => track.stop());
-        alert("Could not connect to host. Please check the Share ID and try again.");
-        camera.classList.add("hidden");
-        overlayCanvas.classList.add("hidden");
-        gridCanvas.classList.add("hidden");
-        panel.classList.add("hidden");
-        topBar.classList.add("hidden");
-        joinScreen.classList.remove("hidden");
+        shareId.textContent = "Connection failed";
+        shareId.className = "error";
+        setTimeout(() => {
+          alert("Could not connect to host. Please check the Share ID and try again.");
+          camera.classList.add("hidden");
+          overlayCanvas.classList.add("hidden");
+          gridCanvas.classList.add("hidden");
+          panel.classList.add("hidden");
+          topBar.classList.add("hidden");
+          joinScreen.classList.remove("hidden");
+        }, 500);
       }
     }, 100);
   });
   
   peer.on("error", (err) => {
     console.error("Peer error:", err);
-    alert("Connection error: " + err.message);
-    camera.classList.add("hidden");
-    overlayCanvas.classList.add("hidden");
-    gridCanvas.classList.add("hidden");
-    panel.classList.add("hidden");
-    topBar.classList.add("hidden");
-    joinScreen.classList.remove("hidden");
+    shareId.textContent = "Connection error";
+    shareId.className = "error";
+    setTimeout(() => {
+      alert("Connection error: " + err.message);
+      camera.classList.add("hidden");
+      overlayCanvas.classList.add("hidden");
+      gridCanvas.classList.add("hidden");
+      panel.classList.add("hidden");
+      topBar.classList.add("hidden");
+      joinScreen.classList.remove("hidden");
+    }, 500);
   });
 }
 
@@ -739,12 +1383,63 @@ function enterViewerMode(stream) {
   remoteVideo.muted = true;
   remoteVideo.play();
   remoteVideo.classList.remove("hidden");
+  
+  shareId.textContent = "Connected to host";
+  shareId.className = "success";
 }
 
 /* Exit viewer */
 remoteVideo.addEventListener("touchend", () => {
   if (appMode === "viewer" && confirm("Exit viewer?")) {
     location.reload();
+  }
+});
+
+// ================= COPY TO CLIPBOARD =================
+const copyBtn = document.getElementById("copyBtn");
+const shareLinkInput = document.getElementById("shareLinkInput");
+
+copyBtn.addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(shareLinkInput.value);
+    const originalText = copyBtn.textContent;
+    copyBtn.textContent = "✓ Copied!";
+    copyBtn.classList.add("copied");
+    
+    setTimeout(() => {
+      copyBtn.textContent = originalText;
+      copyBtn.classList.remove("copied");
+    }, 2000);
+  } catch (err) {
+    // Fallback for older browsers
+    shareLinkInput.select();
+    document.execCommand("copy");
+    const originalText = copyBtn.textContent;
+    copyBtn.textContent = "✓ Copied!";
+    copyBtn.classList.add("copied");
+    
+    setTimeout(() => {
+      copyBtn.textContent = originalText;
+      copyBtn.classList.remove("copied");
+    }, 2000);
+  }
+});
+
+// ================= CHECK URL PARAMETERS =================
+window.addEventListener("DOMContentLoaded", () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const joinId = urlParams.get("join");
+  
+  if (joinId) {
+    // Automatically join if join parameter is in URL
+    firstScreen.classList.add("hidden");
+    joinScreen.classList.add("hidden");
+    camera.classList.remove("hidden");
+    overlayCanvas.classList.remove("hidden");
+    gridCanvas.classList.remove("hidden");
+    panel.classList.remove("hidden");
+    topBar.classList.remove("hidden");
+    join(joinId);
   }
 });
 </script>
