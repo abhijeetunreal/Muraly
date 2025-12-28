@@ -1,9 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AR Wall Drawing PRO + Share</title>
+
+<!-- Primary Meta Tags -->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Muraly — AR Mural Maker & Wall Visualization App</title>
+<meta name="title" content="Muraly — AR Mural Maker & Wall Visualization App" />
+<meta name="description" content="Muraly is an augmented reality mural maker that lets you visualize wall art and murals in real spaces before painting or printing." />
+<meta name="author" content="Codefrydev" />
+<meta name="keywords" content="Muraly, AR mural maker, augmented reality wall art, mural visualization, AR design app, wall design, interior visualization" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://codefrydev.in/metatag/" />
+
+<!-- Theme & Icons -->
+<meta name="theme-color" content="#0ea5e9" />
+<meta name="msapplication-TileColor" content="#0ea5e9" />
+<link rel="icon" href="https://codefrydev.in/favicon-32x32.png" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://codefrydev.in/metatag/" />
+<meta property="og:title" content="Muraly — Design & Preview Murals in AR" />
+<meta property="og:description" content="Preview murals on real walls using augmented reality. Muraly helps artists and designers plan wall art with confidence." />
+<meta property="og:image" content="https://codefrydev.in/images/IconCodefrydev.svg" />
+<meta property="og:site_name" content="Muraly -AR Mural Maker & Wall Visualization App" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="Visualize murals and wall art in real spaces using AR. Create, preview, and design with Muraly." />
+<meta name="twitter:title" content="Muraly — Design & Preview Murals in AR" />
+<meta name="twitter:description" content="Preview murals on real walls using augmented reality. Muraly helps artists and designers plan wall art with confidence." />
+<meta name="twitter:image" content="https://codefrydev.in/images/IconCodefrydev.svg" />
 
 <style>
 :root { --glass: rgba(15,15,15,0.7); }
@@ -98,7 +125,25 @@ button {
 </style>
 </head>
 
+
 <body>
+
+<!-- FIRST SCREEN: Host/Join selection -->
+<div id="firstScreen" style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:black;z-index:1000;">
+  <h2 style="color:white;margin-bottom:24px;">Welcome to AR Wall Drawing</h2>
+  <div style="display:flex;gap:20px;">
+    <button id="hostSelectBtn" style="padding:18px 36px;font-size:1.2em;">📡 Host</button>
+    <button id="joinSelectBtn" style="padding:18px 36px;font-size:1.2em;">🔗 Join</button>
+  </div>
+</div>
+
+<!-- JOIN SCREEN: Enter key -->
+<div id="joinScreen" class="hidden" style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:black;z-index:1000;">
+  <h2 style="color:white;margin-bottom:18px;">Join a Session</h2>
+  <input id="joinKeyInput" type="text" placeholder="Enter Share ID" style="padding:12px;font-size:1.1em;width:220px;margin-bottom:18px;">
+  <button id="joinKeyBtn" style="padding:12px 28px;font-size:1.1em;">Join</button>
+  <button id="backToFirstBtn" style="margin-top:18px;background:none;border:none;color:#aaa;">Back</button>
+</div>
 
 <!-- HOST AR -->
 <video id="camera" autoplay playsinline></video>
@@ -133,8 +178,8 @@ button {
   <hr style="opacity:.2">
 
   <div class="row">
-    <button onclick="host()">📡 Host</button>
-    <button onclick="join()">🔗 Join</button>
+    <button id="hostBtn">📡 Host</button>
+    <button id="joinBtn">🔗 Join</button>
   </div>
 
   <div id="shareId" style="font-size:12px;opacity:.7"></div>
@@ -146,13 +191,96 @@ button {
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 
 <script>
-/* ================= APP MODE ================= */
+
+// ================= APP MODE =================
 let appMode = "host";
 let renderActive = true;
 
 /* ================= CAMERA ================= */
-navigator.mediaDevices.getUserMedia({ video:{ facingMode:"environment" } })
-  .then(s => camera.srcObject = s);
+
+function startCamera() {
+  navigator.mediaDevices.getUserMedia({ video:{ facingMode:"environment" } })
+    .then(s => camera.srcObject = s);
+}
+// ========== FIRST SCREEN LOGIC ==========
+const firstScreen = document.getElementById("firstScreen");
+const joinScreen = document.getElementById("joinScreen");
+const hostSelectBtn = document.getElementById("hostSelectBtn");
+const joinSelectBtn = document.getElementById("joinSelectBtn");
+const joinKeyInput = document.getElementById("joinKeyInput");
+const joinKeyBtn = document.getElementById("joinKeyBtn");
+const backToFirstBtn = document.getElementById("backToFirstBtn");
+
+function showHostScreen() {
+  firstScreen.classList.add("hidden");
+  joinScreen.classList.add("hidden");
+  camera.classList.remove("hidden");
+  overlayCanvas.classList.remove("hidden");
+  gridCanvas.classList.remove("hidden");
+  panel.classList.remove("hidden");
+  topBar.classList.remove("hidden");
+  startCamera();
+  // Don't auto-start hosting, let user click Host button
+}
+
+function showJoinScreen() {
+  firstScreen.classList.add("hidden");
+  joinScreen.classList.remove("hidden");
+  joinKeyInput.value = "";
+  joinKeyInput.focus();
+}
+
+function doJoin() {
+  const id = joinKeyInput.value.trim();
+  if (!id) {
+    joinKeyInput.focus();
+    return;
+  }
+  joinScreen.classList.add("hidden");
+  // Show host UI while waiting for stream
+  camera.classList.remove("hidden");
+  overlayCanvas.classList.remove("hidden");
+  gridCanvas.classList.remove("hidden");
+  panel.classList.remove("hidden");
+  topBar.classList.remove("hidden");
+  join(id);
+}
+
+hostSelectBtn.onclick = showHostScreen;
+joinSelectBtn.onclick = showJoinScreen;
+joinKeyBtn.onclick = doJoin;
+joinKeyInput.addEventListener("keydown", e => { if (e.key === "Enter") doJoin(); });
+backToFirstBtn.onclick = () => {
+  joinScreen.classList.add("hidden");
+  firstScreen.classList.remove("hidden");
+};
+
+// Panel buttons
+document.getElementById("hostBtn").onclick = host;
+document.getElementById("joinBtn").onclick = () => {
+  if (peer) {
+    peer.destroy();
+    peer = null;
+  }
+  if (call) {
+    call.close();
+    call = null;
+  }
+  if (hostStream) {
+    hostStream.getTracks().forEach(track => track.stop());
+    hostStream = null;
+  }
+  isHosting = false;
+  shareId.textContent = "";
+  showJoinScreen();
+};
+
+// Hide all main UI at start
+camera.classList.add("hidden");
+overlayCanvas.classList.add("hidden");
+gridCanvas.classList.add("hidden");
+panel.classList.add("hidden");
+topBar.classList.add("hidden");
 
 /* ================= CANVAS ================= */
 const ctx = overlayCanvas.getContext("2d");
@@ -299,24 +427,186 @@ render();
 
 /* ================= SCREEN SHARE ================= */
 let peer, call;
+let hostStream = null;
+let isHosting = false;
 
 function host() {
-  peer = new Peer();
-  peer.on("open", id => shareId.textContent = "Share ID: " + id);
-  peer.on("call", async c => {
-    const stream = await navigator.mediaDevices.getDisplayMedia({ video:true });
-    c.answer(stream);
+  if (isHosting) {
+    alert("Already hosting. Please stop the current session first.");
+    return;
+  }
+  
+  // Clean up any existing peer
+  if (peer) {
+    peer.destroy();
+  }
+  
+  isHosting = true;
+  shareId.textContent = "Starting host...";
+  shareId.style.color = "#fbbf24";
+  
+  peer = new Peer({
+    debug: 2,
+    config: {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+      ]
+    }
+  });
+  
+  peer.on("open", async (id) => {
+    shareId.textContent = "Share ID: " + id;
+    shareId.style.color = "#4ade80";
+    
+    try {
+      // Get screen share stream
+      hostStream = await navigator.mediaDevices.getDisplayMedia({ 
+        video: { 
+          cursor: "always",
+          displaySurface: "monitor"
+        },
+        audio: false 
+      });
+      
+      // Handle when user stops sharing
+      hostStream.getVideoTracks()[0].onended = () => {
+        if (call) {
+          call.close();
+          call = null;
+        }
+        if (hostStream) {
+          hostStream.getTracks().forEach(track => track.stop());
+          hostStream = null;
+        }
+        isHosting = false;
+        shareId.textContent = "Screen sharing stopped";
+        shareId.style.color = "#ef4444";
+      };
+      
+    } catch (err) {
+      console.error("Error getting display media:", err);
+      isHosting = false;
+      shareId.textContent = "Error: Could not share screen";
+      shareId.style.color = "#ef4444";
+      if (err.name !== "NotAllowedError") {
+        alert("Could not start screen sharing. Please allow screen sharing when prompted.");
+      }
+    }
+  });
+  
+  peer.on("error", (err) => {
+    console.error("Peer error:", err);
+    shareId.textContent = "Error: " + err.message;
+    shareId.style.color = "#ef4444";
+  });
+  
+  peer.on("call", (incomingCall) => {
+    if (hostStream) {
+      incomingCall.answer(hostStream);
+      call = incomingCall;
+      
+      call.on("close", () => {
+        console.log("Call closed");
+      });
+      
+      call.on("error", (err) => {
+        console.error("Call error:", err);
+      });
+    } else {
+      console.error("No stream available to answer call");
+      incomingCall.close();
+    }
   });
 }
 
-function join() {
-  const id = prompt("Enter Share ID");
-  if (!id) return;
-
-  peer = new Peer();
+function join(id) {
+  // Clean up any existing peer
+  if (peer) {
+    peer.destroy();
+  }
+  
+  if (!id || id.trim() === "") {
+    alert("Please enter a valid Share ID");
+    return;
+  }
+  
+  peer = new Peer({
+    debug: 2,
+    config: {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+      ]
+    }
+  });
+  
   peer.on("open", () => {
-    call = peer.call(id, null);
-    call.on("stream", stream => enterViewerMode(stream));
+    console.log("Joining with ID:", id);
+    
+    // PeerJS requires a stream when calling, so we create a minimal dummy stream
+    // We'll use a canvas-based video stream to avoid requesting camera permissions
+    const canvas = document.createElement("canvas");
+    canvas.width = 1;
+    canvas.height = 1;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, 1, 1);
+    
+    const stream = canvas.captureStream(1); // 1 FPS is enough for a dummy stream
+    
+    // Small delay to ensure peer is fully ready
+    setTimeout(() => {
+      try {
+        call = peer.call(id.trim(), stream);
+        
+        if (!call) {
+          throw new Error("Could not initiate call");
+        }
+        
+        call.on("stream", (remoteStream) => {
+          console.log("Received remote stream");
+          // Stop the dummy stream once we get the real stream
+          stream.getTracks().forEach(track => track.stop());
+          enterViewerMode(remoteStream);
+        });
+        
+        call.on("close", () => {
+          console.log("Call closed");
+          stream.getTracks().forEach(track => track.stop());
+          alert("Connection to host lost");
+          location.reload();
+        });
+        
+        call.on("error", (err) => {
+          console.error("Call error:", err);
+          stream.getTracks().forEach(track => track.stop());
+          alert("Connection error: " + err.message);
+          location.reload();
+        });
+      } catch (err) {
+        console.error("Error initiating call:", err);
+        stream.getTracks().forEach(track => track.stop());
+        alert("Could not connect to host. Please check the Share ID and try again.");
+        camera.classList.add("hidden");
+        overlayCanvas.classList.add("hidden");
+        gridCanvas.classList.add("hidden");
+        panel.classList.add("hidden");
+        topBar.classList.add("hidden");
+        joinScreen.classList.remove("hidden");
+      }
+    }, 100);
+  });
+  
+  peer.on("error", (err) => {
+    console.error("Peer error:", err);
+    alert("Connection error: " + err.message);
+    camera.classList.add("hidden");
+    overlayCanvas.classList.add("hidden");
+    gridCanvas.classList.add("hidden");
+    panel.classList.add("hidden");
+    topBar.classList.add("hidden");
+    joinScreen.classList.remove("hidden");
   });
 }
 
