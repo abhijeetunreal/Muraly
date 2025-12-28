@@ -262,15 +262,7 @@ document.getElementById("joinBtn").onclick = () => {
     peer.destroy();
     peer = null;
   }
-  if (call) {
-    call.close();
-    call = null;
-  }
-  if (hostStream) {
-    hostStream.getTracks().forEach(track => track.stop());
-    hostStream = null;
-  }
-  isHosting = false;
+  stopHosting();
   shareId.textContent = "";
   showJoinScreen();
 };
@@ -429,6 +421,103 @@ render();
 let peer, call;
 let hostStream = null;
 let isHosting = false;
+let canvasStream = null;
+let canvasStreamInterval = null;
+let resizeHandler = null;
+
+// Detect if device is mobile
+function isMobileDevice() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+         (window.innerWidth <= 768 && 'ontouchstart' in window);
+}
+
+// Create a composite canvas stream (camera + overlay)
+function createCompositeStream() {
+  // Create a new canvas for compositing
+  const compositeCanvas = document.createElement("canvas");
+  compositeCanvas.width = overlayCanvas.width || window.innerWidth;
+  compositeCanvas.height = overlayCanvas.height || window.innerHeight;
+  const compositeCtx = compositeCanvas.getContext("2d");
+  
+  // Update canvas size if window resizes
+  function updateCanvasSize() {
+    compositeCanvas.width = overlayCanvas.width || window.innerWidth;
+    compositeCanvas.height = overlayCanvas.height || window.innerHeight;
+  }
+  resizeHandler = updateCanvasSize;
+  window.addEventListener("resize", resizeHandler);
+  
+  // Capture stream from composite canvas
+  const stream = compositeCanvas.captureStream(30); // 30 FPS
+  
+  // Function to draw composite frame
+  function drawCompositeFrame() {
+    if (!isHosting || !camera.srcObject || camera.readyState !== 4) return;
+    
+    // Update canvas size if needed
+    if (compositeCanvas.width !== overlayCanvas.width || 
+        compositeCanvas.height !== overlayCanvas.height) {
+      updateCanvasSize();
+    }
+    
+    // Clear and draw camera frame
+    try {
+      compositeCtx.drawImage(camera, 0, 0, compositeCanvas.width, compositeCanvas.height);
+      
+      // Draw overlay canvas on top
+      compositeCtx.drawImage(overlayCanvas, 0, 0);
+      
+      // Draw grid canvas on top
+      compositeCtx.drawImage(gridCanvas, 0, 0);
+    } catch (e) {
+      // Silently handle any drawing errors
+      console.warn("Error drawing composite frame:", e);
+    }
+  }
+  
+  // Wait for camera to be ready, then start capturing
+  function startCapturing() {
+    if (camera.readyState === 4) {
+      canvasStreamInterval = setInterval(drawCompositeFrame, 33); // ~30 FPS
+    } else {
+      camera.addEventListener("loadedmetadata", () => {
+        if (isHosting && !canvasStreamInterval) {
+          canvasStreamInterval = setInterval(drawCompositeFrame, 33);
+        }
+      }, { once: true });
+    }
+  }
+  
+  startCapturing();
+  
+  return stream;
+}
+
+function stopHosting() {
+  if (call) {
+    call.close();
+    call = null;
+  }
+  if (hostStream) {
+    hostStream.getTracks().forEach(track => track.stop());
+    hostStream = null;
+  }
+  if (canvasStreamInterval) {
+    clearInterval(canvasStreamInterval);
+    canvasStreamInterval = null;
+  }
+  if (canvasStream) {
+    canvasStream.getTracks().forEach(track => track.stop());
+    canvasStream = null;
+  }
+  if (resizeHandler) {
+    window.removeEventListener("resize", resizeHandler);
+    resizeHandler = null;
+  }
+  isHosting = false;
+  shareId.textContent = "Sharing stopped";
+  shareId.style.color = "#ef4444";
+}
 
 function host() {
   if (isHosting) {
@@ -439,6 +528,11 @@ function host() {
   // Clean up any existing peer
   if (peer) {
     peer.destroy();
+  }
+  
+  // Ensure camera is started
+  if (!camera.srcObject) {
+    startCamera();
   }
   
   isHosting = true;
@@ -460,37 +554,53 @@ function host() {
     shareId.style.color = "#4ade80";
     
     try {
-      // Get screen share stream
-      hostStream = await navigator.mediaDevices.getDisplayMedia({ 
-        video: { 
-          cursor: "always",
-          displaySurface: "monitor"
-        },
-        audio: false 
-      });
+      // Check if device is mobile or if getDisplayMedia is not available
+      const isMobile = isMobileDevice();
+      const hasDisplayMedia = navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia;
       
-      // Handle when user stops sharing
-      hostStream.getVideoTracks()[0].onended = () => {
-        if (call) {
-          call.close();
-          call = null;
+      if (isMobile || !hasDisplayMedia) {
+        // For mobile devices, use canvas capture instead
+        // Wait a bit for camera to be ready
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        if (!camera.srcObject) {
+          throw new Error("Camera not available. Please ensure camera permissions are granted.");
         }
-        if (hostStream) {
-          hostStream.getTracks().forEach(track => track.stop());
-          hostStream = null;
-        }
-        isHosting = false;
-        shareId.textContent = "Screen sharing stopped";
-        shareId.style.color = "#ef4444";
-      };
+        
+        // Create composite stream from canvas
+        hostStream = createCompositeStream();
+        canvasStream = hostStream;
+        
+        shareId.textContent = "Share ID: " + id + " (Mobile Mode)";
+        
+      } else {
+        // Desktop: Use screen sharing
+        hostStream = await navigator.mediaDevices.getDisplayMedia({ 
+          video: { 
+            cursor: "always",
+            displaySurface: "monitor"
+          },
+          audio: false 
+        });
+        
+        // Handle when user stops sharing
+        hostStream.getVideoTracks()[0].onended = () => {
+          stopHosting();
+        };
+      }
       
     } catch (err) {
-      console.error("Error getting display media:", err);
+      console.error("Error getting media stream:", err);
       isHosting = false;
-      shareId.textContent = "Error: Could not share screen";
+      shareId.textContent = "Error: Could not start sharing";
       shareId.style.color = "#ef4444";
-      if (err.name !== "NotAllowedError") {
-        alert("Could not start screen sharing. Please allow screen sharing when prompted.");
+      
+      if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+        alert("Permission denied. Please allow camera/screen sharing access.");
+      } else if (err.name === "NotFoundError" || err.name === "DevicesNotFoundError") {
+        alert("No camera found. Please ensure your device has a camera.");
+      } else {
+        alert("Could not start sharing: " + err.message);
       }
     }
   });
@@ -499,6 +609,7 @@ function host() {
     console.error("Peer error:", err);
     shareId.textContent = "Error: " + err.message;
     shareId.style.color = "#ef4444";
+    isHosting = false;
   });
   
   peer.on("call", (incomingCall) => {
