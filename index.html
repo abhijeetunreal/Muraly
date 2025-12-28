@@ -821,22 +821,63 @@ fullscreenBtn.onclick = () => {
 
 /* ================= DOUBLE TAP/CLICK UI ================= */
 let lastTap = 0;
+let lastTapPos = { x: 0, y: 0 };
+let isDoubleTap = false;
+let uiHiddenTime = 0;
+let preventGestureUntil = 0;
+
 overlayCanvas.addEventListener("touchend", (e) => {
   const now = Date.now();
-  if (now - lastTap < 300 && e.touches.length === 0) {
+  const touch = e.changedTouches[0];
+  const tapX = touch.clientX;
+  const tapY = touch.clientY;
+  
+  // Check if this is a double-tap (within 300ms and 50px distance)
+  const timeDiff = now - lastTap;
+  const distDiff = Math.hypot(tapX - lastTapPos.x, tapY - lastTapPos.y);
+  
+  if (timeDiff < 300 && distDiff < 50 && e.touches.length === 0) {
+    isDoubleTap = true;
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Prevent gesture handling for a short time after double-tap
+    preventGestureUntil = now + 500;
+    
+    // Toggle UI visibility
+    const wasHidden = panel.classList.contains("hidden");
     panel.classList.toggle("hidden");
     topBar.classList.toggle("hidden");
+    
+    // If we just hid the UI, record the time to prevent immediate re-showing
+    if (!wasHidden) {
+      uiHiddenTime = now;
+    }
+    
+    // Clear gesture state
+    g = null;
+    
+    // Reset double-tap flag after a short delay
+    setTimeout(() => {
+      isDoubleTap = false;
+    }, 100);
+  } else {
+    isDoubleTap = false;
   }
+  
   lastTap = now;
+  lastTapPos = { x: tapX, y: tapY };
+  
   // Reset gesture state when all touches end
   if (e.touches.length === 0) {
     g = null;
   }
-});
+}, { passive: false });
 
 // Double-click for desktop/mouse users
 overlayCanvas.addEventListener("dblclick", (e) => {
   e.preventDefault();
+  e.stopPropagation();
   panel.classList.toggle("hidden");
   topBar.classList.toggle("hidden");
 });
@@ -844,7 +885,13 @@ overlayCanvas.addEventListener("dblclick", (e) => {
 /* ================= GESTURES ================= */
 let g = null;
 overlayCanvas.addEventListener("touchstart", e => {
-  if (locked) return;
+  // Prevent gesture handling if we just had a double-tap or UI was recently hidden
+  const now = Date.now();
+  if (locked || isDoubleTap || now < preventGestureUntil || (now - uiHiddenTime < 300)) {
+    g = null;
+    return;
+  }
+  
   const t = [...e.touches];
   g = {
     startPos: { ...pos },
@@ -857,7 +904,15 @@ overlayCanvas.addEventListener("touchstart", e => {
 });
 
 overlayCanvas.addEventListener("touchmove", e => {
-  if (locked || !g) return;
+  // Prevent gesture handling if we just had a double-tap or UI was recently hidden
+  const now = Date.now();
+  if (locked || !g || isDoubleTap || now < preventGestureUntil || (now - uiHiddenTime < 300)) {
+    if (isDoubleTap || now < preventGestureUntil) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    return;
+  }
   e.preventDefault();
   const t = [...e.touches];
   const c = center(t);
