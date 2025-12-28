@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AR Wall Drawing PRO + Share</title>
+
+<style>
+:root { --glass: rgba(15,15,15,0.7); }
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  touch-action: none;
+}
+
+body {
+  background: black;
+  font-family: system-ui, sans-serif;
+  overflow: hidden;
+}
+
+video, canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+#camera { object-fit: cover; z-index: 1; }
+#overlayCanvas { z-index: 2; }
+#gridCanvas { z-index: 3; pointer-events: none; }
+
+#panel {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: 420px;
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  border-radius: 18px;
+  padding: 14px;
+  color: white;
+  z-index: 10;
+}
+
+#topBar {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 10px;
+  z-index: 10;
+}
+
+.iconBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--glass);
+  backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+}
+
+.hidden { display: none !important; }
+
+.row { display: flex; gap: 10px; margin-bottom: 10px; }
+label { width: 70px; font-size: 12px; opacity: .7; }
+
+input[type="range"], input[type="file"] { flex: 1; color: white; }
+
+button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #222;
+  color: white;
+}
+
+/* Viewer */
+#remoteVideo {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: contain;
+  background: black;
+  z-index: 999;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HOST AR -->
+<video id="camera" autoplay playsinline></video>
+<canvas id="overlayCanvas"></canvas>
+<canvas id="gridCanvas"></canvas>
+
+<div id="topBar">
+  <div class="iconBtn" id="fullscreenBtn">⛶</div>
+</div>
+
+<div id="panel">
+  <div class="row">
+    <label>Image</label>
+    <input type="file" id="upload" accept="image/*">
+  </div>
+
+  <div class="row">
+    <label>Opacity</label>
+    <input type="range" id="opacity" min="0" max="1" step="0.01" value="0.6">
+  </div>
+
+  <div class="row">
+    <button id="sketchBtn">✏️ Sketch</button>
+    <button id="imageBtn">🖼 Image</button>
+  </div>
+
+  <div class="row">
+    <button id="lockBtn">🔓 Move</button>
+    <button id="gridBtn">Grid</button>
+  </div>
+
+  <hr style="opacity:.2">
+
+  <div class="row">
+    <button onclick="host()">📡 Host</button>
+    <button onclick="join()">🔗 Join</button>
+  </div>
+
+  <div id="shareId" style="font-size:12px;opacity:.7"></div>
+</div>
+
+<!-- VIEWER -->
+<video id="remoteVideo" autoplay playsinline muted class="hidden"></video>
+
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+
+<script>
+/* ================= APP MODE ================= */
+let appMode = "host";
+let renderActive = true;
+
+/* ================= CAMERA ================= */
+navigator.mediaDevices.getUserMedia({ video:{ facingMode:"environment" } })
+  .then(s => camera.srcObject = s);
+
+/* ================= CANVAS ================= */
+const ctx = overlayCanvas.getContext("2d");
+const gtx = gridCanvas.getContext("2d");
+
+function resize() {
+  overlayCanvas.width = gridCanvas.width = innerWidth;
+  overlayCanvas.height = gridCanvas.height = innerHeight;
+}
+addEventListener("resize", resize);
+resize();
+
+/* ================= IMAGE ================= */
+let img = new Image();
+let sketchImg = null;
+let mode = "image";
+
+let pos = { x: innerWidth/2, y: innerHeight/2 };
+let scale = 1;
+let rot = 0;
+let opacityVal = 0.6;
+
+let locked = false;
+let showGrid = false;
+
+upload.onchange = e => {
+  img.src = URL.createObjectURL(e.target.files[0]);
+  img.onload = makeSketch;
+};
+
+function makeSketch() {
+  const c = document.createElement("canvas");
+  c.width = img.width;
+  c.height = img.height;
+  const cx = c.getContext("2d");
+  cx.drawImage(img,0,0);
+  const d = cx.getImageData(0,0,c.width,c.height);
+  for(let i=0;i<d.data.length;i+=4){
+    const g=(d.data[i]+d.data[i+1]+d.data[i+2])/3;
+    d.data[i]=d.data[i+1]=d.data[i+2]=g>150?255:0;
+  }
+  cx.putImageData(d,0,0);
+  sketchImg = new Image();
+  sketchImg.src = c.toDataURL();
+}
+
+/* ================= UI ================= */
+opacity.oninput = e => opacityVal = +e.target.value;
+sketchBtn.onclick = () => mode = "sketch";
+imageBtn.onclick = () => mode = "image";
+
+lockBtn.onclick = () => {
+  locked = !locked;
+  lockBtn.textContent = locked ? "🔒 Locked" : "🔓 Move";
+};
+
+gridBtn.onclick = () => showGrid = !showGrid;
+
+fullscreenBtn.onclick = () => {
+  document.fullscreenElement
+    ? document.exitFullscreen()
+    : document.documentElement.requestFullscreen();
+};
+
+/* ================= DOUBLE TAP UI ================= */
+let lastTap = 0;
+overlayCanvas.addEventListener("touchend", () => {
+  const now = Date.now();
+  if (now - lastTap < 300) {
+    panel.classList.toggle("hidden");
+    topBar.classList.toggle("hidden");
+  }
+  lastTap = now;
+});
+
+/* ================= GESTURES ================= */
+let g = null;
+overlayCanvas.addEventListener("touchstart", e => {
+  if (locked) return;
+  const t = [...e.touches];
+  g = {
+    startPos: { ...pos },
+    startScale: scale,
+    startRot: rot,
+    c0: center(t),
+    d0: t.length>1 ? dist(t) : 0,
+    a0: t.length>1 ? ang(t) : 0
+  };
+});
+
+overlayCanvas.addEventListener("touchmove", e => {
+  if (locked || !g) return;
+  e.preventDefault();
+  const t = [...e.touches];
+  const c = center(t);
+  pos.x = g.startPos.x + (c.x - g.c0.x);
+  pos.y = g.startPos.y + (c.y - g.c0.y);
+  if (t.length > 1) {
+    scale = g.startScale * (dist(t) / g.d0);
+    rot = g.startRot + (ang(t) - g.a0);
+  }
+},{ passive:false });
+
+function dist(t){return Math.hypot(t[1].clientX-t[0].clientX,t[1].clientY-t[0].clientY);}
+function ang(t){return Math.atan2(t[1].clientY-t[0].clientY,t[1].clientX-t[0].clientX);}
+function center(t){let x=0,y=0;t.forEach(p=>{x+=p.clientX;y+=p.clientY});return{x:x/t.length,y:y/t.length};}
+
+/* ================= GRID ================= */
+function drawGrid() {
+  gtx.clearRect(0,0,gridCanvas.width,gridCanvas.height);
+  if (!showGrid) return;
+  gtx.strokeStyle = "rgba(255,255,255,.15)";
+  for(let i=0;i<gridCanvas.width;i+=60){
+    gtx.beginPath(); gtx.moveTo(i,0); gtx.lineTo(i,gridCanvas.height); gtx.stroke();
+  }
+  for(let i=0;i<gridCanvas.height;i+=60){
+    gtx.beginPath(); gtx.moveTo(0,i); gtx.lineTo(gridCanvas.width,i); gtx.stroke();
+  }
+}
+
+/* ================= RENDER ================= */
+function render() {
+  if (!renderActive) return;
+  ctx.clearRect(0,0,overlayCanvas.width,overlayCanvas.height);
+  const src = mode==="sketch" ? sketchImg : img;
+  if (src) {
+    ctx.save();
+    ctx.translate(pos.x,pos.y);
+    ctx.rotate(rot);
+    ctx.globalAlpha = opacityVal;
+    ctx.drawImage(
+      src,
+      -src.width*scale/2,
+      -src.height*scale/2,
+      src.width*scale,
+      src.height*scale
+    );
+    ctx.restore();
+  }
+  drawGrid();
+  requestAnimationFrame(render);
+}
+render();
+
+/* ================= SCREEN SHARE ================= */
+let peer, call;
+
+function host() {
+  peer = new Peer();
+  peer.on("open", id => shareId.textContent = "Share ID: " + id);
+  peer.on("call", async c => {
+    const stream = await navigator.mediaDevices.getDisplayMedia({ video:true });
+    c.answer(stream);
+  });
+}
+
+function join() {
+  const id = prompt("Enter Share ID");
+  if (!id) return;
+
+  peer = new Peer();
+  peer.on("open", () => {
+    call = peer.call(id, null);
+    call.on("stream", stream => enterViewerMode(stream));
+  });
+}
+
+function enterViewerMode(stream) {
+  appMode = "viewer";
+  renderActive = false;
+
+  if (camera.srcObject) {
+    camera.srcObject.getTracks().forEach(t => t.stop());
+    camera.srcObject = null;
+  }
+
+  panel.classList.add("hidden");
+  topBar.classList.add("hidden");
+  overlayCanvas.classList.add("hidden");
+  gridCanvas.classList.add("hidden");
+
+  remoteVideo.srcObject = stream;
+  remoteVideo.muted = true;
+  remoteVideo.play();
+  remoteVideo.classList.remove("hidden");
+}
+
+/* Exit viewer */
+remoteVideo.addEventListener("touchend", () => {
+  if (appMode === "viewer" && confirm("Exit viewer?")) {
+    location.reload();
+  }
+});
+</script>
+
+</body>
+</html>
