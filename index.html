@@ -32,18 +32,28 @@
 <meta name="twitter:description" content="Preview murals on real walls using augmented reality. Muraly helps artists and designers plan wall art with confidence." />
 <meta name="twitter:image" content="https://codefrydev.in/images/IconCodefrydev.svg" />
 
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Wallpoet&display=swap" rel="stylesheet">
+
 <style>
 :root { 
-  --glass: rgba(15, 15, 15, 0.75);
-  --glass-light: rgba(255, 255, 255, 0.1);
-  --primary: #0ea5e9;
-  --primary-dark: #0284c7;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --glass: rgba(15, 15, 15, 0.85);
+  --glass-light: rgba(255, 255, 255, 0.15);
+  --primary: #ff6b35;
+  --primary-dark: #e55a2b;
+  --success: #06ffa5;
+  --warning: #ffd23f;
+  --danger: #ff1744;
+  --gradient-1: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff1744 100%);
+  --gradient-2: linear-gradient(135deg, #06ffa5 0%, #00d4ff 50%, #667eea 100%);
+  --gradient-3: linear-gradient(135deg, #ffd23f 0%, #ff6b35 50%, #ff1744 100%);
+  --spray-blue: #00d4ff;
+  --spray-pink: #ff1744;
+  --spray-yellow: #ffd23f;
+  --spray-green: #06ffa5;
+  --spray-orange: #ff6b35;
 }
 
 * {
@@ -77,15 +87,29 @@ video, canvas {
   transform: translateX(-50%);
   width: calc(100% - 32px);
   max-width: 480px;
-  background: var(--glass);
+  background: 
+    linear-gradient(135deg, rgba(15, 15, 15, 0.4) 0%, rgba(26, 15, 31, 0.4) 100%);
   backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid var(--glass-light);
-  border-radius: 24px;
+  border: 3px solid;
+  border-image: linear-gradient(135deg, var(--spray-orange), var(--spray-green), var(--spray-blue), var(--spray-pink)) 1;
+  border-radius: 0;
   padding: 20px;
   color: white;
   z-index: 10;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 107, 53, 0.2);
   animation: slideUp 0.3s ease-out;
+}
+
+#panel::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  background: linear-gradient(135deg, var(--spray-orange), var(--spray-green), var(--spray-blue), var(--spray-pink));
+  z-index: -1;
+  opacity: 0.3;
+  filter: blur(8px);
 }
 
 @keyframes slideUp {
@@ -101,8 +125,8 @@ video, canvas {
 
 #topBar {
   position: fixed;
-  top: 16px;
-  right: 16px;
+  bottom: 20px;
+  right: 20px;
   display: flex;
   gap: 12px;
   z-index: 10;
@@ -111,23 +135,30 @@ video, canvas {
 .iconBtn {
   width: 48px;
   height: 48px;
-  border-radius: 50%;
-  background: var(--glass);
+  border-radius: 0;
+  background: linear-gradient(135deg, rgba(15, 15, 15, 0.4) 0%, rgba(26, 15, 31, 0.4) 100%);
   backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid var(--glass-light);
+  border: 2px solid;
+  border-image: linear-gradient(135deg, var(--spray-orange), var(--spray-green)) 1;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 20px;
+  font-size: 22px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  transition: all 0.15s ease;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 107, 53, 0.2);
 }
 
 .iconBtn:hover {
-  transform: scale(1.05);
-  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.1);
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.3) 0%, rgba(6, 255, 165, 0.3) 100%);
+  border-image: linear-gradient(135deg, var(--spray-orange), var(--spray-green), var(--spray-blue)) 1;
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 107, 53, 0.3);
 }
 
 .iconBtn:active {
@@ -145,9 +176,12 @@ video, canvas {
 
 label { 
   width: 80px; 
-  font-size: 13px; 
-  opacity: 0.85;
-  font-weight: 500;
+  font-size: 12px; 
+  opacity: 0.9;
+  font-weight: 400;
+  font-family: 'Wallpoet', cursive;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 input[type="range"] { 
@@ -179,34 +213,84 @@ input[type="range"]::-webkit-slider-thumb:hover {
 input[type="file"] { 
   flex: 1; 
   color: white;
-  font-size: 13px;
-  padding: 8px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--glass-light);
+  font-size: 12px;
+  font-family: 'Wallpoet', cursive;
+  padding: 10px;
+  border-radius: 0;
+  background: rgba(10, 10, 26, 0.8);
+  border: 2px solid;
+  border-image: linear-gradient(135deg, rgba(255, 107, 53, 0.5), rgba(6, 255, 165, 0.5)) 1;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 107, 53, 0.2);
+}
+
+input[type="file"]:hover {
+  border-image: linear-gradient(135deg, var(--spray-orange), var(--spray-green), var(--spray-blue)) 1;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 107, 53, 0.25);
 }
 
 input[type="file"]:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
+select, input[type="number"] {
+  color: white;
+  font-size: 12px;
+  font-family: 'Wallpoet', cursive;
+  border-radius: 4px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+select option {
+  background: #1a1a3e;
+  color: white;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 0.5;
+}
+
 button {
   flex: 1;
-  padding: 14px 20px;
-  border-radius: 14px;
-  border: none;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  padding: 12px 18px;
+  border-radius: 0;
+  border: 2px solid;
+  border-image: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 107, 53, 0.6)) 1;
+  background: linear-gradient(135deg, rgba(15, 15, 15, 0.9) 0%, rgba(26, 15, 31, 0.9) 100%);
   color: white;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 400;
+  font-family: 'Wallpoet', cursive;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid var(--glass-light);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.15s ease;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 107, 53, 0.15);
+  text-transform: uppercase;
   position: relative;
   overflow: hidden;
+}
+
+button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(255, 107, 53, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+button:hover::after {
+  opacity: 1;
 }
 
 button::before {
@@ -216,8 +300,8 @@ button::before {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  transition: left 0.5s ease;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  transition: left 0.3s ease;
 }
 
 button:hover::before {
@@ -226,39 +310,53 @@ button:hover::before {
 
 button:hover {
   transform: translateY(-2px);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.1) 100%);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.2) 0%, rgba(6, 255, 165, 0.2) 100%);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 107, 53, 0.25);
+  border-image: linear-gradient(135deg, var(--spray-orange), var(--spray-green)) 1;
 }
 
 button:active {
   transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 button.primary {
   background: var(--gradient-3);
-  border: none;
+  border: 3px solid;
+  border-image: linear-gradient(135deg, var(--spray-yellow), var(--spray-orange), var(--spray-pink)) 1;
+  box-shadow: 
+    0 1px 4px rgba(255, 107, 53, 0.15),
+    0 0 0 1px rgba(255, 210, 63, 0.2);
 }
 
 button.primary:hover {
-  background: linear-gradient(135deg, #3d9bf0 0%, #00d9f5 100%);
+  background: linear-gradient(135deg, #ffd23f 0%, #ff6b35 50%, #ff1744 100%);
+  border-image: linear-gradient(135deg, var(--spray-yellow), var(--spray-orange), var(--spray-pink), var(--spray-blue)) 1;
+  box-shadow: 
+    0 2px 6px rgba(255, 107, 53, 0.2),
+    0 0 0 1px rgba(255, 210, 63, 0.3);
 }
 
 button.success {
   background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
-  border: none;
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 button.success:hover {
   background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 button.danger {
   background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
-  border: none;
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 button.danger:hover {
   background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 button:disabled,
@@ -442,7 +540,8 @@ hr {
   color: white;
   margin-bottom: 40px;
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 400;
+  font-family: 'Wallpoet', cursive;
   background: var(--gradient-3);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -464,26 +563,75 @@ hr {
 
 #firstScreen .button-group {
   display: flex;
-  gap: 20px;
+  gap: 16px;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 #firstScreen button {
-  padding: 20px 48px;
-  font-size: 18px;
-  font-weight: 700;
-  border-radius: 20px;
-  min-width: 180px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  padding: 14px 28px;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: 'Wallpoet', cursive;
+  letter-spacing: 1.5px;
+  border-radius: 0;
+  min-width: 160px;
+  border: 3px solid;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: visible;
+}
+
+#firstScreen button::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: inherit;
+  filter: blur(12px);
+  opacity: 0.6;
+  z-index: -1;
+}
+
+#firstScreen button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+#firstScreen button:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 #hostSelectBtn {
   background: var(--gradient-3);
+  border-image: linear-gradient(135deg, var(--spray-yellow), var(--spray-orange), var(--spray-pink)) 1;
+  box-shadow: 
+    0 2px 6px rgba(255, 107, 53, 0.2),
+    0 0 0 1px rgba(255, 210, 63, 0.25);
+}
+
+#hostSelectBtn:hover {
+  box-shadow: 
+    0 3px 8px rgba(255, 107, 53, 0.25),
+    0 0 0 1px rgba(255, 210, 63, 0.35);
+  transform: translateY(-3px) scale(1.02);
 }
 
 #joinSelectBtn {
   background: var(--gradient-1);
+  border-image: linear-gradient(135deg, var(--spray-orange), var(--spray-pink), var(--spray-blue)) 1;
+  box-shadow: 
+    0 2px 6px rgba(255, 23, 68, 0.2),
+    0 0 0 1px rgba(255, 107, 53, 0.25);
+}
+
+#joinSelectBtn:hover {
+  box-shadow: 
+    0 3px 8px rgba(255, 23, 68, 0.25),
+    0 0 0 1px rgba(255, 107, 53, 0.35);
+  transform: translateY(-3px) scale(1.02);
 }
 
 /* Join Screen Styles */
@@ -503,7 +651,8 @@ hr {
   color: white;
   margin-bottom: 24px;
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 400;
+  font-family: 'Wallpoet', cursive;
   background: var(--gradient-1);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -521,80 +670,110 @@ hr {
 
 #joinKeyInput {
   padding: 14px 18px;
-  font-size: 15px;
+  font-size: 14px;
+  font-family: 'Wallpoet', cursive;
+  letter-spacing: 0.5px;
   width: 100%;
-  background: var(--glass);
+  background: rgba(10, 10, 26, 0.8);
   backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-light);
-  border-radius: 14px;
+  border: 2px solid;
+  border-image: linear-gradient(135deg, rgba(255, 107, 53, 0.5), rgba(6, 255, 165, 0.5)) 1;
+  border-radius: 0;
   color: white;
   outline: none;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 107, 53, 0.2);
 }
 
 #joinKeyInput:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
-  background: rgba(15, 15, 15, 0.85);
+  border-image: linear-gradient(135deg, var(--spray-orange), var(--spray-green), var(--spray-blue)) 1;
+  box-shadow: 
+    0 0 0 3px rgba(255, 107, 53, 0.3),
+    inset 0 2px 4px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(255, 107, 53, 0.2);
+  background: rgba(15, 15, 15, 0.9);
 }
 
 #joinKeyInput::placeholder {
   color: rgba(255, 255, 255, 0.5);
+  font-family: 'Wallpoet', cursive;
 }
 
 #joinKeyBtn {
   padding: 14px 24px;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: 'Wallpoet', cursive;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
   width: 100%;
   background: var(--gradient-1);
-  border: none;
-  border-radius: 14px;
+  border: 3px solid;
+  border-image: linear-gradient(135deg, var(--spray-orange), var(--spray-pink), var(--spray-blue)) 1;
+  border-radius: 0;
   color: white;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+  box-shadow: 
+    0 2px 6px rgba(255, 107, 53, 0.2),
+    0 0 0 1px rgba(255, 107, 53, 0.2);
+  position: relative;
 }
 
 #joinKeyBtn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 
+    0 3px 8px rgba(255, 107, 53, 0.25),
+    0 0 0 1px rgba(255, 107, 53, 0.3);
+  border-image: linear-gradient(135deg, var(--spray-orange), var(--spray-pink), var(--spray-blue), var(--spray-green)) 1;
 }
 
 #joinKeyBtn:active {
   transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(255, 107, 53, 0.15);
 }
 
 #backToFirstBtn {
   position: fixed;
   top: 20px;
   left: 20px;
-  background: var(--glass);
+  background: linear-gradient(135deg, rgba(15, 15, 15, 0.4) 0%, rgba(26, 15, 31, 0.4) 100%);
   backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid var(--glass-light);
-  border-radius: 12px;
+  border: 2px solid;
+  border-image: linear-gradient(135deg, var(--spray-orange), var(--spray-green)) 1;
+  border-radius: 0;
   color: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 400;
+  font-family: 'Wallpoet', cursive;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   padding: 10px 16px;
   z-index: 1001;
   display: flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 107, 53, 0.2);
 }
 
 #backToFirstBtn:hover {
   color: white;
-  background: rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.2) 0%, rgba(6, 255, 165, 0.2) 100%);
   transform: translateX(-3px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 107, 53, 0.3);
+  border-image: linear-gradient(135deg, var(--spray-orange), var(--spray-green), var(--spray-blue)) 1;
 }
 
 #backToFirstBtn:active {
   transform: translateX(-1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* Viewer */
@@ -670,6 +849,33 @@ hr {
     
   </div>
 
+  <hr style="opacity:.2">
+
+  <div class="row">
+    <button id="saveSessionBtn">💾 Save Session</button>
+    <button id="loadSessionBtn">📂 Load Session</button>
+  </div>
+
+  <div class="row">
+    <label>Record Mode</label>
+    <select id="recordMode" style="flex: 1; padding: 8px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-light); color: white; font-size: 13px; outline: none;">
+      <option value="timelapse">Timelapse</option>
+      <option value="full">Full Video</option>
+    </select>
+  </div>
+
+  <div class="row" id="timelapseOptions">
+    <label>Interval</label>
+    <div style="flex: 1; display: flex; gap: 8px; align-items: center;">
+      <button id="interval1sBtn" style="flex: 0 0 auto; padding: 8px 16px; font-size: 12px;">1s</button>
+      <input type="number" id="customInterval" placeholder="Custom (seconds)" min="0.1" step="0.1" value="1" style="flex: 1; padding: 8px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-light); color: white; font-size: 13px; outline: none;">
+    </div>
+  </div>
+
+  <div class="row">
+    <button id="recordTimelapseBtn">🎬 Start Recording</button>
+  </div>
+
   <div id="shareLinkContainer" class="hidden">
     <label id="shareLinkLabel">Share this link to invite others:</label>
     <div id="shareLink">
@@ -717,6 +923,8 @@ function showHostScreen() {
   panel.classList.remove("hidden");
   topBar.classList.remove("hidden");
   startCamera();
+  // Try to load saved session from localStorage only when entering host mode
+  tryLoadFromLocalStorage();
   // Don't auto-start hosting, let user click Host button
 }
 
@@ -792,11 +1000,35 @@ let locked = false;
 let showGrid = false;
 
 upload.onchange = e => {
-  img.src = URL.createObjectURL(e.target.files[0]);
-  img.onload = makeSketch;
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  // Clear any existing image first
+  if (img.src && img.src.startsWith('blob:')) {
+    URL.revokeObjectURL(img.src);
+  }
+  
+  // Load new image
+  const objectURL = URL.createObjectURL(file);
+  img.onload = function() {
+    // Ensure image is fully loaded before making sketch
+    if (img.complete && img.naturalWidth > 0) {
+      makeSketch();
+    }
+  };
+  img.onerror = function() {
+    alert("Error loading image. Please try a different image file.");
+    upload.value = ""; // Reset file input
+  };
+  img.src = objectURL;
 };
 
 function makeSketch() {
+  if (!img.complete || img.naturalWidth === 0) {
+    // Wait for image to be fully loaded
+    img.onload = makeSketch;
+    return;
+  }
   const c = document.createElement("canvas");
   c.width = img.width;
   c.height = img.height;
@@ -809,6 +1041,9 @@ function makeSketch() {
   }
   cx.putImageData(d,0,0);
   sketchImg = new Image();
+  sketchImg.onload = function() {
+    // Sketch image loaded, render will pick it up
+  };
   sketchImg.src = c.toDataURL();
 }
 
@@ -1040,7 +1275,7 @@ function render() {
   if (!renderActive) return;
   ctx.clearRect(0,0,overlayCanvas.width,overlayCanvas.height);
   const src = mode==="sketch" ? sketchImg : img;
-  if (src) {
+  if (src && src.complete && src.naturalWidth > 0) {
     ctx.save();
     ctx.translate(pos.x,pos.y);
     ctx.rotate(rot);
@@ -1168,6 +1403,11 @@ function stopHosting() {
     hostBtn.disabled = false;
     hostBtn.classList.remove("disabled");
   }
+  
+  // Stop recording if active
+  if (isRecording) {
+    stopRecordingTimelapse();
+  }
 }
 
 function host() {
@@ -1197,7 +1437,15 @@ function host() {
     hostBtn.classList.add("disabled");
   }
   
-  peer = new Peer({
+  // Generate 6-character shareable code first
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Exclude confusing chars
+  let shareCode = '';
+  for (let i = 0; i < 6; i++) {
+    shareCode += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  
+  // Use the code as PeerJS custom ID
+  peer = new Peer(shareCode, {
     debug: 2,
     config: {
       iceServers: [
@@ -1208,15 +1456,18 @@ function host() {
   });
   
   peer.on("open", async (id) => {
-    // Generate shareable link
-    const shareLink = `${window.location.origin}${window.location.pathname}?join=${id}`;
+    // id will be the shareCode we set
+    const code = id;
+    
+    // Generate shareable link with short code
+    const shareLink = `${window.location.origin}${window.location.pathname}?join=${code}`;
     const shareLinkInput = document.getElementById("shareLinkInput");
     const shareLinkContainer = document.getElementById("shareLinkContainer");
     
     shareLinkInput.value = shareLink;
     shareLinkContainer.classList.remove("hidden");
     
-    shareId.textContent = `Session ID: ${id}`;
+    shareId.textContent = `Share Code: ${code}`;
     shareId.className = "success";
     
     try {
@@ -1237,7 +1488,7 @@ function host() {
         hostStream = createCompositeStream();
         canvasStream = hostStream;
         
-        shareId.textContent = `Session ID: ${id} (Mobile Mode)`;
+        shareId.textContent = `Share Code: ${code} (Mobile Mode)`;
         shareId.className = "success";
         
       } else {
@@ -1329,7 +1580,7 @@ function join(idOrLink) {
   }
   
   if (!id || id === "") {
-    alert("Please enter a valid Share ID or Link");
+    alert("Please enter a valid Share Code or Link");
     return;
   }
   
@@ -1347,7 +1598,10 @@ function join(idOrLink) {
   });
   
   peer.on("open", () => {
-    console.log("Joining with ID:", id);
+    console.log("Joining with code/ID:", id);
+    
+    // Use the code/ID directly (if it's 6 chars, it's a custom PeerJS ID)
+    const peerIdToCall = id.trim();
     
     // PeerJS requires a stream when calling, so we create a minimal dummy stream
     // We'll use a canvas-based video stream to avoid requesting camera permissions
@@ -1363,7 +1617,7 @@ function join(idOrLink) {
     // Small delay to ensure peer is fully ready
     setTimeout(() => {
       try {
-        call = peer.call(id.trim(), stream);
+        call = peer.call(peerIdToCall, stream);
         
         if (!call) {
           throw new Error("Could not initiate call");
@@ -1491,6 +1745,609 @@ copyBtn.addEventListener("click", async () => {
   }
 });
 
+// ================= SESSION SAVE/LOAD =================
+let mediaRecorder = null;
+let recordedChunks = [];
+let isRecording = false;
+let recordingStream = null;
+let recordingCompositeCanvas = null;
+let recordingCompositeCtx = null;
+let recordingInterval = null;
+let recordingMode = "timelapse"; // "timelapse" or "full"
+let recordingIntervalSeconds = 1; // Interval in seconds for timelapse
+let timelapseFrames = []; // Store frames for timelapse
+let timelapseCaptureInterval = null;
+
+// Save current session state
+function saveSession() {
+  if (!img.src) {
+    alert("No image loaded to save.");
+    return;
+  }
+  
+  const sessionData = {
+    imageData: img.src,
+    sketchImageData: sketchImg ? sketchImg.src : null,
+    position: { x: pos.x, y: pos.y },
+    scale: scale,
+    rotation: rot,
+    opacity: opacityVal,
+    mode: mode,
+    locked: locked,
+    showGrid: showGrid,
+    timestamp: new Date().toISOString()
+  };
+  
+  // Save to localStorage
+  try {
+    localStorage.setItem('muraly_session', JSON.stringify(sessionData));
+    
+    // Also create downloadable file
+    const dataStr = JSON.stringify(sessionData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `muraly_session_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    
+    shareId.textContent = "Session saved successfully!";
+    shareId.className = "success";
+    setTimeout(() => {
+      shareId.textContent = "";
+      shareId.className = "";
+    }, 3000);
+  } catch (err) {
+    console.error("Error saving session:", err);
+    alert("Error saving session: " + err.message);
+  }
+}
+
+// Load saved session
+function loadSession() {
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'application/json';
+  fileInput.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const sessionData = JSON.parse(event.target.result);
+        
+        // Load image
+        if (sessionData.imageData) {
+          img.src = sessionData.imageData;
+          img.onload = () => {
+            if (sessionData.sketchImageData) {
+              sketchImg = new Image();
+              sketchImg.src = sessionData.sketchImageData;
+            } else {
+              makeSketch();
+            }
+            
+            // Restore state
+            pos.x = sessionData.position.x;
+            pos.y = sessionData.position.y;
+            scale = sessionData.scale || 1;
+            rot = sessionData.rotation || 0;
+            opacityVal = sessionData.opacity || 0.6;
+            mode = sessionData.mode || "image";
+            locked = sessionData.locked || false;
+            showGrid = sessionData.showGrid || false;
+            
+            // Update UI
+            opacity.value = opacityVal;
+            lockBtn.textContent = locked ? "🔒 Locked" : "🔓 Move";
+            
+            shareId.textContent = "Session loaded successfully!";
+            shareId.className = "success";
+            setTimeout(() => {
+              shareId.textContent = "";
+              shareId.className = "";
+            }, 3000);
+          };
+        }
+      } catch (err) {
+        console.error("Error loading session:", err);
+        alert("Error loading session: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+  fileInput.click();
+}
+
+// Try to load from localStorage on page load
+function tryLoadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem('muraly_session');
+    if (saved) {
+      const sessionData = JSON.parse(saved);
+      if (sessionData.imageData) {
+        img.src = sessionData.imageData;
+        img.onload = () => {
+          if (sessionData.sketchImageData) {
+            sketchImg = new Image();
+            sketchImg.src = sessionData.sketchImageData;
+          } else {
+            makeSketch();
+          }
+          
+          pos.x = sessionData.position.x;
+          pos.y = sessionData.position.y;
+          scale = sessionData.scale || 1;
+          rot = sessionData.rotation || 0;
+          opacityVal = sessionData.opacity || 0.6;
+          mode = sessionData.mode || "image";
+          locked = sessionData.locked || false;
+          showGrid = sessionData.showGrid || false;
+          
+          opacity.value = opacityVal;
+          lockBtn.textContent = locked ? "🔒 Locked" : "🔓 Move";
+        };
+      }
+    }
+  } catch (err) {
+    console.warn("Could not load from localStorage:", err);
+  }
+}
+
+// Create recording canvas and stream
+function createRecordingStream() {
+  if (recordingCompositeCanvas) {
+    return recordingCompositeCanvas.captureStream(30);
+  }
+  
+  recordingCompositeCanvas = document.createElement("canvas");
+  recordingCompositeCanvas.width = overlayCanvas.width || window.innerWidth;
+  recordingCompositeCanvas.height = overlayCanvas.height || window.innerHeight;
+  recordingCompositeCtx = recordingCompositeCanvas.getContext("2d");
+  
+  // Update canvas size if window resizes
+  function updateRecordingCanvasSize() {
+    recordingCompositeCanvas.width = overlayCanvas.width || window.innerWidth;
+    recordingCompositeCanvas.height = overlayCanvas.height || window.innerHeight;
+  }
+  window.addEventListener("resize", updateRecordingCanvasSize);
+  
+  return recordingCompositeCanvas.captureStream(30);
+}
+
+// Start recording (timelapse or full video)
+function startRecordingTimelapse() {
+  if (isRecording) {
+    stopRecordingTimelapse();
+    return;
+  }
+  
+  if (!camera.srcObject || camera.readyState !== 4) {
+    alert("Camera not ready. Please ensure camera is active.");
+    return;
+  }
+  
+  if (!img.src) {
+    alert("No image loaded. Please upload an image first.");
+    return;
+  }
+  
+  // Get recording mode and interval
+  const recordModeSelect = document.getElementById("recordMode");
+  recordingMode = recordModeSelect ? recordModeSelect.value : "timelapse";
+  
+  if (recordingMode === "timelapse") {
+    const customIntervalInput = document.getElementById("customInterval");
+    recordingIntervalSeconds = customIntervalInput ? parseFloat(customIntervalInput.value) || 1 : 1;
+    
+    if (recordingIntervalSeconds < 0.1) {
+      alert("Interval must be at least 0.1 seconds.");
+      return;
+    }
+  }
+  
+  try {
+    if (recordingMode === "full") {
+      // Full video recording - continuous
+      startFullVideoRecording();
+    } else {
+      // Timelapse recording - capture frames at intervals
+      startTimelapseRecording();
+    }
+  } catch (err) {
+    console.error("Error starting recording:", err);
+    alert("Error starting recording: " + err.message);
+  }
+}
+
+// Start full video recording (continuous)
+function startFullVideoRecording() {
+  recordingStream = createRecordingStream();
+  
+  // Check for MediaRecorder support
+  if (!window.MediaRecorder) {
+    alert("MediaRecorder API not supported in this browser.");
+    return;
+  }
+  
+  // Get available MIME types
+  const options = { mimeType: 'video/webm;codecs=vp9' };
+  if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+    options.mimeType = 'video/webm;codecs=vp8';
+    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+      options.mimeType = 'video/webm';
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        options.mimeType = 'video/mp4';
+      }
+    }
+  }
+  
+  mediaRecorder = new MediaRecorder(recordingStream, {
+    ...options,
+    videoBitsPerSecond: 5000000 // High quality: 5 Mbps
+  });
+  
+  recordedChunks = [];
+  
+  mediaRecorder.ondataavailable = (event) => {
+    if (event.data && event.data.size > 0) {
+      recordedChunks.push(event.data);
+    }
+  };
+  
+  mediaRecorder.onstop = () => {
+    const blob = new Blob(recordedChunks, { type: options.mimeType || 'video/webm' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    link.download = `muraly_video_${timestamp}.${options.mimeType.includes('mp4') ? 'mp4' : 'webm'}`;
+    link.click();
+    URL.revokeObjectURL(url);
+    
+    recordedChunks = [];
+    
+    shareId.textContent = "Video saved!";
+    shareId.className = "success";
+    setTimeout(() => {
+      shareId.textContent = "";
+      shareId.className = "";
+    }, 3000);
+  };
+  
+  mediaRecorder.onerror = (event) => {
+    console.error("MediaRecorder error:", event);
+    alert("Error recording: " + event.error);
+    stopRecordingTimelapse();
+  };
+  
+  // Start recording
+  mediaRecorder.start(1000); // Collect data every second
+  
+  // Draw frames to recording canvas continuously
+  function drawRecordingFrame() {
+    if (!isRecording || !camera.srcObject || camera.readyState !== 4) return;
+    
+    try {
+      // Update canvas size if needed
+      if (recordingCompositeCanvas.width !== overlayCanvas.width || 
+          recordingCompositeCanvas.height !== overlayCanvas.height) {
+        recordingCompositeCanvas.width = overlayCanvas.width || window.innerWidth;
+        recordingCompositeCanvas.height = overlayCanvas.height || window.innerHeight;
+      }
+      
+      // Draw camera frame
+      recordingCompositeCtx.drawImage(camera, 0, 0, recordingCompositeCanvas.width, recordingCompositeCanvas.height);
+      
+      // Draw overlay canvas on top
+      recordingCompositeCtx.drawImage(overlayCanvas, 0, 0);
+      
+      // Draw grid canvas on top
+      recordingCompositeCtx.drawImage(gridCanvas, 0, 0);
+    } catch (e) {
+      console.warn("Error drawing recording frame:", e);
+    }
+  }
+  
+  recordingInterval = setInterval(drawRecordingFrame, 33); // ~30 FPS
+  
+  isRecording = true;
+  const recordBtn = document.getElementById("recordTimelapseBtn");
+  if (recordBtn) {
+    recordBtn.textContent = "⏹ Stop Recording";
+    recordBtn.classList.add("danger");
+  }
+  
+  shareId.textContent = "Recording video...";
+  shareId.className = "warning";
+}
+
+// Start timelapse recording (capture frames at intervals)
+function startTimelapseRecording() {
+  timelapseFrames = [];
+  
+  // Create canvas for capturing frames
+  if (!recordingCompositeCanvas) {
+    recordingCompositeCanvas = document.createElement("canvas");
+    recordingCompositeCanvas.width = overlayCanvas.width || window.innerWidth;
+    recordingCompositeCanvas.height = overlayCanvas.height || window.innerHeight;
+    recordingCompositeCtx = recordingCompositeCanvas.getContext("2d");
+  }
+  
+  // Function to capture a frame
+  function captureFrame() {
+    if (!isRecording || !camera.srcObject || camera.readyState !== 4) return;
+    
+    try {
+      // Update canvas size if needed
+      if (recordingCompositeCanvas.width !== overlayCanvas.width || 
+          recordingCompositeCanvas.height !== overlayCanvas.height) {
+        recordingCompositeCanvas.width = overlayCanvas.width || window.innerWidth;
+        recordingCompositeCanvas.height = overlayCanvas.height || window.innerHeight;
+      }
+      
+      // Draw camera frame
+      recordingCompositeCtx.drawImage(camera, 0, 0, recordingCompositeCanvas.width, recordingCompositeCanvas.height);
+      
+      // Draw overlay canvas on top
+      recordingCompositeCtx.drawImage(overlayCanvas, 0, 0);
+      
+      // Draw grid canvas on top
+      recordingCompositeCtx.drawImage(gridCanvas, 0, 0);
+      
+      // Capture frame as image data
+      const frameData = recordingCompositeCanvas.toDataURL('image/png');
+      timelapseFrames.push(frameData);
+      
+      // Update status
+      shareId.textContent = `Recording timelapse... (${timelapseFrames.length} frames)`;
+      shareId.className = "warning";
+    } catch (e) {
+      console.warn("Error capturing frame:", e);
+    }
+  }
+  
+  // Capture first frame immediately
+  captureFrame();
+  
+  // Capture frames at specified interval
+  const intervalMs = recordingIntervalSeconds * 1000;
+  timelapseCaptureInterval = setInterval(captureFrame, intervalMs);
+  
+  isRecording = true;
+  const recordBtn = document.getElementById("recordTimelapseBtn");
+  if (recordBtn) {
+    recordBtn.textContent = "⏹ Stop Recording";
+    recordBtn.classList.add("danger");
+  }
+  
+  shareId.textContent = `Recording timelapse (${recordingIntervalSeconds}s interval)...`;
+  shareId.className = "warning";
+}
+
+// Stop recording timelapse
+function stopRecordingTimelapse() {
+  if (!isRecording) return;
+  
+  isRecording = false;
+  
+  if (recordingMode === "full") {
+    // Stop full video recording
+    if (recordingInterval) {
+      clearInterval(recordingInterval);
+      recordingInterval = null;
+    }
+    
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      mediaRecorder.stop();
+    }
+    
+    if (recordingStream) {
+      recordingStream.getTracks().forEach(track => track.stop());
+      recordingStream = null;
+    }
+  } else {
+    // Stop timelapse recording and compile frames
+    if (timelapseCaptureInterval) {
+      clearInterval(timelapseCaptureInterval);
+      timelapseCaptureInterval = null;
+    }
+    
+    if (timelapseFrames.length === 0) {
+      shareId.textContent = "No frames captured";
+      shareId.className = "error";
+      const recordBtn = document.getElementById("recordTimelapseBtn");
+      if (recordBtn) {
+        recordBtn.textContent = "🎬 Start Recording";
+        recordBtn.classList.remove("danger");
+      }
+      return;
+    }
+    
+    shareId.textContent = `Processing ${timelapseFrames.length} frames...`;
+    shareId.className = "warning";
+    
+    // Compile timelapse frames into video
+    compileTimelapseVideo();
+  }
+  
+  const recordBtn = document.getElementById("recordTimelapseBtn");
+  if (recordBtn) {
+    recordBtn.textContent = "🎬 Start Recording";
+    recordBtn.classList.remove("danger");
+  }
+}
+
+// Compile timelapse frames into a video
+function compileTimelapseVideo() {
+  if (timelapseFrames.length === 0) return;
+  
+  // Create a canvas for video frames
+  const videoCanvas = document.createElement("canvas");
+  videoCanvas.width = recordingCompositeCanvas.width;
+  videoCanvas.height = recordingCompositeCanvas.height;
+  const videoCtx = videoCanvas.getContext("2d");
+  
+  // Create stream from canvas
+  const stream = videoCanvas.captureStream(30); // 30 FPS output
+  
+  // Check for MediaRecorder support
+  if (!window.MediaRecorder) {
+    alert("MediaRecorder API not supported in this browser.");
+    return;
+  }
+  
+  // Get available MIME types
+  const options = { mimeType: 'video/webm;codecs=vp9' };
+  if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+    options.mimeType = 'video/webm;codecs=vp8';
+    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+      options.mimeType = 'video/webm';
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        options.mimeType = 'video/mp4';
+      }
+    }
+  }
+  
+  mediaRecorder = new MediaRecorder(stream, {
+    ...options,
+    videoBitsPerSecond: 5000000 // High quality: 5 Mbps
+  });
+  
+  recordedChunks = [];
+  
+  mediaRecorder.ondataavailable = (event) => {
+    if (event.data && event.data.size > 0) {
+      recordedChunks.push(event.data);
+    }
+  };
+  
+  const totalFrames = timelapseFrames.length;
+  
+  mediaRecorder.onstop = () => {
+    const blob = new Blob(recordedChunks, { type: options.mimeType || 'video/webm' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    link.download = `muraly_timelapse_${timestamp}.${options.mimeType.includes('mp4') ? 'mp4' : 'webm'}`;
+    link.click();
+    URL.revokeObjectURL(url);
+    
+    recordedChunks = [];
+    timelapseFrames = [];
+    
+    shareId.textContent = `Timelapse video saved! (${totalFrames} frames)`;
+    shareId.className = "success";
+    setTimeout(() => {
+      shareId.textContent = "";
+      shareId.className = "";
+    }, 3000);
+  };
+  
+  mediaRecorder.onerror = (event) => {
+    console.error("MediaRecorder error:", event);
+    alert("Error compiling video: " + event.error);
+    timelapseFrames = [];
+  };
+  
+  // Start recording
+  mediaRecorder.start();
+  
+  // Draw frames to canvas at 30 FPS
+  let frameIndex = 0;
+  const frameDuration = 1000 / 30; // ~33ms per frame at 30 FPS
+  
+  function drawNextFrame() {
+    if (frameIndex >= timelapseFrames.length) {
+      mediaRecorder.stop();
+      stream.getTracks().forEach(track => track.stop());
+      return;
+    }
+    
+    // Load and draw frame
+    const img = new Image();
+    img.onload = () => {
+      videoCtx.drawImage(img, 0, 0, videoCanvas.width, videoCanvas.height);
+      frameIndex++;
+      
+      // Continue to next frame
+      setTimeout(drawNextFrame, frameDuration);
+    };
+    img.onerror = () => {
+      frameIndex++;
+      setTimeout(drawNextFrame, frameDuration);
+    };
+    img.src = timelapseFrames[frameIndex];
+  }
+  
+  // Start drawing frames
+  drawNextFrame();
+}
+
+// Event listeners for save/load/record buttons
+document.getElementById("saveSessionBtn").onclick = saveSession;
+document.getElementById("loadSessionBtn").onclick = loadSession;
+document.getElementById("recordTimelapseBtn").onclick = startRecordingTimelapse;
+
+// Event listeners for recording mode and interval
+const recordModeSelect = document.getElementById("recordMode");
+const timelapseOptions = document.getElementById("timelapseOptions");
+const interval1sBtn = document.getElementById("interval1sBtn");
+const customIntervalInput = document.getElementById("customInterval");
+
+// Show/hide timelapse options based on mode
+if (recordModeSelect) {
+  recordModeSelect.addEventListener("change", (e) => {
+    recordingMode = e.target.value;
+    if (timelapseOptions) {
+      timelapseOptions.style.display = recordingMode === "timelapse" ? "flex" : "none";
+    }
+  });
+  
+  // Initialize visibility
+  if (timelapseOptions) {
+    timelapseOptions.style.display = recordingMode === "timelapse" ? "flex" : "none";
+  }
+}
+
+// 1 second interval button
+if (interval1sBtn) {
+  interval1sBtn.onclick = () => {
+    if (customIntervalInput) {
+      customIntervalInput.value = "1";
+      recordingIntervalSeconds = 1;
+    }
+  };
+}
+
+// Custom interval input
+if (customIntervalInput) {
+  customIntervalInput.addEventListener("input", (e) => {
+    const value = parseFloat(e.target.value);
+    if (!isNaN(value) && value >= 0.1) {
+      recordingIntervalSeconds = value;
+    }
+  });
+  
+  customIntervalInput.addEventListener("change", (e) => {
+    const value = parseFloat(e.target.value);
+    if (isNaN(value) || value < 0.1) {
+      e.target.value = "1";
+      recordingIntervalSeconds = 1;
+    }
+  });
+}
+
+// Cleanup on page unload
+window.addEventListener("beforeunload", () => {
+  if (isRecording) {
+    stopRecordingTimelapse();
+  }
+});
+
 // ================= CHECK URL PARAMETERS =================
 window.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -1507,6 +2364,13 @@ window.addEventListener("DOMContentLoaded", () => {
     topBar.classList.remove("hidden");
     join(joinId);
   }
+  // Don't auto-load from localStorage on page load - only when user enters host mode
+});
+
+// Clean up code mappings when page unloads
+window.addEventListener("beforeunload", () => {
+  codeToPeerIdMap = {};
+  peerIdToCodeMap = {};
 });
 </script>
 
