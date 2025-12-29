@@ -14,9 +14,16 @@
 <link rel="canonical" href="https://codefrydev.in/metatag/" />
 
 <!-- Theme & Icons -->
-<meta name="theme-color" content="#0ea5e9" />
-<meta name="msapplication-TileColor" content="#0ea5e9" />
+<meta name="theme-color" content="#ff6b35" />
+<meta name="msapplication-TileColor" content="#ff6b35" />
 <link rel="icon" href="https://codefrydev.in/favicon-32x32.png" />
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="/manifest.json" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Muraly" />
+<meta name="mobile-web-app-capable" content="yes" />
 
 <!-- Open Graph -->
 <meta property="og:type" content="website" />
@@ -2371,6 +2378,19 @@ window.addEventListener("beforeunload", () => {
   codeToPeerIdMap = {};
   peerIdToCodeMap = {};
 });
+
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((registration) => {
+        console.log('Service Worker registered:', registration);
+      })
+      .catch((error) => {
+        console.log('Service Worker registration failed:', error);
+      });
+  });
+}
 </script>
 
 </body>
