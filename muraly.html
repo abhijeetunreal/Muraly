@@ -800,11 +800,8 @@ hr {
   left: 50%;
   transform: translate(-50%, -50%);
   transform-origin: center center;
-  object-fit: contain;
   background: black;
   will-change: transform;
-  width: 100vw;
-  height: 100vh;
 }
 </style>
 </head>
@@ -1724,10 +1721,15 @@ function enterViewerMode(stream) {
   remoteVideo.muted = true;
   remoteVideo.play();
   
-  // Initialize video size and zoom/pan state
+  // Initialize video size and zoom/pan state when video metadata is loaded
   remoteVideo.onloadedmetadata = () => {
     initViewerZoomPan();
   };
+  
+  // Also try to initialize if video is already loaded
+  if (remoteVideo.readyState >= 1) {
+    setTimeout(() => initViewerZoomPan(), 100);
+  }
   
   remoteVideoContainer.classList.remove("hidden");
   
@@ -1749,8 +1751,33 @@ function initViewerZoomPan() {
   viewerPanX = 0;
   viewerPanY = 0;
   
-  // Let CSS handle the sizing with object-fit: contain
-  // This will maintain the video's natural aspect ratio
+  // Set video size to match its natural aspect ratio exactly
+  const video = remoteVideo;
+  const container = remoteVideoContainer;
+  
+  // Wait for video dimensions to be available
+  if (video.videoWidth && video.videoHeight) {
+    const videoAspect = video.videoWidth / video.videoHeight;
+    const containerAspect = container.clientWidth / container.clientHeight;
+    
+    // Calculate size to fit container while maintaining exact aspect ratio
+    let displayWidth, displayHeight;
+    
+    if (videoAspect > containerAspect) {
+      // Video is wider - fit to width, calculate height from aspect ratio
+      displayWidth = container.clientWidth;
+      displayHeight = displayWidth / videoAspect;
+    } else {
+      // Video is taller - fit to height, calculate width from aspect ratio
+      displayHeight = container.clientHeight;
+      displayWidth = displayHeight * videoAspect;
+    }
+    
+    // Set exact dimensions to maintain aspect ratio
+    video.style.width = displayWidth + 'px';
+    video.style.height = displayHeight + 'px';
+  }
+  
   updateViewerTransform();
 }
 
