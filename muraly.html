@@ -800,8 +800,13 @@ hr {
   left: 50%;
   transform: translate(-50%, -50%);
   transform-origin: center center;
+  object-fit: contain;
   background: black;
   will-change: transform;
+  width: 100%;
+  height: 100%;
+  max-width: 100vw;
+  max-height: 100vh;
 }
 </style>
 </head>
@@ -1361,8 +1366,22 @@ function createCompositeStream() {
     
     // Clear and draw camera frame at its natural dimensions
     try {
-      // Draw camera at its actual video dimensions (no stretching)
-      compositeCtx.drawImage(camera, 0, 0, compositeCanvas.width, compositeCanvas.height);
+      // Ensure canvas exactly matches camera video dimensions
+      const camWidth = camera.videoWidth;
+      const camHeight = camera.videoHeight;
+      
+      if (camWidth && camHeight) {
+        // Update canvas to exactly match camera if needed
+        if (compositeCanvas.width !== camWidth || compositeCanvas.height !== camHeight) {
+          compositeCanvas.width = camWidth;
+          compositeCanvas.height = camHeight;
+        }
+        // Draw camera at 1:1 scale - no stretching
+        compositeCtx.drawImage(camera, 0, 0);
+      } else {
+        // Fallback if dimensions not available
+        compositeCtx.drawImage(camera, 0, 0, compositeCanvas.width, compositeCanvas.height);
+      }
       
       // Draw overlay canvas on top (scale to match camera dimensions)
       const overlayScaleX = compositeCanvas.width / overlayCanvas.width;
@@ -1784,39 +1803,9 @@ function initViewerZoomPan() {
   viewerPanX = 0;
   viewerPanY = 0;
   
-  // Set video size to match its natural aspect ratio exactly
-  const video = remoteVideo;
-  const container = remoteVideoContainer;
-  
-  // Wait for video dimensions to be available
-  if (video.videoWidth && video.videoHeight) {
-    const videoAspect = video.videoWidth / video.videoHeight;
-    const containerAspect = container.clientWidth / container.clientHeight;
-    
-    // Calculate size to fit container while maintaining exact aspect ratio
-    let displayWidth, displayHeight;
-    
-    if (videoAspect > containerAspect) {
-      // Video is wider - fit to width, calculate height from aspect ratio
-      displayWidth = container.clientWidth;
-      displayHeight = displayWidth / videoAspect;
-    } else {
-      // Video is taller - fit to height, calculate width from aspect ratio
-      displayHeight = container.clientHeight;
-      displayWidth = displayHeight * videoAspect;
-    }
-    
-    // Set exact pixel dimensions to prevent any stretching
-    // Remove object-fit when we set exact dimensions to prevent browser scaling
-    video.style.objectFit = 'none';
-    video.style.width = displayWidth + 'px';
-    video.style.height = displayHeight + 'px';
-    video.style.minWidth = displayWidth + 'px';
-    video.style.minHeight = displayHeight + 'px';
-    video.style.maxWidth = displayWidth + 'px';
-    video.style.maxHeight = displayHeight + 'px';
-  }
-  
+  // Let CSS object-fit: contain handle the aspect ratio
+  // The video will automatically maintain its natural aspect ratio
+  // No manual dimension setting needed
   updateViewerTransform();
 }
 
