@@ -1738,9 +1738,7 @@ const remoteVideo = document.getElementById("remoteVideo");
 let viewerZoom = 1;
 let viewerPanX = 0;
 let viewerPanY = 0;
-let viewerGesture = null;
-let viewerLastTouchDistance = 0;
-let viewerLastTouchCenter = { x: 0, y: 0 };
+let viewerG = null;
 
 function initViewerZoomPan() {
   // Reset zoom and pan
@@ -1794,140 +1792,45 @@ function updateViewerTransform() {
   video.style.transform = `translate(${translateX}px, ${translateY}px) scale(${viewerZoom})`;
 }
 
-// Touch gesture handlers for viewer
-remoteVideoContainer.addEventListener('touchstart', (e) => {
-  if (e.touches.length === 1) {
-    // Single touch - pan
-    const touch = e.touches[0];
-    viewerGesture = {
-      type: 'pan',
-      startX: touch.clientX - viewerPanX,
-      startY: touch.clientY - viewerPanY,
-      startZoom: viewerZoom
-    };
-  } else if (e.touches.length === 2) {
-    // Two touches - pinch to zoom
-    e.preventDefault();
-    const touch1 = e.touches[0];
-    const touch2 = e.touches[1];
-    
-    const distance = Math.hypot(
-      touch2.clientX - touch1.clientX,
-      touch2.clientY - touch1.clientY
-    );
-    
-    const centerX = (touch1.clientX + touch2.clientX) / 2;
-    const centerY = (touch1.clientY + touch2.clientY) / 2;
-    
-    viewerLastTouchDistance = distance;
-    viewerLastTouchCenter = { x: centerX, y: centerY };
-    
-    viewerGesture = {
-      type: 'zoom',
-      startZoom: viewerZoom,
-      startPanX: viewerPanX,
-      startPanY: viewerPanY,
-      startDistance: distance,
-      startCenter: { x: centerX, y: centerY }
-    };
-  }
-}, { passive: false });
+// Helper functions (same as host session)
+function viewerDist(t){return Math.hypot(t[1].clientX-t[0].clientX,t[1].clientY-t[0].clientY);}
+function viewerCenter(t){let x=0,y=0;t.forEach(p=>{x+=p.clientX;y+=p.clientY});return{x:x/t.length,y:y/t.length};}
 
-remoteVideoContainer.addEventListener('touchmove', (e) => {
-  if (!viewerGesture) return;
-  
-  if (viewerGesture.type === 'pan' && e.touches.length === 1) {
-    // Pan with single touch
-    e.preventDefault();
-    const touch = e.touches[0];
-    const deltaX = touch.clientX - viewerGesture.startX;
-    const deltaY = touch.clientY - viewerGesture.startY;
-    
-    viewerPanX = viewerGesture.startPanX + deltaX;
-    viewerPanY = viewerGesture.startPanY + deltaY;
-    
-    // Constrain pan to prevent moving too far
-    const video = remoteVideo;
-    const container = remoteVideoContainer;
-    const videoRect = video.getBoundingClientRect();
-    const videoWidth = videoRect.width || video.videoWidth || container.clientWidth;
-    const videoHeight = videoRect.height || video.videoHeight || container.clientHeight;
-    const scaledWidth = videoWidth * viewerZoom;
-    const scaledHeight = videoHeight * viewerZoom;
-    const maxPanX = Math.max(0, (scaledWidth - container.clientWidth) / 2);
-    const maxPanY = Math.max(0, (scaledHeight - container.clientHeight) / 2);
-    
-    viewerPanX = Math.max(-maxPanX, Math.min(maxPanX, viewerPanX));
-    viewerPanY = Math.max(-maxPanY, Math.min(maxPanY, viewerPanY));
-    
-    updateViewerTransform();
-  } else if (viewerGesture.type === 'zoom' && e.touches.length === 2) {
-    // Zoom with pinch
-    e.preventDefault();
-    const touch1 = e.touches[0];
-    const touch2 = e.touches[1];
-    
-    const distance = Math.hypot(
-      touch2.clientX - touch1.clientX,
-      touch2.clientY - touch1.clientY
-    );
-    
-    const centerX = (touch1.clientX + touch2.clientX) / 2;
-    const centerY = (touch1.clientY + touch2.clientY) / 2;
-    
-    // Calculate zoom
-    const zoomDelta = distance / viewerGesture.startDistance;
-    const newZoom = viewerGesture.startZoom * zoomDelta;
-    
-    // Limit zoom range (0.5x to 5x)
-    if (newZoom >= 0.5 && newZoom <= 5) {
-      viewerZoom = newZoom;
-      
-      // Adjust pan to zoom towards touch center
-      const container = remoteVideoContainer;
-      const containerCenterX = container.clientWidth / 2;
-      const containerCenterY = container.clientHeight / 2;
-      
-      const zoomPointX = centerX - containerCenterX;
-      const zoomPointY = centerY - containerCenterY;
-      
-      // Calculate zoom center offset
-      const zoomRatio = viewerZoom / viewerGesture.startZoom;
-      viewerPanX = viewerGesture.startPanX - (zoomPointX * (zoomRatio - 1));
-      viewerPanY = viewerGesture.startPanY - (zoomPointY * (zoomRatio - 1));
-      
-      // Constrain pan
-      const video = remoteVideo;
-      const videoRect = video.getBoundingClientRect();
-      const videoWidth = videoRect.width || video.videoWidth || container.clientWidth;
-      const videoHeight = videoRect.height || video.videoHeight || container.clientHeight;
-      const scaledWidth = videoWidth * viewerZoom;
-      const scaledHeight = videoHeight * viewerZoom;
-      const maxPanX = Math.max(0, (scaledWidth - container.clientWidth) / 2);
-      const maxPanY = Math.max(0, (scaledHeight - container.clientHeight) / 2);
-      
-      viewerPanX = Math.max(-maxPanX, Math.min(maxPanX, viewerPanX));
-      viewerPanY = Math.max(-maxPanY, Math.min(maxPanY, viewerPanY));
-      
-      updateViewerTransform();
+// Touch gesture handlers for viewer (exactly like host session)
+remoteVideoContainer.addEventListener("touchstart", e => {
+  const t = [...e.touches];
+  viewerG = {
+    startPanX: viewerPanX,
+    startPanY: viewerPanY,
+    startZoom: viewerZoom,
+    c0: viewerCenter(t),
+    d0: t.length>1 ? viewerDist(t) : 0
+  };
+});
+
+remoteVideoContainer.addEventListener("touchmove", e => {
+  if (!viewerG) return;
+  e.preventDefault();
+  const t = [...e.touches];
+  const c = viewerCenter(t);
+  viewerPanX = viewerG.startPanX + (c.x - viewerG.c0.x);
+  viewerPanY = viewerG.startPanY + (c.y - viewerG.c0.y);
+  if (t.length > 1) {
+    const newDist = viewerDist(t);
+    if (viewerG.d0 > 0) {
+      const newZoom = viewerG.startZoom * (newDist / viewerG.d0);
+      // Limit zoom range (0.5x to 5x)
+      if (newZoom >= 0.5 && newZoom <= 5) {
+        viewerZoom = newZoom;
+      }
     }
   }
+  updateViewerTransform();
 }, { passive: false });
 
-remoteVideoContainer.addEventListener('touchend', (e) => {
+remoteVideoContainer.addEventListener("touchend", e => {
   if (e.touches.length === 0) {
-    viewerGesture = null;
-  } else if (e.touches.length === 1 && viewerGesture && viewerGesture.type === 'zoom') {
-    // Switch from zoom to pan if one finger is lifted
-    const touch = e.touches[0];
-    viewerGesture = {
-      type: 'pan',
-      startX: touch.clientX,
-      startY: touch.clientY,
-      startPanX: viewerPanX,
-      startPanY: viewerPanY,
-      startZoom: viewerZoom
-    };
+    viewerG = null;
   }
 });
 
