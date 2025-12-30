@@ -1329,15 +1329,22 @@ function isMobileDevice() {
 // Create a composite canvas stream (camera + overlay)
 function createCompositeStream() {
   // Create a new canvas for compositing
+  // Use camera's actual video dimensions to maintain aspect ratio
   const compositeCanvas = document.createElement("canvas");
-  compositeCanvas.width = overlayCanvas.width || window.innerWidth;
-  compositeCanvas.height = overlayCanvas.height || window.innerHeight;
+  const cameraWidth = camera.videoWidth || camera.clientWidth || window.innerWidth;
+  const cameraHeight = camera.videoHeight || camera.clientHeight || window.innerHeight;
+  compositeCanvas.width = cameraWidth;
+  compositeCanvas.height = cameraHeight;
   const compositeCtx = compositeCanvas.getContext("2d");
   
-  // Update canvas size if window resizes
+  // Update canvas size if window resizes or camera dimensions change
   function updateCanvasSize() {
-    compositeCanvas.width = overlayCanvas.width || window.innerWidth;
-    compositeCanvas.height = overlayCanvas.height || window.innerHeight;
+    const newCameraWidth = camera.videoWidth || camera.clientWidth || window.innerWidth;
+    const newCameraHeight = camera.videoHeight || camera.clientHeight || window.innerHeight;
+    if (compositeCanvas.width !== newCameraWidth || compositeCanvas.height !== newCameraHeight) {
+      compositeCanvas.width = newCameraWidth;
+      compositeCanvas.height = newCameraHeight;
+    }
   }
   resizeHandler = updateCanvasSize;
   window.addEventListener("resize", resizeHandler);
@@ -1349,21 +1356,27 @@ function createCompositeStream() {
   function drawCompositeFrame() {
     if (!isHosting || !camera.srcObject || camera.readyState !== 4) return;
     
-    // Update canvas size if needed
-    if (compositeCanvas.width !== overlayCanvas.width || 
-        compositeCanvas.height !== overlayCanvas.height) {
-      updateCanvasSize();
-    }
+    // Update canvas size if camera dimensions changed
+    updateCanvasSize();
     
-    // Clear and draw camera frame
+    // Clear and draw camera frame at its natural dimensions
     try {
+      // Draw camera at its actual video dimensions (no stretching)
       compositeCtx.drawImage(camera, 0, 0, compositeCanvas.width, compositeCanvas.height);
       
-      // Draw overlay canvas on top
+      // Draw overlay canvas on top (scale to match camera dimensions)
+      const overlayScaleX = compositeCanvas.width / overlayCanvas.width;
+      const overlayScaleY = compositeCanvas.height / overlayCanvas.height;
+      compositeCtx.save();
+      compositeCtx.scale(overlayScaleX, overlayScaleY);
       compositeCtx.drawImage(overlayCanvas, 0, 0);
+      compositeCtx.restore();
       
-      // Draw grid canvas on top
+      // Draw grid canvas on top (scale to match camera dimensions)
+      compositeCtx.save();
+      compositeCtx.scale(overlayScaleX, overlayScaleY);
       compositeCtx.drawImage(gridCanvas, 0, 0);
+      compositeCtx.restore();
     } catch (e) {
       // Silently handle any drawing errors
       console.warn("Error drawing composite frame:", e);
