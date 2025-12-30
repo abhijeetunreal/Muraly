@@ -800,13 +800,8 @@ hr {
   left: 50%;
   transform: translate(-50%, -50%);
   transform-origin: center center;
-  object-fit: contain;
   background: black;
   will-change: transform;
-  width: 100%;
-  height: 100%;
-  max-width: 100vw;
-  max-height: 100vh;
 }
 </style>
 </head>
@@ -1338,20 +1333,18 @@ function createCompositeStream() {
   const compositeCanvas = document.createElement("canvas");
   const cameraWidth = camera.videoWidth || camera.clientWidth || window.innerWidth;
   const cameraHeight = camera.videoHeight || camera.clientHeight || window.innerHeight;
-  // Apply aspect ratio adjustments
-  compositeCanvas.width = cameraWidth + ASPECT_WIDTH_ADJUST;
-  compositeCanvas.height = cameraHeight + ASPECT_HEIGHT_ADJUST;
+  // Use camera's actual dimensions (adjustments applied on viewer side only)
+  compositeCanvas.width = cameraWidth;
+  compositeCanvas.height = cameraHeight;
   const compositeCtx = compositeCanvas.getContext("2d");
   
   // Update canvas size if window resizes or camera dimensions change
   function updateCanvasSize() {
     const newCameraWidth = camera.videoWidth || camera.clientWidth || window.innerWidth;
     const newCameraHeight = camera.videoHeight || camera.clientHeight || window.innerHeight;
-    const adjustedWidth = newCameraWidth + ASPECT_WIDTH_ADJUST;
-    const adjustedHeight = newCameraHeight + ASPECT_HEIGHT_ADJUST;
-    if (compositeCanvas.width !== adjustedWidth || compositeCanvas.height !== adjustedHeight) {
-      compositeCanvas.width = adjustedWidth;
-      compositeCanvas.height = adjustedHeight;
+    if (compositeCanvas.width !== newCameraWidth || compositeCanvas.height !== newCameraHeight) {
+      compositeCanvas.width = newCameraWidth;
+      compositeCanvas.height = newCameraHeight;
     }
   }
   resizeHandler = updateCanvasSize;
@@ -1374,17 +1367,13 @@ function createCompositeStream() {
       const camHeight = camera.videoHeight;
       
       if (camWidth && camHeight) {
-        // Apply aspect ratio adjustments
-        const adjustedWidth = camWidth + ASPECT_WIDTH_ADJUST;
-        const adjustedHeight = camHeight + ASPECT_HEIGHT_ADJUST;
-        
-        // Update canvas to match adjusted dimensions
-        if (compositeCanvas.width !== adjustedWidth || compositeCanvas.height !== adjustedHeight) {
-          compositeCanvas.width = adjustedWidth;
-          compositeCanvas.height = adjustedHeight;
+        // Update canvas to match camera dimensions (no adjustments - done on viewer side)
+        if (compositeCanvas.width !== camWidth || compositeCanvas.height !== camHeight) {
+          compositeCanvas.width = camWidth;
+          compositeCanvas.height = camHeight;
         }
-        // Draw camera scaled to adjusted dimensions
-        compositeCtx.drawImage(camera, 0, 0, adjustedWidth, adjustedHeight);
+        // Draw camera at its natural size
+        compositeCtx.drawImage(camera, 0, 0);
       } else {
         // Fallback if dimensions not available
         compositeCtx.drawImage(camera, 0, 0, compositeCanvas.width, compositeCanvas.height);
@@ -1764,6 +1753,7 @@ function enterViewerMode(stream) {
   function handleVideoReady() {
     // Wait a bit for video dimensions to be available
     if (remoteVideo.videoWidth && remoteVideo.videoHeight) {
+      // Force recalculation with current adjustment values
       initViewerZoomPan();
     } else {
       // Retry if dimensions not ready yet
@@ -1773,22 +1763,34 @@ function enterViewerMode(stream) {
   
   remoteVideo.onloadedmetadata = handleVideoReady;
   remoteVideo.onloadeddata = handleVideoReady;
+  remoteVideo.onresize = handleVideoReady;
   
   // Also try to initialize if video is already loaded
   if (remoteVideo.readyState >= 1) {
     setTimeout(handleVideoReady, 100);
   }
   
-  // Recalculate on resize
+  // Recalculate on resize (preserve zoom/pan)
   let viewerResizeTimeout;
   window.addEventListener('resize', () => {
     clearTimeout(viewerResizeTimeout);
     viewerResizeTimeout = setTimeout(() => {
       if (appMode === 'viewer' && remoteVideo.videoWidth && remoteVideo.videoHeight) {
-        initViewerZoomPan();
+        updateViewerDimensions();
       }
     }, 250);
   });
+  
+  // Periodically check and update dimensions (in case adjustments changed)
+  // Use updateViewerDimensions() instead of initViewerZoomPan() to preserve zoom/pan
+  if (window.viewerDimensionInterval) {
+    clearInterval(window.viewerDimensionInterval);
+  }
+  window.viewerDimensionInterval = setInterval(() => {
+    if (appMode === 'viewer' && remoteVideo.videoWidth && remoteVideo.videoHeight) {
+      updateViewerDimensions();
+    }
+  }, 500);
   
   remoteVideoContainer.classList.remove("hidden");
   
@@ -1806,28 +1808,73 @@ let viewerG = null;
 
 // ================= ASPECT RATIO ADJUSTMENT =================
 // Adjust these values to fine-tune aspect ratio matching
-// Add/subtract pixels to width and height to match host camera view
-const ASPECT_WIDTH_ADJUST = -10;  // Add/subtract pixels from width (e.g., -10, 0, 10)
-const ASPECT_HEIGHT_ADJUST = 0; // Add/subtract pixels from height (e.g., -10, 0, 10)
+// These multipliers adjust the aspect ratio calculation (not cropping)
+// Values > 1.0 make it wider/taller, values < 1.0 make it narrower/shorter
+// Example: 1.05 = 5% wider aspect ratio, 0.95 = 5% narrower aspect ratio
+const ASPECT_WIDTH_MULTIPLIER = 1.0;   // Multiply width aspect (e.g., 0.95, 1.0, 1.05)
+const ASPECT_HEIGHT_MULTIPLIER = 1.3; // Multiply height aspect (e.g., 0.95, 1.0, 1.05)
+
+function updateViewerDimensions() {
+  // Update dimensions without resetting zoom/pan
+  const video = remoteVideo;
+  const container = remoteVideoContainer;
+  
+  if (video.videoWidth && video.videoHeight) {
+    // Apply aspect ratio multipliers (stretches/compresses, doesn't crop)
+    const originalAspect = video.videoWidth / video.videoHeight;
+    const adjustedAspect = (originalAspect * ASPECT_WIDTH_MULTIPLIER) / ASPECT_HEIGHT_MULTIPLIER;
+    const containerAspect = container.clientWidth / container.clientHeight;
+    
+    // Calculate size to fit container while using adjusted aspect ratio
+    let displayWidth, displayHeight;
+    
+    if (adjustedAspect > containerAspect) {
+      // Video is wider - fit to width
+      displayWidth = container.clientWidth;
+      displayHeight = displayWidth / adjustedAspect;
+    } else {
+      // Video is taller - fit to height
+      displayHeight = container.clientHeight;
+      displayWidth = displayHeight * adjustedAspect;
+    }
+    
+    // Store display dimensions for transform calculations
+    video._displayWidth = displayWidth;
+    video._displayHeight = displayHeight;
+    
+    // Set dimensions with adjusted aspect ratio (will stretch/compress to match)
+    video.style.width = displayWidth + 'px';
+    video.style.height = displayHeight + 'px';
+    video.style.objectFit = 'fill'; // Fill dimensions (stretch/compress, no cropping)
+  }
+  
+  updateViewerTransform();
+}
 
 function initViewerZoomPan() {
-  // Reset zoom and pan
+  // Reset zoom and pan only on initial setup
   viewerZoom = 1;
   viewerPanX = 0;
   viewerPanY = 0;
   
-  // Let CSS object-fit: contain handle the aspect ratio
-  // The video will automatically maintain its natural aspect ratio
-  // No manual dimension setting needed
-  updateViewerTransform();
+  // Update dimensions
+  updateViewerDimensions();
 }
 
 function updateViewerTransform() {
   const video = remoteVideo;
   
-  // Video is centered at 50%, 50% with translate(-50%, -50%) in CSS
-  // We add pan offset in pixels and apply zoom
-  video.style.transform = `translate(calc(-50% + ${viewerPanX}px), calc(-50% + ${viewerPanY}px)) scale(${viewerZoom})`;
+  // Get the actual display dimensions
+  const displayWidth = video._displayWidth || video.clientWidth || video.videoWidth;
+  const displayHeight = video._displayHeight || video.clientHeight || video.videoHeight;
+  
+  // Calculate transform: center the video, then apply pan and zoom
+  // The video is positioned at 50%, 50%, so we translate by -50% to center it
+  // Then add pan offset and apply zoom
+  const translateX = -50 + (viewerPanX / displayWidth * 100);
+  const translateY = -50 + (viewerPanY / displayHeight * 100);
+  
+  video.style.transform = `translate(${translateX}%, ${translateY}%) scale(${viewerZoom})`;
 }
 
 // Helper functions (same as host session)
