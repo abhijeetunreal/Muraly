@@ -796,12 +796,15 @@ hr {
 
 #remoteVideo {
   position: absolute;
-  top: 0;
-  left: 0;
-  transform-origin: 0 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
   object-fit: contain;
   background: black;
   will-change: transform;
+  width: 100vw;
+  height: 100vh;
 }
 </style>
 </head>
@@ -1746,50 +1749,17 @@ function initViewerZoomPan() {
   viewerPanX = 0;
   viewerPanY = 0;
   
-  // Set initial video size
-  const container = remoteVideoContainer;
-  const video = remoteVideo;
-  
-  if (video.videoWidth && video.videoHeight) {
-    const containerAspect = container.clientWidth / container.clientHeight;
-    const videoAspect = video.videoWidth / video.videoHeight;
-    
-    if (videoAspect > containerAspect) {
-      // Video is wider - fit to width
-      video.style.width = '100vw';
-      video.style.height = 'auto';
-    } else {
-      // Video is taller - fit to height
-      video.style.width = 'auto';
-      video.style.height = '100vh';
-    }
-  }
-  
+  // Let CSS handle the sizing with object-fit: contain
+  // This will maintain the video's natural aspect ratio
   updateViewerTransform();
 }
 
 function updateViewerTransform() {
   const video = remoteVideo;
-  const container = remoteVideoContainer;
   
-  // Get video dimensions
-  const videoRect = video.getBoundingClientRect();
-  const videoWidth = videoRect.width || video.videoWidth || container.clientWidth;
-  const videoHeight = videoRect.height || video.videoHeight || container.clientHeight;
-  
-  // Calculate center position
-  const centerX = container.clientWidth / 2;
-  const centerY = container.clientHeight / 2;
-  
-  // Calculate scaled dimensions
-  const scaledWidth = videoWidth * viewerZoom;
-  const scaledHeight = videoHeight * viewerZoom;
-  
-  // Calculate position: center + pan offset
-  const translateX = centerX - (videoWidth / 2) + viewerPanX;
-  const translateY = centerY - (videoHeight / 2) + viewerPanY;
-  
-  video.style.transform = `translate(${translateX}px, ${translateY}px) scale(${viewerZoom})`;
+  // Video is centered at 50%, 50% with translate(-50%, -50%) in CSS
+  // We add pan offset in pixels and apply zoom
+  video.style.transform = `translate(calc(-50% + ${viewerPanX}px), calc(-50% + ${viewerPanY}px)) scale(${viewerZoom})`;
 }
 
 // Helper functions (same as host session)
