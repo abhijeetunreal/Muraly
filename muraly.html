@@ -1334,21 +1334,24 @@ function isMobileDevice() {
 // Create a composite canvas stream (camera + overlay)
 function createCompositeStream() {
   // Create a new canvas for compositing
-  // Use camera's actual video dimensions to maintain aspect ratio
+  // Use camera's actual video dimensions with aspect ratio adjustments
   const compositeCanvas = document.createElement("canvas");
   const cameraWidth = camera.videoWidth || camera.clientWidth || window.innerWidth;
   const cameraHeight = camera.videoHeight || camera.clientHeight || window.innerHeight;
-  compositeCanvas.width = cameraWidth;
-  compositeCanvas.height = cameraHeight;
+  // Apply aspect ratio adjustments
+  compositeCanvas.width = cameraWidth + ASPECT_WIDTH_ADJUST;
+  compositeCanvas.height = cameraHeight + ASPECT_HEIGHT_ADJUST;
   const compositeCtx = compositeCanvas.getContext("2d");
   
   // Update canvas size if window resizes or camera dimensions change
   function updateCanvasSize() {
     const newCameraWidth = camera.videoWidth || camera.clientWidth || window.innerWidth;
     const newCameraHeight = camera.videoHeight || camera.clientHeight || window.innerHeight;
-    if (compositeCanvas.width !== newCameraWidth || compositeCanvas.height !== newCameraHeight) {
-      compositeCanvas.width = newCameraWidth;
-      compositeCanvas.height = newCameraHeight;
+    const adjustedWidth = newCameraWidth + ASPECT_WIDTH_ADJUST;
+    const adjustedHeight = newCameraHeight + ASPECT_HEIGHT_ADJUST;
+    if (compositeCanvas.width !== adjustedWidth || compositeCanvas.height !== adjustedHeight) {
+      compositeCanvas.width = adjustedWidth;
+      compositeCanvas.height = adjustedHeight;
     }
   }
   resizeHandler = updateCanvasSize;
@@ -1366,18 +1369,22 @@ function createCompositeStream() {
     
     // Clear and draw camera frame at its natural dimensions
     try {
-      // Ensure canvas exactly matches camera video dimensions
+      // Ensure canvas exactly matches camera video dimensions with adjustments
       const camWidth = camera.videoWidth;
       const camHeight = camera.videoHeight;
       
       if (camWidth && camHeight) {
-        // Update canvas to exactly match camera if needed
-        if (compositeCanvas.width !== camWidth || compositeCanvas.height !== camHeight) {
-          compositeCanvas.width = camWidth;
-          compositeCanvas.height = camHeight;
+        // Apply aspect ratio adjustments
+        const adjustedWidth = camWidth + ASPECT_WIDTH_ADJUST;
+        const adjustedHeight = camHeight + ASPECT_HEIGHT_ADJUST;
+        
+        // Update canvas to match adjusted dimensions
+        if (compositeCanvas.width !== adjustedWidth || compositeCanvas.height !== adjustedHeight) {
+          compositeCanvas.width = adjustedWidth;
+          compositeCanvas.height = adjustedHeight;
         }
-        // Draw camera at 1:1 scale - no stretching
-        compositeCtx.drawImage(camera, 0, 0);
+        // Draw camera scaled to adjusted dimensions
+        compositeCtx.drawImage(camera, 0, 0, adjustedWidth, adjustedHeight);
       } else {
         // Fallback if dimensions not available
         compositeCtx.drawImage(camera, 0, 0, compositeCanvas.width, compositeCanvas.height);
@@ -1796,6 +1803,12 @@ let viewerZoom = 1;
 let viewerPanX = 0;
 let viewerPanY = 0;
 let viewerG = null;
+
+// ================= ASPECT RATIO ADJUSTMENT =================
+// Adjust these values to fine-tune aspect ratio matching
+// Add/subtract pixels to width and height to match host camera view
+const ASPECT_WIDTH_ADJUST = -10;  // Add/subtract pixels from width (e.g., -10, 0, 10)
+const ASPECT_HEIGHT_ADJUST = 0; // Add/subtract pixels from height (e.g., -10, 0, 10)
 
 function initViewerZoomPan() {
   // Reset zoom and pan
