@@ -1713,12 +1713,7 @@ function enterViewerMode(stream) {
   shareId.className = "success";
 }
 
-/* Exit viewer */
-remoteVideo.addEventListener("touchend", () => {
-  if (appMode === "viewer" && confirm("Exit viewer?")) {
-    location.reload();
-  }
-});
+
 
 // ================= COPY TO CLIPBOARD =================
 const copyBtn = document.getElementById("copyBtn");
