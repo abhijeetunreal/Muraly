@@ -1722,14 +1722,34 @@ function enterViewerMode(stream) {
   remoteVideo.play();
   
   // Initialize video size and zoom/pan state when video metadata is loaded
-  remoteVideo.onloadedmetadata = () => {
-    initViewerZoomPan();
-  };
+  function handleVideoReady() {
+    // Wait a bit for video dimensions to be available
+    if (remoteVideo.videoWidth && remoteVideo.videoHeight) {
+      initViewerZoomPan();
+    } else {
+      // Retry if dimensions not ready yet
+      setTimeout(handleVideoReady, 100);
+    }
+  }
+  
+  remoteVideo.onloadedmetadata = handleVideoReady;
+  remoteVideo.onloadeddata = handleVideoReady;
   
   // Also try to initialize if video is already loaded
   if (remoteVideo.readyState >= 1) {
-    setTimeout(() => initViewerZoomPan(), 100);
+    setTimeout(handleVideoReady, 100);
   }
+  
+  // Recalculate on resize
+  let viewerResizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(viewerResizeTimeout);
+    viewerResizeTimeout = setTimeout(() => {
+      if (appMode === 'viewer' && remoteVideo.videoWidth && remoteVideo.videoHeight) {
+        initViewerZoomPan();
+      }
+    }, 250);
+  });
   
   remoteVideoContainer.classList.remove("hidden");
   
@@ -1773,9 +1793,15 @@ function initViewerZoomPan() {
       displayWidth = displayHeight * videoAspect;
     }
     
-    // Set exact dimensions to maintain aspect ratio
+    // Set exact pixel dimensions to prevent any stretching
+    // Remove object-fit when we set exact dimensions to prevent browser scaling
+    video.style.objectFit = 'none';
     video.style.width = displayWidth + 'px';
     video.style.height = displayHeight + 'px';
+    video.style.minWidth = displayWidth + 'px';
+    video.style.minHeight = displayHeight + 'px';
+    video.style.maxWidth = displayWidth + 'px';
+    video.style.maxHeight = displayHeight + 'px';
   }
   
   updateViewerTransform();
