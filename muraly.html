@@ -64,8 +64,16 @@
   <div class="form-container">
     <input id="joinKeyInput" type="text" placeholder="Enter Share ID or Link">
     <button id="joinKeyBtn">Join Session</button>
+    <div style="width: 100%; text-align: center; margin: 8px 0; color: rgba(255, 255, 255, 0.6); font-size: 12px;">OR</div>
+    <button id="browseSessionsBtn">Browse Available Sessions</button>
   </div>
   
+  <div id="sessionsListContainer" class="hidden">
+    <h3>Available Sessions</h3>
+    <div id="sessionsList"></div>
+    <button id="refreshSessionsBtn">Refresh</button>
+    <button id="closeSessionsListBtn">Close</button>
+  </div>
 </div>
 <button id="backToFirstBtn">← Back</button>
 

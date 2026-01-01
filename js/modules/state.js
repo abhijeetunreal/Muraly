@@ -47,6 +47,7 @@ export const state = {
   canvasStream: null,
   canvasStreamInterval: null,
   resizeHandler: null,
+  currentShareCode: null,
   
   // Gesture state
   g: null,

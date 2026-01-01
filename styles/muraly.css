@@ -799,6 +799,156 @@ hr {
   box-shadow: 0 1px 3px rgba(255, 107, 53, 0.15);
 }
 
+/* Sessions List Styles */
+#sessionsListContainer {
+  width: 100%;
+  max-width: 400px;
+  margin-top: 24px;
+  padding: 20px;
+  background: rgba(10, 10, 26, 0.8);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 2px solid transparent;
+  background-image: 
+    rgba(10, 10, 26, 0.8),
+    linear-gradient(135deg, rgba(255, 107, 53, 0.5), rgba(6, 255, 165, 0.5));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  border-radius: 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+#sessionsListContainer.hidden {
+  display: none;
+}
+
+#sessionsListContainer h3 {
+  color: white;
+  font-size: 16px;
+  margin-bottom: 12px;
+  text-align: center;
+  font-family: 'Comfortaa', cursive;
+  font-weight: 400;
+}
+
+#sessionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.session-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(15, 15, 15, 0.6);
+  border: 2px solid transparent;
+  background-image: 
+    rgba(15, 15, 15, 0.6),
+    linear-gradient(135deg, rgba(255, 107, 53, 0.3), rgba(6, 255, 165, 0.3));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  border-radius: 0;
+  transition: all 0.2s ease;
+}
+
+.session-item:hover {
+  background: rgba(255, 107, 53, 0.15);
+  background-image: 
+    rgba(255, 107, 53, 0.15),
+    linear-gradient(135deg, var(--spray-orange), var(--spray-green));
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2);
+}
+
+.session-code {
+  flex: 1;
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  letter-spacing: 2px;
+  background: var(--gradient-3);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.session-info {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Comfortaa', cursive;
+  min-width: 80px;
+  text-align: right;
+}
+
+.session-join-btn {
+  min-width: 80px;
+  padding: 8px 16px;
+  font-size: 12px;
+  background: var(--gradient-1);
+  border: 2px solid transparent;
+  background-image: 
+    var(--gradient-1),
+    linear-gradient(135deg, var(--spray-orange), var(--spray-pink));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  border-radius: 0;
+  color: white;
+  font-family: 'Comfortaa', cursive;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 
+    0 1px 3px rgba(255, 107, 53, 0.2),
+    0 0 0 1px rgba(255, 107, 53, 0.15);
+}
+
+.session-join-btn:hover {
+  transform: scale(1.05);
+  background-image: 
+    var(--gradient-1),
+    linear-gradient(135deg, var(--spray-orange), var(--spray-pink), var(--spray-blue));
+  box-shadow: 
+    0 2px 6px rgba(255, 107, 53, 0.3),
+    0 0 0 1px rgba(255, 107, 53, 0.25);
+}
+
+.session-join-btn:active {
+  transform: scale(0.95);
+}
+
+#refreshSessionsBtn,
+#closeSessionsListBtn {
+  width: 100%;
+  margin-top: 8px;
+  font-size: 12px;
+  padding: 10px;
+}
+
+#refreshSessionsBtn {
+  background: var(--gradient-2);
+  background-image: 
+    var(--gradient-2),
+    linear-gradient(135deg, var(--spray-green), var(--spray-blue));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+#closeSessionsListBtn {
+  background: rgba(255, 255, 255, 0.1);
+  background-image: 
+    rgba(255, 255, 255, 0.1),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
 #backToFirstBtn {
   position: fixed;
   top: max(20px, env(safe-area-inset-top, 20px));

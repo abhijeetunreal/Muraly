@@ -10,6 +10,9 @@ export const dom = {
   hostSelectBtn: document.getElementById("hostSelectBtn"),
   joinSelectBtn: document.getElementById("joinSelectBtn"),
   joinKeyBtn: document.getElementById("joinKeyBtn"),
+  browseSessionsBtn: document.getElementById("browseSessionsBtn"),
+  refreshSessionsBtn: document.getElementById("refreshSessionsBtn"),
+  closeSessionsListBtn: document.getElementById("closeSessionsListBtn"),
   backToFirstBtn: document.getElementById("backToFirstBtn"),
   hostBtn: document.getElementById("hostBtn"),
   sketchBtn: document.getElementById("sketchBtn"),
@@ -44,6 +47,8 @@ export const dom = {
   shareLinkContainer: document.getElementById("shareLinkContainer"),
   shareId: document.getElementById("shareId"),
   timelapseOptions: document.getElementById("timelapseOptions"),
+  sessionsListContainer: document.getElementById("sessionsListContainer"),
+  sessionsList: document.getElementById("sessionsList"),
   
   // Canvas contexts (initialized after DOM is ready)
   ctx: null,

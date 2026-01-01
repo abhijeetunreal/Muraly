@@ -5,6 +5,7 @@ import { startCamera } from './camera.js';
 import { isMobileDevice, isFirefox } from './utils.js';
 import { enterViewerMode } from './viewer.js';
 import { stopRecordingTimelapse } from './recording.js';
+import { registerSession, unregisterSession } from './discovery.js';
 
 // Create a composite canvas stream (camera + overlay)
 function createCompositeStream() {
@@ -141,6 +142,12 @@ function createCompositeStream() {
 }
 
 export function stopHosting() {
+  // Unregister from discovery service
+  if (state.currentShareCode) {
+    unregisterSession(state.currentShareCode);
+    state.currentShareCode = null;
+  }
+
   if (state.call) {
     state.call.close();
     state.call = null;
@@ -337,6 +344,13 @@ export async function host() {
     state.peer.on("open", (id) => {
       // id will be the shareCode we set
       const code = id;
+      state.currentShareCode = code;
+      
+      // Register with discovery service
+      registerSession(code).catch(err => {
+        console.warn("Failed to register session with discovery service:", err);
+        // Continue anyway - discovery is optional
+      });
       
       // Generate shareable link with short code
       const shareLink = `${window.location.origin}${window.location.pathname}?join=${code}`;
