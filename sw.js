@@ -1,7 +1,12 @@
-const CACHE_NAME = 'muraly-v1';
+const CACHE_NAME = 'muraly-v2';
 const urlsToCache = [
-  '/',
-  '/index.html',
+  './',
+  './index.html',
+  './muraly.html',
+  './styles/index.css',
+  './styles/muraly.css',
+  './js/index.js',
+  './js/muraly.js',
   'https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js',
   'https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Limelight&display=swap'
 ];
