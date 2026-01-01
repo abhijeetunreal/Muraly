@@ -485,6 +485,44 @@ body {
   margin-right: auto;
 }
 
+.clear-cache-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Comfortaa', cursive;
+  text-decoration: none;
+  border-radius: 8px;
+  border: 2px solid var(--glass-light);
+  background: var(--glass);
+  backdrop-filter: blur(10px);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.clear-cache-btn:hover {
+  opacity: 1;
+  border-color: var(--primary);
+  background: rgba(255, 107, 53, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+}
+
+@media (max-width: 768px) {
+  .clear-cache-btn {
+    top: 10px;
+    right: 10px;
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+}
+
 /* Animations */
 @keyframes slideDown {
   from {
