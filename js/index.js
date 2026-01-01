@@ -1,3 +1,6 @@
+// Import custom confirm dialog
+import { showConfirm } from './modules/alert.js';
+
 // Scroll animations
 const observerOptions = {
   threshold: 0.1,
@@ -71,7 +74,7 @@ async function clearAllCaches() {
 const clearCacheBtn = document.getElementById('clearCacheBtn');
 if (clearCacheBtn) {
   clearCacheBtn.addEventListener('click', async () => {
-    const confirmed = confirm("Are you sure you want to clear all caches? This will remove cached files and saved sessions.");
+    const confirmed = await showConfirm("Are you sure you want to clear all caches? This will remove cached files and saved sessions.");
     if (!confirmed) return;
     
     try {

@@ -2,11 +2,12 @@
 import { state } from './state.js';
 import { dom } from './dom.js';
 import { makeSketch } from './image.js';
+import { showAlert } from './alert.js';
 
 // Save current session state
 export function saveSession() {
   if (!state.img.src) {
-    alert("No image loaded to save.");
+    showAlert("No image loaded to save.", 'warning');
     return;
   }
   
@@ -45,7 +46,7 @@ export function saveSession() {
     }, 3000);
   } catch (err) {
     console.error("Error saving session:", err);
-    alert("Error saving session: " + err.message);
+    showAlert("Error saving session: " + err.message, 'error');
   }
 }
 
@@ -98,7 +99,7 @@ export function loadSession() {
         }
       } catch (err) {
         console.error("Error loading session:", err);
-        alert("Error loading session: " + err.message);
+        showAlert("Error loading session: " + err.message, 'error');
       }
     };
     reader.readAsText(file);

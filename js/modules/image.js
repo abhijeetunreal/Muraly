@@ -1,6 +1,7 @@
 // ================= IMAGE =================
 import { state } from './state.js';
 import { dom } from './dom.js';
+import { showAlert } from './alert.js';
 
 export function makeSketch() {
   if (!state.img.complete || state.img.naturalWidth === 0) {
@@ -45,7 +46,7 @@ export function initImageUpload() {
       }
     };
     state.img.onerror = function() {
-      alert("Error loading image. Please try a different image file.");
+      showAlert("Error loading image. Please try a different image file.", 'error');
       dom.upload.value = ""; // Reset file input
     };
     state.img.src = objectURL;
