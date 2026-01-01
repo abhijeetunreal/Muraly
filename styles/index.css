@@ -575,3 +575,221 @@ body {
   transform: translateY(0);
 }
 
+/* Custom Confirm Dialog Styles (for index.html) */
+#customConfirmContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.custom-confirm-backdrop {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: auto;
+}
+
+.custom-confirm-backdrop.custom-confirm-show {
+  opacity: 1;
+}
+
+.custom-confirm-backdrop.custom-confirm-hide {
+  opacity: 0;
+}
+
+.custom-confirm {
+  position: relative;
+  background: linear-gradient(135deg, rgba(15, 15, 15, 0.4) 0%, rgba(26, 15, 31, 0.4) 100%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 3px solid transparent;
+  background-image: 
+    linear-gradient(135deg, rgba(15, 15, 15, 0.4) 0%, rgba(26, 15, 31, 0.4) 100%),
+    linear-gradient(135deg, var(--warning), var(--spray-orange));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  border-radius: 0;
+  padding: clamp(1.5rem, 3vw, 2rem);
+  color: white;
+  font-family: 'Comfortaa', cursive;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 107, 53, 0.2);
+  pointer-events: auto;
+  opacity: 0;
+  transform: scale(0.9) translateY(20px);
+  transition: all 0.3s ease;
+  width: calc(100% - 2rem);
+  max-width: 400px;
+  z-index: 10002;
+}
+
+.custom-confirm::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  bottom: -3px;
+  left: -3px;
+  background: linear-gradient(135deg, var(--warning), var(--spray-orange));
+  z-index: -1;
+  opacity: 0.3;
+  filter: blur(8px);
+}
+
+.custom-confirm-show {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.custom-confirm-hide {
+  opacity: 0;
+  transform: scale(0.9) translateY(20px);
+}
+
+.custom-confirm-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  text-align: center;
+}
+
+.custom-confirm-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.custom-confirm-message {
+  font-size: clamp(0.9375rem, 2vw, 1.0625rem);
+  line-height: 1.6;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.custom-confirm-buttons {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.custom-confirm-btn {
+  flex: 1;
+  min-height: 44px;
+  padding: clamp(0.75rem, 2vw, 0.875rem) clamp(1rem, 3vw, 1.25rem);
+  border-radius: 0;
+  border: 2px solid transparent;
+  background-image: 
+    linear-gradient(135deg, rgba(15, 15, 15, 0.9) 0%, rgba(26, 15, 31, 0.9) 100%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 107, 53, 0.6));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  color: white;
+  font-size: clamp(0.75rem, 2vw, 0.8125rem);
+  font-weight: 400;
+  font-family: 'Comfortaa', cursive;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 107, 53, 0.15);
+  text-transform: uppercase;
+  touch-action: manipulation;
+}
+
+.custom-confirm-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.2) 0%, rgba(6, 255, 165, 0.2) 100%);
+  background-image: 
+    linear-gradient(135deg, rgba(255, 107, 53, 0.2) 0%, rgba(6, 255, 165, 0.2) 100%),
+    linear-gradient(135deg, var(--spray-orange), var(--spray-green));
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 107, 53, 0.25);
+}
+
+.custom-confirm-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.custom-confirm-ok {
+  background: var(--gradient-3);
+  border: 3px solid transparent;
+  background-image: 
+    var(--gradient-3),
+    linear-gradient(135deg, var(--spray-yellow), var(--spray-orange), var(--spray-pink));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 
+    0 1px 4px rgba(255, 107, 53, 0.15),
+    0 0 0 1px rgba(255, 210, 63, 0.2);
+}
+
+.custom-confirm-ok:hover {
+  background: linear-gradient(135deg, #ffd23f 0%, #ff6b35 50%, #ff1744 100%);
+  background-image: 
+    linear-gradient(135deg, #ffd23f 0%, #ff6b35 50%, #ff1744 100%),
+    linear-gradient(135deg, var(--spray-yellow), var(--spray-orange), var(--spray-pink), var(--spray-blue));
+  box-shadow: 
+    0 2px 6px rgba(255, 107, 53, 0.2),
+    0 0 0 1px rgba(255, 210, 63, 0.3);
+}
+
+.custom-confirm-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  background-image: 
+    rgba(255, 255, 255, 0.1),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+.custom-confirm-cancel:hover {
+  background: rgba(255, 255, 255, 0.15);
+  background-image: 
+    rgba(255, 255, 255, 0.15),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
+}
+
+/* Responsive Styles for Confirm Dialog */
+@media (max-width: 768px) {
+  .custom-confirm {
+    width: calc(100% - 1rem);
+    padding: clamp(1.25rem, 3vw, 1.5rem);
+  }
+  
+  .custom-confirm-message {
+    font-size: clamp(0.875rem, 2vw, 1rem);
+  }
+  
+  .custom-confirm-icon {
+    font-size: 28px;
+  }
+  
+  .custom-confirm-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .custom-confirm-btn {
+    width: 100%;
+  }
+}
+

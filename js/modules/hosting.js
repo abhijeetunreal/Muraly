@@ -6,6 +6,7 @@ import { isMobileDevice, isFirefox } from './utils.js';
 import { enterViewerMode } from './viewer.js';
 import { stopRecordingTimelapse } from './recording.js';
 import { registerSession, unregisterSession } from './discovery.js';
+import { showAlert } from './alert.js';
 
 // Create a composite canvas stream (camera + overlay)
 function createCompositeStream() {
@@ -188,7 +189,7 @@ export function stopHosting() {
 
 export async function host() {
   if (state.isHosting) {
-    alert("Already hosting. Please stop the current session first.");
+    showAlert("Already hosting. Please stop the current session first.", 'warning');
     return;
   }
   
@@ -393,24 +394,24 @@ export async function host() {
     if (isFirefoxBrowser) {
       // Firefox-specific error handling
       if (err.message && (err.message.includes("can not be found here") || err.message.includes("The object can not be found here"))) {
-        alert("Screen sharing failed. If the window list is empty, please grant Screen Recording permission in System Preferences > Security & Privacy > Privacy > Screen Recording, then restart Firefox.");
+        showAlert("Screen sharing failed. If the window list is empty, please grant Screen Recording permission in System Preferences > Security & Privacy > Privacy > Screen Recording, then restart Firefox.", 'error');
       } else if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
-        alert("Permission denied. Please allow screen sharing access in Firefox. You may need to check Firefox's permissions settings.");
+        showAlert("Permission denied. Please allow screen sharing access in Firefox. You may need to check Firefox's permissions settings.", 'error');
       } else if (err.name === "AbortError" || err.name === "NotReadableError") {
-        alert("Screen sharing was cancelled or failed. Please try again and select a window, screen, or tab to share.");
+        showAlert("Screen sharing was cancelled or failed. Please try again and select a window, screen, or tab to share.", 'warning');
       } else {
-        alert("Firefox screen sharing error: " + (err.message || err.name || "Unknown error") + "\n\nTip: Make sure Firefox has Screen Recording permission in your system settings.");
+        showAlert("Firefox screen sharing error: " + (err.message || err.name || "Unknown error") + "\n\nTip: Make sure Firefox has Screen Recording permission in your system settings.", 'error');
       }
     } else {
       // Other browsers
       if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
-        alert("Permission denied. Please allow screen sharing access.");
+        showAlert("Permission denied. Please allow screen sharing access.", 'error');
       } else if (err.name === "NotFoundError" || err.name === "DevicesNotFoundError") {
-        alert("No camera found. Please ensure your device has a camera.");
+        showAlert("No camera found. Please ensure your device has a camera.", 'error');
       } else if (err.name === "AbortError") {
-        alert("Screen sharing was cancelled. Please try again.");
+        showAlert("Screen sharing was cancelled. Please try again.", 'warning');
       } else {
-        alert("Could not start sharing: " + (err.message || err.name || "Unknown error"));
+        showAlert("Could not start sharing: " + (err.message || err.name || "Unknown error"), 'error');
       }
     }
   }
@@ -431,7 +432,7 @@ export function join(idOrLink) {
   }
   
   if (!id || id === "") {
-    alert("Please enter a valid Share Code or Link");
+    showAlert("Please enter a valid Share Code or Link", 'warning');
     return;
   }
   
@@ -501,7 +502,7 @@ export function join(idOrLink) {
           dom.shareId.textContent = "Connection lost";
           dom.shareId.className = "error";
           setTimeout(() => {
-            alert("Connection to host lost");
+            showAlert("Connection to host lost", 'error');
             location.reload();
           }, 500);
         });
@@ -514,7 +515,7 @@ export function join(idOrLink) {
           dom.shareId.textContent = "Connection error";
           dom.shareId.className = "error";
           setTimeout(() => {
-            alert("Connection error: " + err.message);
+            showAlert("Connection error: " + err.message, 'error');
             location.reload();
           }, 500);
         });
@@ -526,7 +527,7 @@ export function join(idOrLink) {
         dom.shareId.textContent = "Connection failed";
         dom.shareId.className = "error";
         setTimeout(() => {
-          alert("Could not connect to host. Please check the Share ID and try again.");
+          showAlert("Could not connect to host. Please check the Share ID and try again.", 'error');
           dom.camera.classList.add("hidden");
           dom.overlayCanvas.classList.add("hidden");
           dom.gridCanvas.classList.add("hidden");
@@ -543,7 +544,7 @@ export function join(idOrLink) {
     dom.shareId.textContent = "Connection error";
     dom.shareId.className = "error";
     setTimeout(() => {
-      alert("Connection error: " + err.message);
+      showAlert("Connection error: " + err.message, 'error');
       dom.camera.classList.add("hidden");
       dom.overlayCanvas.classList.add("hidden");
       dom.gridCanvas.classList.add("hidden");

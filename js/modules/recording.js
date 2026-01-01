@@ -1,6 +1,7 @@
 // ================= RECORDING =================
 import { state } from './state.js';
 import { dom } from './dom.js';
+import { showAlert } from './alert.js';
 
 // Create recording canvas and stream
 function createRecordingStream() {
@@ -43,7 +44,7 @@ function startFullVideoRecording() {
   
   // Check for MediaRecorder support
   if (!window.MediaRecorder) {
-    alert("MediaRecorder API not supported in this browser.");
+    showAlert("MediaRecorder API not supported in this browser.", 'error');
     return;
   }
   
@@ -94,7 +95,7 @@ function startFullVideoRecording() {
   
   state.mediaRecorder.onerror = (event) => {
     console.error("MediaRecorder error:", event);
-    alert("Error recording: " + event.error);
+    showAlert("Error recording: " + event.error, 'error');
     stopRecordingTimelapse();
   };
   
@@ -222,7 +223,7 @@ function compileTimelapseVideo() {
   
   // Check for MediaRecorder support
   if (!window.MediaRecorder) {
-    alert("MediaRecorder API not supported in this browser.");
+    showAlert("MediaRecorder API not supported in this browser.", 'error');
     return;
   }
   
@@ -276,7 +277,7 @@ function compileTimelapseVideo() {
   
   state.mediaRecorder.onerror = (event) => {
     console.error("MediaRecorder error:", event);
-    alert("Error compiling video: " + event.error);
+    showAlert("Error compiling video: " + event.error, 'error');
     state.timelapseFrames = [];
   };
   
@@ -322,12 +323,12 @@ export function startRecordingTimelapse() {
   }
   
   if (!dom.camera.srcObject || dom.camera.readyState !== 4) {
-    alert("Camera not ready. Please ensure camera is active.");
+    showAlert("Camera not ready. Please ensure camera is active.", 'warning');
     return;
   }
   
   if (!state.img.src) {
-    alert("No image loaded. Please upload an image first.");
+    showAlert("No image loaded. Please upload an image first.", 'warning');
     return;
   }
   
@@ -338,7 +339,7 @@ export function startRecordingTimelapse() {
     state.recordingIntervalSeconds = dom.customInterval ? parseFloat(dom.customInterval.value) || 1 : 1;
     
     if (state.recordingIntervalSeconds < 0.1) {
-      alert("Interval must be at least 0.1 seconds.");
+      showAlert("Interval must be at least 0.1 seconds.", 'warning');
       return;
     }
   }
@@ -353,7 +354,7 @@ export function startRecordingTimelapse() {
     }
   } catch (err) {
     console.error("Error starting recording:", err);
-    alert("Error starting recording: " + err.message);
+    showAlert("Error starting recording: " + err.message, 'error');
   }
 }
 
