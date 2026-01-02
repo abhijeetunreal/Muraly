@@ -172,9 +172,11 @@ video, canvas {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
   gap: clamp(1rem, 2.5vw, 1.25rem);
+  touch-action: pan-y;
 }
 
 #panel.hidden {
@@ -1451,6 +1453,11 @@ hr {
     bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
     max-height: 75vh;
     border-radius: 12px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
   }
   
   .close-panel-btn {
@@ -1565,6 +1572,12 @@ hr {
     padding: clamp(0.75rem, 3vw, 0.875rem);
     padding-top: clamp(2.25rem, 6vw, 2.75rem);
     border-radius: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    max-height: 75vh;
   }
   
   .close-panel-btn {
