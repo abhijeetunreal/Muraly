@@ -56,6 +56,15 @@ function init() {
     dom.recordTimelapseBtn.onclick = startRecordingTimelapse;
   }
   
+  // Set up close panel button
+  const closePanelBtn = document.getElementById('closePanelBtn');
+  const panel = document.getElementById('panel');
+  if (closePanelBtn && panel) {
+    closePanelBtn.onclick = () => {
+      panel.classList.add('hidden');
+    };
+  }
+  
   // Register service worker for PWA
   registerServiceWorker();
 }

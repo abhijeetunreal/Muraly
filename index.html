@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
-<title>Muraly — AR Mural Maker & Wall Visualization</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>MURALY | Paint for a Purpose</title>
 <meta name="description" content="Visualize murals and wall art in real spaces using augmented reality. Create, preview, and design with confidence." />
 
 <!-- Theme & Icons -->
-<meta name="theme-color" content="#ff6b35" />
-<meta name="msapplication-TileColor" content="#ff6b35" />
+<meta name="theme-color" content="#0A0A0A" />
+<meta name="msapplication-TileColor" content="#0A0A0A" />
 <link rel="icon" href="https://codefrydev.in/favicon-32x32.png" />
 
 <!-- PWA Manifest -->
@@ -18,88 +18,268 @@
 <meta name="apple-mobile-web-app-title" content="Muraly" />
 <meta name="mobile-web-app-capable" content="yes" />
 
+<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Limelight&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- GSAP for Animations -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<!-- Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                screens: {
+                    'xs': '375px',
+                },
+                colors: {
+                    'neon-pink': '#FF0055',
+                    'neon-lime': '#CCFF00',
+                    'neon-cyan': '#00FFFF',
+                    'dark-void': '#0A0A0A',
+                    'concrete': '#1a1a1a',
+                    'paper': '#f0e6d2'
+                },
+                fontFamily: {
+                    'marker': ['"Permanent Marker"', 'cursive'],
+                    'grotesk': ['"Space Grotesk"', 'sans-serif'],
+                },
+                backgroundImage: {
+                    'noise': "url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.05%22/%3E%3C/svg%3E')",
+                },
+                animation: {
+                    'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    'glitch': 'glitch 1s linear infinite',
+                },
+                keyframes: {
+                    glitch: {
+                        '2%, 64%': { transform: 'translate(2px,0) skew(0deg)' },
+                        '4%, 60%': { transform: 'translate(-2px,0) skew(0deg)' },
+                        '62%': { transform: 'translate(0,0) skew(5deg)' },
+                    }
+                }
+            }
+        }
+    }
+</script>
+
 <link rel="stylesheet" href="styles/index.css">
 </head>
-<body>
+<body class="font-grotesk antialiased selection:bg-neon-pink selection:text-white">
 
-<!-- Clear Cache Button (Fixed Position) -->
-<button id="clearCacheBtn" class="clear-cache-btn">🗑️ Clear Cache</button>
+<!-- Noise Overlay -->
+<div class="fixed inset-0 bg-noise pointer-events-none z-0 opacity-40 mix-blend-overlay"></div>
+
+<!-- Custom Cursor -->
+<div class="cursor-dot"></div>
+<div class="cursor-outline"></div>
+
+<!-- Clear Cache Button (Fun Animated Sticky) -->
+<div class="cache-button-container">
+  <button id="clearCacheBtn" class="cache-button" aria-label="Clear Cache">
+    <div class="cache-icon">
+      <img src="assets/cache.svg" alt="Clear Cache" class="cache-svg-icon">
+    </div>
+    <div class="cache-particles">
+      <span class="particle"></span>
+      <span class="particle"></span>
+      <span class="particle"></span>
+      <span class="particle"></span>
+    </div>
+  </button>
+  <div class="cache-tooltip">
+    <div class="tooltip-content">
+      <h4>Clear Cache</h4>
+      <p>Remove cached files and saved sessions to free up storage and reset the app to a fresh state.</p>
+      <span class="tooltip-arrow"></span>
+    </div>
+  </div>
+</div>
+
+<!-- Navigation -->
+<nav class="fixed w-full z-50 top-0 px-4 md:px-8 py-6 flex justify-between items-center mix-blend-difference bg-gradient-to-b from-black/80 to-transparent">
+  <div class="text-2xl font-bold tracking-widest font-grotesk z-50 relative">MURALY<span class="text-neon-lime">.</span></div>
+  
+  <div class="hidden md:flex gap-8 text-sm uppercase tracking-widest">
+    <a href="#about" class="hover:text-neon-lime transition-colors">Manifesto</a>
+    <a href="#features" class="hover:text-neon-lime transition-colors">Tech</a>
+    <a href="#mission" class="hover:text-neon-pink transition-colors text-neon-pink font-bold">The Mission</a>
+  </div>
+
+  <div class="flex items-center gap-4">
+    <span class="hidden md:block text-[10px] text-neon-lime border border-neon-lime px-2 py-1 rounded uppercase tracking-widest">100% Free Forever</span>
+    <a href="muraly.html" class="bg-white text-black px-4 md:px-6 py-2 rounded-full font-bold hover:bg-neon-lime hover:scale-105 transition-all duration-300 text-xs md:text-sm z-50 relative">
+      Launch App
+    </a>
+    <button id="menu-btn" class="md:hidden z-50 relative text-white p-2">
+      <i data-lucide="menu" class="w-8 h-8"></i>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div id="mobile-menu" class="fixed inset-0 bg-black z-40 transform translate-x-full transition-transform duration-500 flex flex-col justify-center items-center gap-8 md:hidden">
+  <a href="#about" class="mobile-link text-4xl font-marker hover:text-neon-lime">Manifesto</a>
+  <a href="#features" class="mobile-link text-4xl font-marker hover:text-neon-lime">Tech</a>
+  <a href="#mission" class="mobile-link text-4xl font-marker text-neon-pink hover:text-white">The Mission</a>
+  <div class="text-center mt-4">
+    <p class="text-gray-500 text-sm uppercase tracking-widest mb-2">Always Free.</p>
+    <p class="text-gray-500 text-sm uppercase tracking-widest">Powered by Heart.</p>
+  </div>
+</div>
 
 <!-- Hero Section -->
-<section class="hero">
-  <div class="hero-content">
-    <h1>MURALY</h1>
-    <p>You don’t need to be an artist to create something beautiful.
-      See your artwork on real surfaces—walls, canvases, or anything you choose—before you paint. Use AR to try ideas, make changes, and experiment without fear. When it’s time to paint for real, you already know it will work.</p>
-    
-    <a href="muraly.html" class="cta-button">Launch App</a>
+<header class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 md:pt-0" id="hero-section">
+  <!-- Living Background Blobs (Mouse Parallax) -->
+  <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+    <div data-speed="0.05" class="parallax-blob absolute top-1/4 left-0 md:left-1/4 w-64 md:w-96 h-64 md:h-96 bg-neon-pink/20 rounded-full blur-[80px] md:blur-[100px]"></div>
+    <div data-speed="0.08" class="parallax-blob absolute bottom-1/4 right-0 md:right-1/4 w-72 md:w-[500px] h-72 md:h-[500px] bg-neon-cyan/10 rounded-full blur-[80px] md:blur-[120px]"></div>
+    <div data-speed="0.12" class="parallax-blob absolute top-1/2 left-1/2 w-32 h-32 bg-neon-lime/20 rounded-full blur-[60px]"></div>
   </div>
-</section>
+  
+  <div class="relative z-10 text-center px-4 w-full max-w-7xl mx-auto">
+    <div class="inline-block mb-4 overflow-hidden">
+      <p class="text-neon-lime uppercase tracking-[0.3em] text-xs md:text-sm transform translate-y-10" id="hero-subtitle">Augmented Reality Canvas</p>
+    </div>
+    
+    <h1 class="text-[18vw] md:text-[15vw] leading-[0.9] md:leading-[0.8] font-marker text-white mix-blend-overlay opacity-90 break-words cursor-default paint-title" id="hero-title" data-text="PAINT&#10;ALIVE">
+      <span class="paint-text">PAINT</span><br>
+      <span class="paint-text paint-text-alive">ALIVE</span>
+      <canvas id="sprayCanvas" class="spray-canvas"></canvas>
+      <div class="spray-paint-overlay"></div>
+    </h1>
+    
+    <div class="mt-8 md:mt-12 flex flex-col items-center gap-6 opacity-0 px-4" id="hero-cta">
+      <p class="max-w-xs md:max-w-lg text-gray-300 text-center text-sm md:text-lg leading-relaxed font-light">
+        You don't need to be an artist to create something beautiful. <span class="text-white font-bold">Completely Free.</span> <br> 
+        See your artwork on real surfaces—walls, canvases, or anything you choose—before you paint.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+        <a href="muraly.html" class="glass-panel px-8 py-4 rounded-full flex items-center justify-center gap-3 hover:bg-neon-lime hover:text-black hover:scale-110 transition-all duration-300 group w-full sm:w-auto border-neon-lime/30">
+          <i data-lucide="play-circle" class="w-5 h-5 group-hover:animate-bounce"></i>
+          <span class="font-bold">Launch App</span>
+        </a>
+        <button class="glass-panel px-8 py-4 rounded-full flex items-center justify-center gap-3 hover:bg-white/10 transition-all duration-300 w-full sm:w-auto">
+          <i data-lucide="info" class="w-5 h-5 text-neon-pink"></i>
+          <span>Learn More</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
-<!-- Selling Points Banner -->
-<section class="selling-points">
-  <div class="selling-points-content">
-    <div class="selling-point fade-in">
-      <span class="selling-point-icon">💰</span>
-      <h3>Completely Free</h3>
-      <p>No subscriptions, no hidden fees, no credit card required. Muraly is 100% free forever. Start creating immediately without any payment barriers.</p>
-    </div>
+  <!-- Scroll Indicator -->
+  <div class="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 animate-bounce">
+    <div class="w-[1px] h-10 md:h-16 bg-gradient-to-b from-transparent via-white to-transparent"></div>
+  </div>
+</header>
+
+<!-- Marquee -->
+<div class="w-full bg-neon-lime text-black overflow-hidden py-3 md:py-4 -rotate-1 md:-rotate-2 scale-105 z-20 relative border-y-4 border-black shadow-[0_0_50px_rgba(204,255,0,0.3)]">
+  <div class="flex whitespace-nowrap gap-8 font-marker text-2xl md:text-4xl" id="marquee">
+    <span>// ART FOR EVERYONE // FREE FOREVER // NO INSTALLATION // SHARE TO MULTIPLE DEVICES //</span>
+    <span>// ART FOR EVERYONE // FREE FOREVER // NO INSTALLATION // SHARE TO MULTIPLE DEVICES //</span>
+  </div>
+</div>
+
+<!-- Phone Section (Alive) -->
+<section id="about" class="min-h-screen py-24 relative flex items-center overflow-hidden">
+  <div class="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
     
-    <div class="selling-point fade-in">
-      <span class="selling-point-icon">⚡</span>
-      <h3>No Installation Needed</h3>
-      <p>Works directly in your browser - no app store downloads, no software installation, no updates. Just open and start using. Works on any device with a web browser.</p>
+    <!-- Floating Phone -->
+    <div class="relative order-1 h-[600px] flex items-center justify-center w-full">
+      <!-- Pulse Rings -->
+      <div class="absolute inset-0 border border-white/10 rounded-[3rem] animate-[ping_3s_ease-in-out_infinite] scale-90 opacity-30 max-w-[300px] mx-auto"></div>
+      
+      <div class="relative w-full max-w-[280px] md:max-w-[300px] h-[550px] md:h-[600px] bg-black rounded-[2.5rem] border-8 border-gray-800 shadow-2xl overflow-hidden z-10 box-float mx-auto">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/28/Odissi_murals_in_Bhubaneswar.gif" class="w-full h-full object-cover opacity-90" alt="Odissi Murals">
+        <div class="absolute inset-0 flex flex-col justify-between p-6">
+          <div class="flex justify-between items-center">
+            <i data-lucide="menu" class="text-white"></i>
+            <span class="bg-red-500 w-2 h-2 rounded-full animate-pulse"></span>
+          </div>
+          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full">
+            <h2 class="font-marker text-5xl text-neon-pink drop-shadow-[0_0_10px_rgba(255,0,85,0.8)] rotate-[-10deg] animate-pulse">LIVE</h2>
+          </div>
+          <div class="glass-panel p-2 rounded-full flex justify-between items-center">
+             <div class="w-8 h-8 rounded-full bg-neon-cyan animate-pulse"></div>
+             <div class="w-8 h-8 rounded-full bg-neon-pink border-2 border-white"></div>
+             <div class="w-8 h-8 rounded-full bg-neon-lime animate-pulse"></div>
+          </div>
+        </div>
+      </div>
     </div>
-    
-    <div class="selling-point fade-in">
-      <span class="selling-point-icon">📲</span>
-      <h3>Share to Multiple Devices</h3>
-      <p>Host one session and share with unlimited devices simultaneously. Viewers on phones, tablets, laptops, and desktops can all see your AR mural in real-time. Perfect for teams and client presentations.</p>
+
+    <!-- Content -->
+    <div id="features" class="order-2 text-center md:text-left space-y-8">
+      <h2 class="text-5xl md:text-7xl font-grotesk font-bold leading-tight">
+        Alive. <br>
+        <span class="text-neon-pink font-marker">Untamed.</span>
+      </h2>
+      <p class="text-xl text-gray-400 font-light leading-relaxed">
+        Static images are dead. Muraly uses AR to breathe life into walls. Your art moves, reacts, and stays permanently anchored for the world to find.
+      </p>
+      <div class="grid grid-cols-1 xs:grid-cols-2 gap-4">
+        <div class="p-6 glass-panel rounded-2xl hover:bg-neon-lime/10 transition-colors border-l-4 border-neon-lime">
+          <h3 class="font-bold text-xl mb-1 text-white">0.00$ Cost</h3>
+          <p class="text-sm text-gray-500">Creativity shouldn't have a price tag.</p>
+        </div>
+        <div class="p-6 glass-panel rounded-2xl hover:bg-neon-pink/10 transition-colors border-l-4 border-neon-pink">
+          <h3 class="font-bold text-xl mb-1 text-white">No Installation</h3>
+          <p class="text-sm text-gray-500">Works directly in your browser.</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- Features Section -->
-<section class="features">
-  <h2 class="section-title fade-in">Powerful Features</h2>
-  <div class="features-grid">
-    <div class="feature-card fade-in">
-      <span class="feature-icon">📱</span>
-      <h3>AR Visualization</h3>
-      <p>See your murals projected onto real walls in real-time using your device's camera. Perfect for planning and previewing before painting.</p>
-    </div>
-    
-    <div class="feature-card fade-in">
-      <span class="feature-icon">🎨</span>
-      <h3>Image & Sketch Mode</h3>
-      <p>Upload any image and switch between full-color and sketch modes. Convert designs to outlines for easy tracing and reference.</p>
-    </div>
-    
-    <div class="feature-card fade-in">
-      <span class="feature-icon">✋</span>
-      <h3>Intuitive Controls</h3>
-      <p>Move, scale, rotate, and adjust opacity with simple touch gestures. Lock positions when you're ready to start painting.</p>
-    </div>
-    
-    <div class="feature-card fade-in">
-      <span class="feature-icon">👥</span>
-      <h3>Multi-Device Sharing</h3>
-      <p>Share your AR session with multiple devices simultaneously! One host can broadcast to unlimited viewers on phones, tablets, and computers - all in real-time. Perfect for teams, clients, and remote collaboration.</p>
-    </div>
-    
-    <div class="feature-card fade-in">
-      <span class="feature-icon">💾</span>
-      <h3>Save & Load Sessions</h3>
-      <p>Save your mural configurations and load them later. Never lose your work and pick up exactly where you left off.</p>
-    </div>
-    
-    <div class="feature-card fade-in">
-      <span class="feature-icon">🎬</span>
-      <h3>Video Recording</h3>
-      <p>Record timelapse or full video of your mural creation process. Perfect for documenting your work and sharing progress.</p>
+<section class="features py-24">
+  <div class="container mx-auto px-6">
+    <h2 class="section-title fade-in text-center mb-16">Powerful Features</h2>
+    <div class="features-grid">
+      <div class="feature-card fade-in">
+        <span class="feature-icon">📱</span>
+        <h3>AR Visualization</h3>
+        <p>See your murals projected onto real walls in real-time using your device's camera. Perfect for planning and previewing before painting.</p>
+      </div>
+      
+      <div class="feature-card fade-in">
+        <span class="feature-icon">🎨</span>
+        <h3>Image & Sketch Mode</h3>
+        <p>Upload any image and switch between full-color and sketch modes. Convert designs to outlines for easy tracing and reference.</p>
+      </div>
+      
+      <div class="feature-card fade-in">
+        <span class="feature-icon">✋</span>
+        <h3>Intuitive Controls</h3>
+        <p>Move, scale, rotate, and adjust opacity with simple touch gestures. Lock positions when you're ready to start painting.</p>
+      </div>
+      
+      <div class="feature-card fade-in">
+        <span class="feature-icon">👥</span>
+        <h3>Multi-Device Sharing</h3>
+        <p>Share your AR session with multiple devices simultaneously! One host can broadcast to unlimited viewers on phones, tablets, and computers - all in real-time. Perfect for teams, clients, and remote collaboration.</p>
+      </div>
+      
+      <div class="feature-card fade-in">
+        <span class="feature-icon">💾</span>
+        <h3>Save & Load Sessions</h3>
+        <p>Save your mural configurations and load them later. Never lose your work and pick up exactly where you left off.</p>
+      </div>
+      
+      <div class="feature-card fade-in">
+        <span class="feature-icon">🎬</span>
+        <h3>Video Recording</h3>
+        <p>Record timelapse or full video of your mural creation process. Perfect for documenting your work and sharing progress.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -185,12 +365,99 @@
   </div>
 </section>
 
-<!-- Footer CTA -->
-<section class="footer-cta">
-  <h2 class="fade-in">Ready to Create?</h2>
-  <p class="fade-in">Start visualizing your murals today. <strong>100% Free</strong> • <strong>No Installation</strong> • <strong>Share to Multiple Devices</strong> • Works directly in your browser.</p>
-  <a href="muraly.html" class="cta-button fade-in">Launch Muraly Now</a>
+<!-- AGURUTWA CHARITY SECTION -->
+<section id="mission" class="relative py-24 paper-texture overflow-hidden">
+  <div class="torn-paper-top"></div>
+  
+  <div class="container mx-auto px-6 relative z-10">
+    <div class="flex flex-col md:flex-row items-center gap-12">
+      <!-- Text Content -->
+      <div class="md:w-1/2 space-y-8">
+        <div class="inline-block bg-neon-pink text-white px-3 py-1 text-xs font-bold uppercase tracking-widest mb-2 rotate-2">Our Partner</div>
+        <h2 class="text-5xl md:text-6xl font-bold font-grotesk leading-none">
+          Painting a <br>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-neon-lime to-neon-cyan">Better Future.</span>
+        </h2>
+        <p class="text-gray-400 text-lg leading-relaxed">
+          Muraly is completely free because we believe expression is a human right. But education is a privilege many can't afford.
+        </p>
+        <p class="text-white text-xl font-medium border-l-4 border-neon-pink pl-6 italic">
+          "We've partnered with <span class="text-neon-pink font-bold">Agurutwa</span>, a social service organization dedicated to providing free education to underprivileged children."
+        </p>
+        <p class="text-gray-400 text-sm">
+          While you paint the virtual world, help us build the real one. Every donation goes directly to books, uniforms, and teachers for kids in need.
+        </p>
+        
+        <div class="flex flex-wrap gap-4 pt-4">
+          <button class="bg-gradient-to-r from-neon-pink to-purple-600 text-white px-8 py-4 rounded-full font-bold shadow-[0_0_20px_rgba(255,0,85,0.4)] hover:shadow-[0_0_40px_rgba(255,0,85,0.6)] hover:scale-105 transition-all duration-300 flex items-center gap-3">
+            <i data-lucide="heart" class="fill-current w-5 h-5"></i>
+            <span>Donate to Agurutwa</span>
+          </button>
+          <a href="#" class="px-8 py-4 rounded-full border border-white/20 hover:bg-white/10 transition-colors font-bold">
+            Learn More
+          </a>
+        </div>
+      </div>
+
+      <!-- Visual -->
+      <div class="md:w-1/2 relative mt-12 md:mt-0">
+        <div class="absolute inset-0 bg-gradient-to-tr from-neon-pink/20 to-neon-cyan/20 blur-[60px] animate-pulse"></div>
+        <!-- Collage Style Image -->
+        <div class="relative transform rotate-3 hover:rotate-0 transition-transform duration-700">
+          <div class="absolute -top-4 -left-4 w-24 h-24 bg-neon-lime z-20 rounded-full mix-blend-multiply opacity-80 animate-bounce"></div>
+          <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1000&auto=format&fit=crop" 
+               class="w-full h-auto rounded-xl grayscale contrast-125 border-4 border-white shadow-2xl relative z-10" 
+               alt="Child studying">
+          <div class="absolute -bottom-6 -right-6 bg-black text-white p-4 font-marker text-xl z-20 rotate-[-5deg]">
+            #EducationForAll
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
+
+<!-- Footer CTA -->
+<section class="footer-cta py-24">
+  <div class="container mx-auto px-6 text-center">
+    <h2 class="fade-in text-5xl md:text-6xl font-marker mb-6">Ready to Create?</h2>
+    <p class="fade-in text-lg text-gray-300 mb-8 max-w-2xl mx-auto">Start visualizing your murals today. <strong class="text-white">100% Free</strong> • <strong class="text-white">No Installation</strong> • <strong class="text-white">Share to Multiple Devices</strong> • Works directly in your browser.</p>
+    <a href="muraly.html" class="cta-button fade-in inline-block">Launch Muraly Now</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="relative bg-black pt-24 pb-12 overflow-hidden border-t border-white/10">
+  <h2 class="absolute bottom-0 left-0 w-full text-center text-[18vw] font-marker leading-none text-white/5 select-none pointer-events-none">MURALY</h2>
+  <div class="container mx-auto px-6 relative z-10">
+    <div class="grid md:grid-cols-4 gap-12 mb-16">
+      <div class="col-span-1 md:col-span-2 space-y-4">
+        <h3 class="text-2xl font-bold">Painting the world, <br>one wall at a time.</h3>
+        <p class="text-gray-500 max-w-sm">Muraly is a non-profit initiative supported by the community and Agurutwa Foundation.</p>
+      </div>
+      <div>
+        <h4 class="font-bold mb-4 text-neon-pink">Legal</h4>
+        <ul class="space-y-2 text-gray-400 text-sm">
+          <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+          <li><a href="#" class="hover:text-white">Terms of Use</a></li>
+          <li><a href="#" class="hover:text-white">Donation Transparency</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold mb-4 text-neon-cyan">Connect</h4>
+        <div class="flex gap-4">
+          <a href="#" class="w-10 h-10 rounded-full bg-white/5 hover:bg-neon-lime hover:text-black flex items-center justify-center transition-all"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+          <a href="#" class="w-10 h-10 rounded-full bg-white/5 hover:bg-neon-lime hover:text-black flex items-center justify-center transition-all"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+          <a href="#" class="w-10 h-10 rounded-full bg-white/5 hover:bg-neon-lime hover:text-black flex items-center justify-center transition-all"><i data-lucide="globe" class="w-5 h-5"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="flex justify-between items-end border-t border-white/10 pt-8 text-xs text-gray-600 uppercase tracking-widest">
+      <p>&copy; 2026 Muraly Initiative.</p>
+      <p>Built with ❤️</p>
+    </div>
+  </div>
+</footer>
 
 <script type="module" src="js/index.js"></script>
 

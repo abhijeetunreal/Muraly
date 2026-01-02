@@ -14,8 +14,8 @@
 <link rel="canonical" href="https://codefrydev.in/metatag/" />
 
 <!-- Theme & Icons -->
-<meta name="theme-color" content="#ff6b35" />
-<meta name="msapplication-TileColor" content="#ff6b35" />
+<meta name="theme-color" content="#0A0A0A" />
+<meta name="msapplication-TileColor" content="#0A0A0A" />
 <link rel="icon" href="https://codefrydev.in/favicon-32x32.png" />
 
 <!-- PWA Manifest -->
@@ -39,21 +39,61 @@
 <meta name="twitter:description" content="Preview murals on real walls using augmented reality. Muraly helps artists and designers plan wall art with confidence." />
 <meta name="twitter:image" content="https://codefrydev.in/images/IconCodefrydev.svg" />
 
-<!-- Google Fonts -->
+<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Limelight&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- GSAP for Animations -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+<!-- Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          'neon-pink': '#FF0055',
+          'neon-lime': '#CCFF00',
+          'neon-cyan': '#00FFFF',
+          'dark-void': '#0A0A0A',
+        },
+        fontFamily: {
+          'marker': ['"Permanent Marker"', 'cursive'],
+          'grotesk': ['"Space Grotesk"', 'sans-serif'],
+        },
+      }
+    }
+  }
+</script>
+
 <link rel="stylesheet" href="styles/muraly.css">
 </head>
 
+<body class="font-grotesk antialiased">
 
-<body>
+<!-- Noise Overlay -->
+<div class="fixed inset-0 bg-noise pointer-events-none z-0 opacity-40 mix-blend-overlay"></div>
+
+<!-- Custom Cursor -->
+<div class="cursor-dot"></div>
+<div class="cursor-outline"></div>
 
 <!-- FIRST SCREEN: Host/Join selection -->
 <div id="firstScreen">
-  <h2>MURALY</h2>
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div data-speed="0.05" class="parallax-blob absolute top-1/4 left-1/4 w-64 md:w-96 h-64 md:h-96 bg-neon-pink/20 rounded-full blur-[80px] md:blur-[100px]"></div>
+    <div data-speed="0.08" class="parallax-blob absolute bottom-1/4 right-1/4 w-72 md:w-[500px] h-72 md:h-[500px] bg-neon-cyan/10 rounded-full blur-[80px] md:blur-[120px]"></div>
+    <div data-speed="0.12" class="parallax-blob absolute top-1/2 left-1/2 w-32 h-32 bg-neon-lime/20 rounded-full blur-[60px]"></div>
+  </div>
+  <h2 class="font-marker">MURALY<span class="text-neon-lime">.</span></h2>
   <div class="button-group">
-    <button id="hostSelectBtn">Host Session</button>
+    <button id="hostSelectBtn" class="primary">Host Session</button>
     <button id="joinSelectBtn">Join Session</button>
   </div>
 </div>
@@ -87,68 +127,96 @@
 </div>
 
 <div id="panel">
-  <div class="row">
-    <label>Image</label>
-    <input type="file" id="upload" accept="image/*">
-  </div>
+  <button id="closePanelBtn" class="close-panel-btn" aria-label="Close Panel">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
 
-  <div class="row">
-    <label>Opacity</label>
-    <input type="range" id="opacity" min="0" max="1" step="0.01" value="0.6">
-  </div>
-
-  <div class="row">
-    <button id="sketchBtn">✏️ Sketch</button>
-    <button id="imageBtn">🖼 Image</button>
-  </div>
-
-  <div class="row">
-    <button id="lockBtn">🔓 Move</button>
-    <button id="gridBtn">Grid</button>
-  </div>
-
-  <hr style="opacity:.2">
-
-  <div class="row">
-    <button id="hostBtn" class="primary">Host</button>
-    
-  </div>
-
-  <hr style="opacity:.2">
-
-  <div class="row">
-    <button id="saveSessionBtn">💾 Save Session</button>
-    <button id="loadSessionBtn">📂 Load Session</button>
-  </div>
-
-  <div class="row">
-    <label>Record Mode</label>
-    <select id="recordMode" style="flex: 1; padding: 8px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-light); color: white; font-size: 13px; outline: none;">
-      <option value="timelapse">Timelapse</option>
-      <option value="full">Full Video</option>
-    </select>
-  </div>
-
-  <div class="row" id="timelapseOptions">
-    <label>Interval</label>
-    <div style="flex: 1; display: flex; gap: 8px; align-items: center;">
-      <button id="interval1sBtn" style="flex: 0 0 auto; padding: 8px 16px; font-size: 12px;">1s</button>
-      <input type="number" id="customInterval" placeholder="Custom (seconds)" min="0.1" step="0.1" value="1" style="flex: 1; padding: 8px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-light); color: white; font-size: 13px; outline: none;">
+  <!-- Media Controls Section -->
+  <div class="panel-section">
+    <h3 class="section-title">Media</h3>
+    <div class="row">
+      <label>Image</label>
+      <input type="file" id="upload" accept="image/*">
+    </div>
+    <div class="row">
+      <label>Opacity</label>
+      <input type="range" id="opacity" min="0" max="1" step="0.01" value="0.6">
     </div>
   </div>
 
-  <div class="row">
-    <button id="recordTimelapseBtn">🎬 Start Recording</button>
-  </div>
-
-  <div id="shareLinkContainer" class="hidden">
-    <div id="shareLink">
-      <input type="text" id="shareLinkInput" readonly>
-      <button id="copyBtn">Copy</button>
+  <!-- View Mode Section -->
+  <div class="panel-section">
+    <h3 class="section-title">View Mode</h3>
+    <div class="button-group">
+      <button id="sketchBtn" class="mode-btn">✏️ Sketch</button>
+      <button id="imageBtn" class="mode-btn">🖼 Image</button>
     </div>
   </div>
 
-  <div id="shareId"></div>
+  <!-- Transform Controls Section -->
+  <div class="panel-section">
+    <h3 class="section-title">Controls</h3>
+    <div class="button-group">
+      <button id="lockBtn">🔓 Move</button>
+      <button id="gridBtn">Grid</button>
+    </div>
+  </div>
+
+  <!-- Hosting Section -->
+  <div class="panel-section">
+    <h3 class="section-title">Sharing</h3>
+    <div class="row">
+      <button id="hostBtn" class="primary">Host Session</button>
+    </div>
+    <div id="shareLinkContainer" class="hidden">
+      <div id="shareLink">
+        <input type="text" id="shareLinkInput" readonly placeholder="Share link will appear here">
+        <button id="copyBtn">Copy</button>
+      </div>
+    </div>
+    <div id="shareId"></div>
+  </div>
+
+  <!-- Session Management Section -->
+  <div class="panel-section">
+    <h3 class="section-title">Session</h3>
+    <div class="button-group">
+      <button id="saveSessionBtn">💾 Save</button>
+      <button id="loadSessionBtn">📂 Load</button>
+    </div>
+  </div>
+
+  <!-- Recording Section -->
+  <div class="panel-section">
+    <div class="recording-header">
+      <span class="recording-label">RECORDING</span>
+      <div class="recording-indicator">
+        <div class="indicator-dot"></div>
+      </div>
+    </div>
+    <div class="recording-row">
+      <label class="recording-field-label">MODE</label>
+      <select id="recordMode" class="recording-select">
+        <option value="timelapse">Timelapse</option>
+        <option value="full">Full Video</option>
+      </select>
+    </div>
+    <div class="recording-row" id="timelapseOptions">
+      <label class="recording-field-label">INTERVAL</label>
+      <div class="interval-controls">
+        <button id="interval1sBtn" class="interval-unit-btn">1S</button>
+        <input type="number" id="customInterval" class="interval-input" min="0.1" step="0.1" value="1">
+      </div>
+    </div>
+    <div class="recording-row">
+      <button id="recordTimelapseBtn" class="start-recording-btn">
+        <span class="record-icon">🎬</span>
+        <span>START RECORDING</span>
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- VIEWER -->
@@ -158,6 +226,95 @@
 
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <script type="module" src="js/muraly.js"></script>
+
+<script>
+  // Initialize Lucide icons
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+
+  // Custom Cursor & Interaction
+  const cursorDot = document.querySelector('.cursor-dot');
+  const cursorOutline = document.querySelector('.cursor-outline');
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+  // Initialize cursor position
+  if (cursorDot && cursorOutline) {
+    cursorDot.style.display = 'block';
+    cursorOutline.style.display = 'block';
+    cursorDot.style.opacity = '1';
+    cursorOutline.style.opacity = '1';
+  }
+
+  if (!isTouchDevice && cursorDot && cursorOutline) {
+    // Hide default cursor
+    document.body.style.cursor = 'none';
+    
+    window.addEventListener('mousemove', (e) => {
+      cursorDot.style.left = `${e.clientX}px`;
+      cursorDot.style.top = `${e.clientY}px`;
+      cursorDot.style.display = 'block';
+      cursorDot.style.opacity = '1';
+      
+      // GSAP lag for organic feel
+      if (typeof gsap !== 'undefined') {
+        gsap.to(cursorOutline, {
+          left: e.clientX,
+          top: e.clientY,
+          duration: 0.2,
+          ease: "power2.out"
+        });
+      } else {
+        cursorOutline.style.left = `${e.clientX}px`;
+        cursorOutline.style.top = `${e.clientY}px`;
+      }
+      cursorOutline.style.display = 'block';
+      cursorOutline.style.opacity = '1';
+    });
+
+    // Interactive Element Hover
+    document.querySelectorAll('a, button, input, select').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        if (typeof gsap !== 'undefined') {
+          gsap.to(cursorOutline, { scale: 1.5, backgroundColor: 'rgba(255,255,255,0.1)', duration: 0.3 });
+          gsap.to(cursorDot, { scale: 0, duration: 0.3 });
+        } else {
+          cursorOutline.style.transform = 'translate(-50%, -50%) scale(1.5)';
+          cursorOutline.style.backgroundColor = 'rgba(255,255,255,0.1)';
+          cursorDot.style.transform = 'translate(-50%, -50%) scale(0)';
+        }
+      });
+      el.addEventListener('mouseleave', () => {
+        if (typeof gsap !== 'undefined') {
+          gsap.to(cursorOutline, { scale: 1, backgroundColor: 'transparent', duration: 0.3 });
+          gsap.to(cursorDot, { scale: 1, duration: 0.3 });
+        } else {
+          cursorOutline.style.transform = 'translate(-50%, -50%) scale(1)';
+          cursorOutline.style.backgroundColor = 'transparent';
+          cursorDot.style.transform = 'translate(-50%, -50%) scale(1)';
+        }
+      });
+    });
+  } else if (isTouchDevice && cursorDot && cursorOutline) {
+    // Hide cursor on touch devices
+    cursorDot.style.display = 'none';
+    cursorOutline.style.display = 'none';
+  }
+
+  // Mouse Parallax Effect for firstScreen
+  document.addEventListener('mousemove', (e) => {
+    const x = (window.innerWidth - e.pageX * 2) / 100;
+    const y = (window.innerHeight - e.pageY * 2) / 100;
+
+    document.querySelectorAll('.parallax-blob').forEach(el => {
+      const speed = parseFloat(el.getAttribute('data-speed')) || 0.05;
+      const xPos = x * speed * 100;
+      const yPos = y * speed * 100;
+      
+      el.style.transform = `translate(${xPos}px, ${yPos}px)`;
+    });
+  });
+</script>
 
 </body>
 </html>
