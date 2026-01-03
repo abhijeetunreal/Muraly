@@ -28,28 +28,34 @@ function displaySessions(sessions) {
     
     const sessionCode = document.createElement('div');
     sessionCode.className = 'session-code';
-    sessionCode.textContent = session.code;
     
-    // Add private indicator if session is private
+    // Wrap session code text in a span for better layout control
+    const codeText = document.createElement('span');
+    codeText.textContent = session.code;
+    codeText.style.wordBreak = 'break-all';
+    sessionCode.appendChild(codeText);
+    
+    // Add badge for both public and private sessions
+    const badge = document.createElement('span');
     if (session.isPrivate) {
-      const privateBadge = document.createElement('span');
-      privateBadge.className = 'session-private-badge';
-      privateBadge.textContent = '🔒 Private';
-      privateBadge.style.marginLeft = '8px';
-      privateBadge.style.fontSize = '0.85em';
-      privateBadge.style.opacity = '0.8';
-      sessionCode.appendChild(privateBadge);
+      badge.className = 'session-private-badge';
+      badge.textContent = '🔒 Private';
+    } else {
+      badge.className = 'session-public-badge';
+      badge.textContent = '🌐 Public';
     }
+    sessionCode.appendChild(badge);
     
     const sessionInfo = document.createElement('div');
     sessionInfo.className = 'session-info';
     const timeAgo = Math.floor((Date.now() - session.timestamp) / 1000 / 60);
-    sessionInfo.textContent = timeAgo < 1 ? 'Just now' : `${timeAgo} min ago`;
+    const nameText = session.name ? `${session.name} • ` : '';
+    sessionInfo.textContent = `${nameText}${timeAgo < 1 ? 'Just now' : `${timeAgo} min ago`}`;
     
     const joinBtn = document.createElement('button');
     joinBtn.className = 'session-join-btn';
     joinBtn.textContent = 'Join';
-    joinBtn.onclick = () => doJoin(session.code, session.isPrivate === true ? true : null);
+    joinBtn.onclick = () => doJoin(session.code, session.isPrivate === true ? true : false);
     
     sessionItem.appendChild(sessionCode);
     sessionItem.appendChild(sessionInfo);
@@ -114,11 +120,12 @@ async function doJoin(sessionCode, isPrivate = null) {
       const sessions = await connectToDiscovery();
       const foundSession = sessions.find(s => s.code === sessionId);
       if (foundSession) {
-        isPrivate = foundSession.isPrivate === true ? true : null;
+        isPrivate = foundSession.isPrivate === true ? true : false;
       }
     } catch (err) {
-      // If discovery fails, continue with null (unknown privacy status)
-      console.log("Could not check discovery service, proceeding with unknown privacy status");
+      // If discovery fails, continue with null (treat as public for better UX)
+      console.log("Could not check discovery service, treating as public session");
+      isPrivate = false;
     }
   }
   

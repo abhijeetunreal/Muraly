@@ -53,6 +53,7 @@ export const state = {
   currentShareCode: null,
   sessionPin: null,
   isPrivateSession: false,
+  hostName: null,
   
   // Gesture state
   g: null,

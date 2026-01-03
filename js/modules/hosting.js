@@ -279,6 +279,7 @@ export function stopHosting() {
   state.isHosting = false;
   state.sessionPin = null;
   state.isPrivateSession = false;
+  state.hostName = null;
   updateShareIdStatus("", "");
   if (dom.shareLinkContainer) dom.shareLinkContainer.classList.add("hidden");
   if (dom.shareLinkInput) dom.shareLinkInput.value = "";
@@ -335,6 +336,16 @@ export async function host() {
     state.sessionPin = null;
     state.isPrivateSession = false;
   }
+  
+  // Ask for host name
+  const hostName = await showNameInputDialog(
+    "Enter your name (optional):",
+    "Your name",
+    30
+  );
+  
+  // Store host name
+  state.hostName = hostName || null;
   
   // Basic UI setup (synchronous, doesn't break gesture context)
   state.isHosting = true;
@@ -645,7 +656,7 @@ export async function host() {
       state.currentShareCode = code;
       
       // Register with discovery service
-      registerSession(code, null, state.isPrivateSession).catch(err => {
+      registerSession(code, state.hostName, state.isPrivateSession).catch(err => {
         console.warn("Failed to register session with discovery service:", err);
         // Continue anyway - discovery is optional
       });
@@ -735,6 +746,7 @@ export async function join(idOrLink, isPrivate = null) {
   }
   
   // If session is private, prompt for PIN (required)
+  // For public sessions (isPrivate === false or null), skip PIN prompt entirely
   let pin = null;
   if (isPrivate === true) {
     // Known private session - PIN is required
@@ -749,17 +761,8 @@ export async function join(idOrLink, isPrivate = null) {
       showAlert("PIN is required to join this private session.", 'warning');
       return;
     }
-  } else if (isPrivate === null) {
-    // Unknown if private - prompt for PIN (optional, user can cancel if public)
-    pin = await showPinInputDialog(
-      "This session may be private. Enter PIN if required (or cancel if public):",
-      4,
-      6
-    );
-    
-    // If user cancelled, pin will be null - we'll proceed and let host validate
-    // If session is actually private, host will reject connection
   }
+  // If isPrivate is false or null, skip PIN prompt - this is a public session
   
   // Store PIN temporarily for validation
   const joinPin = pin;
