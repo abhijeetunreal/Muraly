@@ -4,7 +4,6 @@
 
 import { state } from './modules/state.js';
 import { dom } from './modules/dom.js';
-import { registerServiceWorker } from './modules/utils.js';
 import { join } from './modules/hosting.js';
 import { connectToDiscovery } from './modules/discovery.js';
 import { showAlert } from './modules/alert.js';
@@ -175,9 +174,6 @@ function init() {
   if (dom.closeSessionsListBtn) {
     dom.closeSessionsListBtn.onclick = closeSessionsList;
   }
-  
-  // Register service worker for PWA
-  registerServiceWorker();
   
   // Check for auto-join from URL parameter
   checkAutoJoin();

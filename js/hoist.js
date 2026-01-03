@@ -4,7 +4,6 @@
 
 import { state } from './modules/state.js';
 import { dom } from './modules/dom.js';
-import { registerServiceWorker } from './modules/utils.js';
 import { initCanvas } from './modules/canvas.js';
 import { initImageUpload } from './modules/image.js';
 import { initUIControls } from './modules/ui-controls.js';
@@ -74,9 +73,6 @@ function init() {
   
   // Try to load saved session from localStorage
   tryLoadFromLocalStorage();
-  
-  // Register service worker for PWA
-  registerServiceWorker();
   
   // Show double-click hint for first-time users
   const hintElement = document.getElementById('doubleClickHint');

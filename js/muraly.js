@@ -4,7 +4,6 @@
 
 import { state } from './modules/state.js';
 import { dom } from './modules/dom.js';
-import { registerServiceWorker } from './modules/utils.js';
 import { initCanvas } from './modules/canvas.js';
 import { initImageUpload } from './modules/image.js';
 import { initNavigation } from './modules/navigation.js';
@@ -71,9 +70,6 @@ function init() {
       console.log("Panel closed via close button");
     };
   }
-  
-  // Register service worker for PWA
-  registerServiceWorker();
   
   // Show double-click hint for first-time users
   const hintElement = document.getElementById('doubleClickHint');
