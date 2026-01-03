@@ -331,10 +331,12 @@ export async function host() {
     
     state.sessionPin = pin;
     state.isPrivateSession = true;
+    console.log('[HOSTING] Private session selected, isPrivateSession set to:', state.isPrivateSession);
   } else {
     // Public selected
     state.sessionPin = null;
     state.isPrivateSession = false;
+    console.log('[HOSTING] Public session selected, isPrivateSession set to:', state.isPrivateSession);
   }
   
   // Ask for host name
@@ -656,6 +658,11 @@ export async function host() {
       state.currentShareCode = code;
       
       // Register with discovery service
+      console.log('[HOSTING] Registering session with discovery service:', {
+        code: code,
+        hostName: state.hostName,
+        isPrivateSession: state.isPrivateSession
+      });
       registerSession(code, state.hostName, state.isPrivateSession).catch(err => {
         console.warn("Failed to register session with discovery service:", err);
         // Continue anyway - discovery is optional

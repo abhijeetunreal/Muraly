@@ -10,6 +10,8 @@ import { showAlert } from './modules/alert.js';
 
 // Display sessions in the list
 function displaySessions(sessions) {
+  console.log('[JOIN] displaySessions called with:', sessions);
+  
   if (!sessions || sessions.length === 0) {
     dom.sessionsList.innerHTML = '<div style="text-align: center; color: rgba(255, 255, 255, 0.7); padding: 32px; font-size: 14px; line-height: 1.6;">No active sessions available</div>';
     return;
@@ -21,7 +23,17 @@ function displaySessions(sessions) {
   // Clear and populate list
   dom.sessionsList.innerHTML = '';
   
-  sessions.forEach(session => {
+  sessions.forEach((session, index) => {
+    // Ensure isPrivate is explicitly boolean, never undefined
+    const isPrivateSession = session.isPrivate === true;
+    
+    console.log(`[JOIN] Processing session ${index + 1}:`, {
+      code: session.code,
+      name: session.name,
+      isPrivate: session.isPrivate,
+      isPrivateType: typeof session.isPrivate,
+      isPrivateSessionConverted: isPrivateSession
+    });
     const sessionItem = document.createElement('div');
     sessionItem.className = 'session-item';
     
@@ -36,14 +48,23 @@ function displaySessions(sessions) {
     
     // Add badge for both public and private sessions
     const badge = document.createElement('span');
-    if (session.isPrivate) {
+    console.log(`[JOIN] Creating badge for session ${session.code}:`, {
+      isPrivate: session.isPrivate,
+      isPrivateSessionConverted: isPrivateSession,
+      willShowPrivateBadge: isPrivateSession
+    });
+    
+    if (isPrivateSession) {
       badge.className = 'session-private-badge';
       badge.textContent = '🔒 Private';
+      console.log('[JOIN] Created PRIVATE badge with className:', badge.className);
     } else {
       badge.className = 'session-public-badge';
       badge.textContent = '🌐 Public';
+      console.log('[JOIN] Created PUBLIC badge with className:', badge.className);
     }
     sessionCode.appendChild(badge);
+    console.log('[JOIN] Badge appended to sessionCode element');
     
     const sessionInfo = document.createElement('div');
     sessionInfo.className = 'session-info';
@@ -54,7 +75,7 @@ function displaySessions(sessions) {
     const joinBtn = document.createElement('button');
     joinBtn.className = 'session-join-btn';
     joinBtn.textContent = 'Join';
-    joinBtn.onclick = () => doJoin(session.code, session.isPrivate === true ? true : false);
+    joinBtn.onclick = () => doJoin(session.code, isPrivateSession);
     
     sessionItem.appendChild(sessionCode);
     sessionItem.appendChild(sessionInfo);
