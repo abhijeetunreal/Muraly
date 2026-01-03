@@ -1,0 +1,13 @@
+# robots.txt for Muraly
+# https://muraly.codefrydev.in/
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://muraly.codefrydev.in/sitemap.xml
+
+# Disallow specific paths if needed in the future
+# Disallow: /admin/
+# Disallow: /private/
+

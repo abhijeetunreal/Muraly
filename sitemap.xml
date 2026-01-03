@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <!-- Homepage -->
+  <url>
+    <loc>https://muraly.codefrydev.in/</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://muraly.codefrydev.in/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://muraly.codefrydev.in/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://muraly.codefrydev.in/" />
+  </url>
+  
+  <!-- Main App Entry -->
+  <url>
+    <loc>https://muraly.codefrydev.in/muraly.html</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://muraly.codefrydev.in/muraly.html" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://muraly.codefrydev.in/muraly.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://muraly.codefrydev.in/muraly.html" />
+  </url>
+  
+  <!-- Join Session -->
+  <url>
+    <loc>https://muraly.codefrydev.in/join.html</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://muraly.codefrydev.in/join.html" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://muraly.codefrydev.in/join.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://muraly.codefrydev.in/join.html" />
+  </url>
+  
+  <!-- Host Session -->
+  <url>
+    <loc>https://muraly.codefrydev.in/hoist.html</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://muraly.codefrydev.in/hoist.html" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://muraly.codefrydev.in/hoist.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://muraly.codefrydev.in/hoist.html" />
+  </url>
+  
+  <!-- Privacy Policy -->
+  <url>
+    <loc>https://muraly.codefrydev.in/privacy-policy.html</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://muraly.codefrydev.in/privacy-policy.html" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://muraly.codefrydev.in/privacy-policy.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://muraly.codefrydev.in/privacy-policy.html" />
+  </url>
+  
+  <!-- Terms and Conditions -->
+  <url>
+    <loc>https://muraly.codefrydev.in/terms-and-conditions.html</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://muraly.codefrydev.in/terms-and-conditions.html" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://muraly.codefrydev.in/terms-and-conditions.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://muraly.codefrydev.in/terms-and-conditions.html" />
+  </url>
+  
+</urlset>
+

@@ -1,0 +1,212 @@
+# Muraly - AR Mural Visualization App (Full Documentation)
+
+## Project Overview
+Muraly is a free, non-profit, web-based augmented reality application that enables users to visualize murals and wall art in real spaces before painting or printing. The application works entirely in the browser with no installation required.
+
+## Mission
+Muraly believes expression is a human right. The application is completely free because creativity shouldn't have a price tag. The project partners with Agurutwa Foundation, a social service organization providing free education to underprivileged children.
+
+## Core Features
+
+### AR Visualization
+- Real-time projection of murals onto walls using device camera
+- Works on mobile and desktop devices
+- No installation required - pure web application
+
+### Image Processing
+- Upload any image format (JPG, PNG, etc.)
+- Switch between full-color and sketch modes
+- Convert designs to outlines for easy tracing
+- Adjust opacity for better visibility
+
+### Intuitive Controls
+- Touch gestures: pinch to zoom, drag to reposition, rotate
+- Opacity adjustment slider
+- Grid overlay for alignment
+- Position locking to prevent accidental moves
+
+### Multi-Device Collaboration
+- Share AR sessions with unlimited devices simultaneously
+- One host can broadcast to multiple viewers
+- Real-time synchronization via peer-to-peer connections
+- Simple 3-character session codes for easy joining
+
+### Session Management
+- Save mural configurations to browser local storage
+- Load saved sessions
+- Never lose your work
+
+### Video Recording
+- Timelapse recording with custom intervals
+- Full video recording
+- Export recordings for documentation and sharing
+
+## Technology Stack
+
+### Frontend
+- HTML5
+- JavaScript (ES6+)
+- CSS3 with Tailwind CSS
+- GSAP for animations
+
+### Libraries & APIs
+- PeerJS for peer-to-peer WebRTC connections
+- WebRTC for real-time communication
+- Camera API (getUserMedia) for AR features
+- Canvas API for image processing
+- Local Storage API for session persistence
+
+### Architecture
+- Fully client-side application
+- No backend server required
+- Peer-to-peer connections for multi-device sharing
+- All processing occurs locally on user's device
+
+## File Structure
+```
+/
+├── index.html              # Homepage
+├── muraly.html             # Main app entry point
+├── join.html               # Join AR session page
+├── hoist.html              # Host AR session page
+├── privacy-policy.html     # Privacy policy
+├── terms-and-conditions.html # Terms of service
+├── sitemap.xml             # SEO sitemap
+├── robots.txt              # Search engine directives
+├── js/                     # JavaScript modules
+│   ├── index.js
+│   ├── muraly.js
+│   ├── join.js
+│   ├── hoist.js
+│   └── modules/            # Feature modules
+│       ├── camera.js
+│       ├── canvas.js
+│       ├── hosting.js
+│       ├── session.js
+│       └── ...
+└── styles/                 # CSS stylesheets
+    ├── index.css
+    ├── muraly.css
+    └── ...
+```
+
+## Key Pages
+
+### Homepage (index.html)
+- Landing page with hero section
+- Feature showcase
+- How it works guide
+- Partnership information (Agurutwa)
+- Call-to-action to launch app
+
+### Main App (muraly.html)
+- Router screen for host/join selection
+- Entry point to AR functionality
+
+### Host Session (hoist.html)
+- AR camera view
+- Image upload and controls
+- Session hosting and sharing
+- Recording functionality
+- Panel with all controls
+
+### Join Session (join.html)
+- Enter session ID or browse available sessions
+- Connect to host's AR stream
+- View-only mode
+
+### Legal Pages
+- Privacy Policy: Data collection and usage policies
+- Terms & Conditions: Terms of service and user responsibilities
+
+## SEO & Metadata
+
+### Structured Data (JSON-LD)
+- Organization schema (Muraly Initiative)
+- WebApplication schema
+- SoftwareApplication schema
+- WebPage schemas
+- BreadcrumbList schemas
+- Article schemas (for legal pages)
+
+### SEO Features
+- Open Graph meta tags
+- Twitter Card meta tags
+- Canonical URLs
+- Hreflang tags (en, en-US, x-default)
+- Semantic HTML5 elements
+- Comprehensive sitemap.xml
+
+## Privacy & Security
+- No data collection for commercial purposes
+- All processing occurs locally on user's device
+- Camera feed never transmitted to servers
+- Images stored only in browser local storage
+- Peer-to-peer connections for sharing (no server routing)
+- Privacy-first approach
+
+## Browser Requirements
+- Modern browser with JavaScript enabled
+- HTML5 support
+- Camera access permissions (for AR features)
+- WebRTC support (for multi-device sharing)
+
+## Supported Platforms
+- Desktop: Chrome, Firefox, Safari, Edge
+- Mobile: iOS Safari, Chrome Mobile, Firefox Mobile
+- Tablet: iPad, Android tablets
+
+## Development
+- Non-profit initiative
+- Open to community contributions
+- Supported by Muraly Initiative and Agurutwa Foundation
+
+## Contact Information
+- Email: codefrydev@gmail.com
+- Website: https://muraly.codefrydev.in/
+- Organization: Muraly Initiative
+
+## Social Media
+- Instagram: https://instagram.com/muraly
+- Twitter: https://twitter.com/muraly
+
+## Related Organizations
+- Agurutwa Foundation: Partner organization providing free education to underprivileged children
+- Muraly Initiative: Non-profit organization behind the project
+
+## License & Usage
+- Free to use
+- No payments or subscriptions
+- No account creation required
+- No installation required
+- Works entirely in browser
+
+## Version
+Current version: 1.0
+Last updated: January 2026
+
+## Important URLs
+- Homepage: https://muraly.codefrydev.in/
+- App Entry: https://muraly.codefrydev.in/muraly.html
+- Join Session: https://muraly.codefrydev.in/join.html
+- Host Session: https://muraly.codefrydev.in/hoist.html
+- Privacy Policy: https://muraly.codefrydev.in/privacy-policy.html
+- Terms: https://muraly.codefrydev.in/terms-and-conditions.html
+- Sitemap: https://muraly.codefrydev.in/sitemap.xml
+
+## Use Cases
+- Artists planning wall murals
+- Interior designers visualizing wall art
+- Homeowners previewing wall decorations
+- Teams collaborating on mural projects
+- Educational purposes for art classes
+- Documentation of mural creation process
+
+## Technical Notes
+- Uses WebRTC for peer-to-peer connections
+- PeerJS library handles connection management
+- Canvas API for image manipulation
+- Local Storage for session persistence
+- No external dependencies for core functionality
+- Responsive design for all screen sizes
+
