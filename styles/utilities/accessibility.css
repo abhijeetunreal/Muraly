@@ -1,0 +1,174 @@
+/* ========================================
+   ACCESSIBILITY IMPROVEMENTS
+   ======================================== */
+
+/* Skip to camera view link for AR app */
+.skip-to-camera {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: var(--neon-lime);
+  color: var(--dark-void);
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-decoration: none;
+  font-weight: 700;
+  z-index: 10001;
+  border-radius: 0 0 var(--radius-md) 0;
+  transition: top var(--transition-base);
+}
+
+.skip-to-camera:focus {
+  top: 0;
+  outline: 3px solid var(--neon-pink);
+  outline-offset: 2px;
+}
+
+/* Enhanced focus styles for keyboard navigation */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--neon-lime);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Better focus indicators for controls */
+#panel button:focus-visible,
+#panel input:focus-visible,
+#panel select:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+  box-shadow: 
+    0 0 0 6px rgba(0, 212, 255, 0.25),
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(0, 212, 255, 0.3);
+  border-color: var(--border-accent);
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+.iconBtn:focus-visible {
+  outline: 3px solid var(--neon-lime);
+  outline-offset: 4px;
+}
+
+/* Close button focus */
+.close-panel-btn:focus-visible,
+.custom-alert-close:focus-visible {
+  outline: 3px solid var(--neon-pink);
+  outline-offset: 3px;
+  box-shadow: 
+    0 0 0 6px rgba(236, 72, 153, 0.25),
+    0 6px 20px rgba(239, 68, 68, 0.4),
+    0 0 0 1px var(--danger);
+}
+
+/* Ensure font loading doesn't block rendering */
+body {
+  font-display: swap;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  #panel,
+  #firstScreen,
+  #joinScreen {
+    border: 3px solid white;
+  }
+  
+  button {
+    border-width: 3px;
+  }
+  
+  input,
+  select {
+    border-width: 2px;
+  }
+  
+  .iconBtn {
+    border: 3px solid white;
+  }
+}
+
+/* Dark mode optimization (already dark, but ensure consistency) */
+@media (prefers-color-scheme: dark) {
+  /* App is already optimized for dark mode */
+  body {
+    background-color: var(--dark-void);
+    color: white;
+  }
+}
+
+/* ========================================
+   RESPONSIVE UTILITIES
+   ======================================== */
+
+/* Touch-friendly tap targets */
+.tap-target {
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Prevent text selection on UI elements */
+button,
+.iconBtn,
+.close-panel-btn {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Allow text selection in inputs */
+input,
+textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Smooth scrolling for panel */
+#panel,
+#sessionsListContainer {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #panel,
+  #sessionsListContainer {
+    scroll-behavior: auto;
+  }
+}
+
+/* Optimize for notched devices */
+@supports (padding: max(0px)) {
+  #panel,
+  #topBar,
+  #firstScreen,
+  #joinScreen {
+    padding-left: max(var(--spacing-md), env(safe-area-inset-left));
+    padding-right: max(var(--spacing-md), env(safe-area-inset-right));
+  }
+}
+
+/* Improve tap delay on iOS */
+a,
+button,
+input[type="button"],
+input[type="submit"],
+.tap-target {
+  touch-action: manipulation;
+}
+
+/* Prevent zoom on input focus (iOS) */
+input[type="text"],
+input[type="number"],
+select {
+  font-size: 16px; /* Prevents iOS zoom */
+}

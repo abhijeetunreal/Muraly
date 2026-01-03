@@ -1,0 +1,806 @@
+/* Join Screen Styles - Complete Redesign */
+#joinScreen {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #0A0A0A;
+  z-index: 1000;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  /* Use dynamic viewport height when available */
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: calc(var(--vh, 1vh) * 100);
+}
+
+.join-screen-content {
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: calc(var(--vh, 1vh) * 100);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(40px, 6vh, 80px) clamp(20px, 4vw, 40px);
+  gap: clamp(32px, 5vh, 48px);
+  /* Ensure content doesn't get cut off on mobile */
+  box-sizing: border-box;
+}
+
+#joinScreen h2 {
+  color: white;
+  margin: 0;
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  font-weight: 700;
+  font-family: 'Permanent Marker', cursive;
+  background: linear-gradient(135deg, #FF0055 0%, #CCFF00 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  text-align: center;
+  line-height: 1.1;
+  text-shadow: 0 0 30px rgba(255, 0, 85, 0.3);
+  letter-spacing: -0.02em;
+}
+
+.join-layout {
+  width: 100%;
+  max-width: 1400px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(24px, 4vw, 40px);
+  align-items: start;
+}
+
+.join-form-column {
+  width: 100%;
+}
+
+#joinScreen .form-container {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 3vw, 20px);
+  padding: 0;
+}
+
+
+#joinKeyInput {
+  min-height: var(--touch-target-large);
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-base);
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: 0.5px;
+  width: 100%;
+  background: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-md);
+  color: #FFFFFF;
+  outline: none;
+  transition: all var(--transition-base);
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  touch-action: manipulation;
+}
+
+#joinKeyInput:focus {
+  background: rgba(30, 30, 30, 0.95);
+  border-color: #CCFF00;
+  box-shadow: 
+    0 0 0 3px rgba(204, 255, 0, 0.4),
+    inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    0 0 25px rgba(204, 255, 0, 0.3);
+}
+
+#joinKeyInput::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'Space Grotesk', sans-serif;
+  opacity: 1;
+}
+
+#joinKeyBtn,
+#browseSessionsBtn {
+  min-height: var(--touch-target-large);
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  width: 100%;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+  touch-action: manipulation;
+}
+
+#joinKeyBtn {
+  background: #CCFF00;
+  border: 2px solid #CCFF00;
+  color: #000000 !important;
+  font-weight: 900 !important;
+  text-shadow: none !important;
+  -webkit-text-stroke: none !important;
+  letter-spacing: 1.5px;
+  box-shadow: 
+    0 4px 12px rgba(204, 255, 0, 0.3),
+    0 0 0 1px rgba(204, 255, 0, 0.25);
+}
+
+#joinKeyBtn:hover {
+  transform: translateY(-2px) scale(1.02);
+  background: #B8E600;
+  border-color: #B8E600;
+  color: #000000 !important;
+  font-weight: 900 !important;
+  text-shadow: none !important;
+  -webkit-text-stroke: none !important;
+  letter-spacing: 1.5px;
+  box-shadow: 
+    0 6px 16px rgba(204, 255, 0, 0.5),
+    0 0 0 1px rgba(204, 255, 0, 0.4);
+}
+
+#joinKeyBtn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(255, 0, 85, 0.2);
+}
+
+#browseSessionsBtn {
+  background: rgba(26, 26, 26, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
+  font-weight: 600;
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+#browseSessionsBtn:hover {
+  background: rgba(40, 40, 40, 0.95);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 
+    0 3px 8px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.25),
+    0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+/* Divider Styles */
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: clamp(16px, 3vw, 24px) 0;
+  position: relative;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: clamp(13px, 2.5vw, 15px);
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+}
+
+.divider::before {
+  margin-right: clamp(12px, 3vw, 16px);
+}
+
+.divider::after {
+  margin-left: clamp(12px, 3vw, 16px);
+}
+
+/* ============================================
+   MOBILE JOIN SCREEN - COMPLETE REDESIGN
+   ============================================ */
+@media (max-width: 767px) {
+  /* Reset and isolate join screen from general styles */
+  #joinScreen {
+    background: #0A0A0A;
+    min-height: 100vh;
+    min-height: 100dvh;
+    min-height: calc(var(--vh, 1vh) * 100);
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* Main content container */
+  #joinScreen .join-screen-content {
+    padding: 32px 20px 40px;
+    gap: 32px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+  }
+  
+  /* Title with full gradient */
+  #joinScreen h2 {
+    font-size: clamp(2rem, 10vw, 3rem);
+    margin: 0 0 32px 0;
+    font-family: 'Permanent Marker', cursive;
+    background: linear-gradient(135deg, #FF0055 0%, #CCFF00 50%, #00FFFF 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    text-align: center;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    filter: drop-shadow(0 0 20px rgba(204, 255, 0, 0.4));
+  }
+  
+  /* Layout */
+  #joinScreen .join-layout {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  /* Form container - glass card */
+  #joinScreen .form-container {
+    width: 100%;
+    padding: 24px;
+    background: rgba(15, 15, 15, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Gradient overlay on form */
+  #joinScreen .form-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 0, 85, 0.05) 0%,
+      rgba(204, 255, 0, 0.05) 50%,
+      rgba(0, 255, 255, 0.05) 100%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+  
+  #joinScreen .form-container > * {
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Input field - dark with neon focus */
+  #joinScreen #joinKeyInput {
+    width: 100%;
+    padding: 18px 20px;
+    font-size: 16px;
+    font-family: 'Space Grotesk', sans-serif;
+    background: rgba(26, 26, 26, 0.9);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    color: #FFFFFF;
+    min-height: 56px;
+    box-sizing: border-box;
+    box-shadow: 
+      inset 0 2px 4px rgba(0, 0, 0, 0.3),
+      0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    outline: none;
+  }
+  
+  #joinScreen #joinKeyInput::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+  
+  #joinScreen #joinKeyInput:focus {
+    background: rgba(30, 30, 30, 0.95);
+    border-color: #CCFF00;
+    box-shadow: 
+      0 0 0 4px rgba(204, 255, 0, 0.2),
+      inset 0 2px 4px rgba(0, 0, 0, 0.3),
+      0 0 30px rgba(204, 255, 0, 0.4),
+      0 4px 16px rgba(204, 255, 0, 0.2);
+    transform: translateY(-2px);
+  }
+  
+  /* Join Session Button - BRIGHT NEON LIME */
+  #joinScreen #joinKeyBtn {
+    width: 100%;
+    padding: 18px 24px;
+    font-size: 15px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: #CCFF00;
+    border: 2px solid #CCFF00;
+    border-radius: 12px;
+    color: #000000;
+    min-height: 56px;
+    box-sizing: border-box;
+    box-shadow: 
+      0 6px 20px rgba(204, 255, 0, 0.5),
+      0 0 0 1px rgba(204, 255, 0, 0.3),
+      0 0 40px rgba(204, 255, 0, 0.4);
+    position: relative;
+    overflow: visible;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Glow effect for join button */
+  #joinScreen #joinKeyBtn::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    right: -6px;
+    bottom: -6px;
+    background: #CCFF00;
+    filter: blur(16px);
+    opacity: 0.6;
+    z-index: -1;
+    border-radius: 14px;
+  }
+  
+  #joinScreen #joinKeyBtn:active {
+    transform: scale(0.98);
+    background: #B8E600;
+    border-color: #B8E600;
+    box-shadow: 
+      0 3px 12px rgba(204, 255, 0, 0.4),
+      0 0 0 1px rgba(204, 255, 0, 0.2);
+  }
+  
+  /* Divider with gradient lines */
+  #joinScreen .divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 24px 0;
+    font-size: 13px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.6);
+    position: relative;
+  }
+  
+  #joinScreen .divider::before,
+  #joinScreen .divider::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(204, 255, 0, 0.5),
+      rgba(0, 255, 255, 0.5),
+      transparent
+    );
+    box-shadow: 0 0 10px rgba(204, 255, 0, 0.4);
+  }
+  
+  #joinScreen .divider::before {
+    margin-right: 16px;
+  }
+  
+  #joinScreen .divider::after {
+    margin-left: 16px;
+  }
+  
+  /* Browse Sessions Button - glass style */
+  #joinScreen #browseSessionsBtn {
+    width: 100%;
+    padding: 18px 24px;
+    font-size: 15px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: rgba(26, 26, 26, 0.8);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    color: #FFFFFF;
+    min-height: 56px;
+    box-sizing: border-box;
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 0 20px rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: visible;
+  }
+  
+  #joinScreen #browseSessionsBtn::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    background: rgba(255, 255, 255, 0.1);
+    filter: blur(12px);
+    opacity: 0;
+    z-index: -1;
+    border-radius: 14px;
+    transition: opacity 0.3s ease;
+  }
+  
+  #joinScreen #browseSessionsBtn:active {
+    transform: scale(0.98);
+    background: rgba(40, 40, 40, 0.9);
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 
+      0 2px 12px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(255, 255, 255, 0.15),
+      0 0 30px rgba(255, 255, 255, 0.15);
+  }
+  
+  #joinScreen #browseSessionsBtn:active::before {
+    opacity: 0.8;
+  }
+  
+  /* Sessions List Container */
+  #joinScreen #sessionsListContainer {
+    width: 100%;
+    padding: 20px;
+    background: rgba(15, 15, 15, 0.8);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(204, 255, 0, 0.4);
+    border-radius: 20px;
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.6),
+      0 0 0 1px rgba(204, 255, 0, 0.3),
+      0 0 40px rgba(204, 255, 0, 0.2);
+    display: none;
+    flex-direction: column;
+    gap: 16px;
+    max-height: calc(100vh - 200px);
+    min-height: 300px;
+    margin-top: 24px;
+  }
+  
+  #joinScreen #sessionsListContainer:not(.hidden) {
+    display: flex;
+  }
+  
+  #joinScreen #sessionsListContainer.hidden {
+    display: none;
+  }
+  
+  /* Sessions list title */
+  #joinScreen #sessionsListContainer h3 {
+    font-size: 18px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #CCFF00;
+    text-align: center;
+    margin: 0 0 16px 0;
+    text-shadow: 
+      0 0 10px rgba(204, 255, 0, 0.8),
+      0 0 20px rgba(204, 255, 0, 0.4);
+  }
+  
+  /* Session items */
+  #joinScreen .session-item {
+    padding: 14px 16px;
+    background: rgba(26, 26, 26, 0.6);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 56px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+  }
+  
+  #joinScreen .session-item:active {
+    background: rgba(40, 40, 40, 0.8);
+    border-color: rgba(204, 255, 0, 0.4);
+    transform: translateX(4px);
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.4),
+      0 0 20px rgba(204, 255, 0, 0.2);
+  }
+  
+  #joinScreen .session-code {
+    flex: 1;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFFFFF;
+    letter-spacing: 1px;
+  }
+  
+  #joinScreen .session-info {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    min-width: 70px;
+    text-align: right;
+  }
+  
+  #joinScreen .session-join-btn {
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    background: #CCFF00;
+    border: 2px solid #CCFF00;
+    border-radius: 8px;
+    color: #000000;
+    min-width: 70px;
+    min-height: 40px;
+    box-shadow: 
+      0 2px 8px rgba(204, 255, 0, 0.4),
+      0 0 20px rgba(204, 255, 0, 0.3);
+    transition: all 0.2s ease;
+  }
+  
+  #joinScreen .session-join-btn:active {
+    transform: scale(0.95);
+    background: #B8E600;
+    border-color: #B8E600;
+  }
+  
+  /* Sessions action buttons */
+  #joinScreen .sessions-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid rgba(204, 255, 0, 0.2);
+  }
+  
+  #joinScreen #refreshSessionsBtn {
+    width: 100%;
+    padding: 16px;
+    font-size: 14px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    background: #00FFFF;
+    border: 2px solid #00FFFF;
+    border-radius: 12px;
+    color: #000000;
+    min-height: 56px;
+    box-shadow: 
+      0 4px 16px rgba(0, 255, 255, 0.5),
+      0 0 0 1px rgba(0, 255, 255, 0.3),
+      0 0 30px rgba(0, 255, 255, 0.4);
+    transition: all 0.2s ease;
+  }
+  
+  #joinScreen #refreshSessionsBtn:active {
+    transform: scale(0.98);
+    background: #00E5E5;
+    border-color: #00E5E5;
+  }
+  
+  #joinScreen #closeSessionsListBtn {
+    width: 100%;
+    padding: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    background: rgba(26, 26, 26, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    color: #FFFFFF;
+    min-height: 56px;
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+  }
+  
+  #joinScreen #closeSessionsListBtn:active {
+    transform: scale(0.98);
+    background: rgba(40, 40, 40, 0.9);
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+  
+  /* Viewport and keyboard handling */
+  @supports (height: 100dvh) {
+    #joinScreen {
+      min-height: 100dvh;
+    }
+    #joinScreen .join-screen-content {
+      min-height: 100dvh;
+    }
+  }
+  
+  @supports (padding: max(0px)) {
+    #joinScreen .join-screen-content {
+      padding-left: max(20px, env(safe-area-inset-left));
+      padding-right: max(20px, env(safe-area-inset-right));
+      padding-top: max(32px, env(safe-area-inset-top));
+      padding-bottom: max(40px, env(safe-area-inset-bottom));
+    }
+  }
+  
+  body.keyboard-open #joinScreen .join-screen-content {
+    padding-bottom: max(40px, env(keyboard-inset-height, 40px));
+  }
+}
+
+/* Tablet Join Screen */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .join-screen-content {
+    padding: clamp(48px, 7vh, 72px) clamp(32px, 5vw, 48px);
+    gap: clamp(32px, 5vh, 48px);
+  }
+  
+  #joinScreen h2 {
+    font-size: clamp(2.5rem, 7vw, 3.5rem);
+    margin-bottom: clamp(20px, 4vh, 32px);
+  }
+  
+  .join-layout {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  #sessionsListContainer,
+  .sessions-column {
+    max-height: calc((var(--vh, 1vh) * 100) - 280px);
+    min-height: 450px;
+  }
+}
+
+/* Desktop Join Screen - Two Column Layout */
+@media (min-width: 1024px) {
+  .join-screen-content {
+    padding: clamp(60px, 8vh, 100px) clamp(40px, 6vw, 80px);
+    gap: clamp(40px, 6vh, 60px);
+  }
+  
+  #joinScreen h2 {
+    font-size: clamp(3.5rem, 8vw, 5.5rem);
+    margin-bottom: clamp(20px, 4vh, 40px);
+  }
+  
+  .join-layout {
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(32px, 5vw, 48px);
+    align-items: start;
+  }
+  
+  .join-form-column {
+    max-width: 100%;
+  }
+  
+  #joinScreen .form-container {
+    max-width: 100%;
+  }
+  
+  #sessionsListContainer,
+  .sessions-column {
+    max-width: 100%;
+    max-height: calc((var(--vh, 1vh) * 100) - 300px);
+    min-height: 500px;
+  }
+  
+  .session-item {
+    padding: clamp(16px, 2.5vw, 20px);
+    min-height: 64px;
+  }
+  
+  .session-code {
+    font-size: clamp(17px, 2.8vw, 21px);
+  }
+  
+  .session-info {
+    font-size: clamp(14px, 2.2vw, 16px);
+    min-width: 100px;
+  }
+  
+  .session-join-btn {
+    min-width: 100px;
+    padding: clamp(14px, 2.2vw, 16px) clamp(18px, 3.2vw, 22px);
+    font-size: clamp(14px, 2.2vw, 16px);
+  }
+  
+  #joinKeyInput {
+    font-size: var(--font-lg);
+    padding: clamp(16px, 3vw, 20px) clamp(20px, 4vw, 24px);
+  }
+  
+  #joinKeyBtn,
+  #browseSessionsBtn {
+    font-size: var(--font-base);
+    padding: clamp(16px, 3vw, 20px) clamp(24px, 4vw, 32px);
+  }
+}
+
+/* Large Desktop: Even wider layout */
+@media (min-width: 1440px) {
+  .join-screen-content {
+    padding: clamp(80px, 10vh, 120px) clamp(60px, 8vw, 120px);
+    gap: clamp(50px, 7vh, 80px);
+  }
+  
+  #joinScreen h2 {
+    font-size: clamp(4.5rem, 9vw, 6.5rem);
+  }
+  
+  .join-layout {
+    gap: clamp(40px, 6vw, 64px);
+    max-width: 1600px;
+  }
+  
+  #sessionsListContainer,
+  .sessions-column {
+    max-height: calc((var(--vh, 1vh) * 100) - 350px);
+    min-height: 600px;
+    padding: clamp(28px, 4vw, 36px);
+  }
+  
+  .session-item {
+    padding: clamp(18px, 2.5vw, 22px);
+    min-height: 68px;
+  }
+  
+  .session-code {
+    font-size: clamp(18px, 2.8vw, 22px);
+  }
+  
+  .session-info {
+    font-size: clamp(15px, 2.2vw, 17px);
+    min-width: 110px;
+  }
+  
+  .session-join-btn {
+    min-width: 110px;
+    padding: clamp(16px, 2.2vw, 18px) clamp(20px, 3.2vw, 24px);
+    font-size: clamp(15px, 2.2vw, 17px);
+  }
+}

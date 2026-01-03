@@ -1,0 +1,59 @@
+/* ========================================
+   PERFORMANCE OPTIMIZATIONS
+   ======================================== */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  #firstScreen,
+  #joinScreen,
+  #panel {
+    animation: none !important;
+  }
+  
+  .parallax-blob {
+    transform: none !important;
+  }
+}
+
+/* Optimize for mobile performance */
+@media (max-width: 767px) {
+  /* Reduce backdrop blur on mobile */
+  #panel {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  
+  button,
+  input,
+  select {
+    backdrop-filter: blur(5px);
+  }
+  
+  /* Simplify parallax blobs */
+  .parallax-blob {
+    will-change: auto;
+    transition: none;
+  }
+}
+
+/* GPU acceleration for smooth interactions */
+#panel,
+#firstScreen,
+#joinScreen,
+button,
+.iconBtn,
+.custom-alert,
+.custom-confirm {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}

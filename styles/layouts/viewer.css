@@ -1,0 +1,54 @@
+video, canvas {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: calc(var(--vh, 1vh) * 100);
+}
+
+#camera { 
+  -webkit-object-fit: cover;
+  -moz-object-fit: cover;
+  -ms-object-fit: cover;
+  object-fit: cover; 
+  z-index: 1; 
+}
+#overlayCanvas { z-index: 2; }
+#gridCanvas { z-index: 3; pointer-events: none; }
+#overlayCanvas { touch-action: none; }
+#gridCanvas { touch-action: none; }
+
+#firstScreen,
+#joinScreen,
+#remoteVideoContainer {
+  min-height: calc(var(--vh, 1vh) * 100);
+}
+#remoteVideoContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: calc(var(--vh, 1vh) * 100);
+  overflow: hidden;
+  background: black;
+  z-index: 999;
+  touch-action: none;
+}
+
+#remoteVideo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+  background: black;
+  will-change: transform;
+  -webkit-object-fit: contain;
+  -moz-object-fit: contain;
+  -ms-object-fit: contain;
+  object-fit: contain;
+}

@@ -1,0 +1,28 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  overflow: hidden;
+  max-width: 100vw;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+body {
+  background-color: #0A0A0A;
+  font-family: 'Space Grotesk', sans-serif;
+  overflow: hidden;
+  cursor: default;
+  max-width: 100vw;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
