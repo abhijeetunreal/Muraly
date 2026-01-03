@@ -109,17 +109,20 @@ body {
   left: 0;
   transform: translate(-50%, -50%);
   border-radius: 50%; 
-  z-index: 9999; 
+  z-index: 999999 !important; 
   pointer-events: none;
   display: block;
+  visibility: visible !important;
 }
 
 .cursor-dot { 
   width: 8px; 
   height: 8px; 
   background-color: #CCFF00;
-  opacity: 1;
-  visibility: visible;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 999999 !important;
+  display: block !important;
 }
 
 .cursor-outline {
@@ -128,8 +131,10 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.5);
   transition: width 0.2s, height 0.2s, background-color 0.2s, transform 0.2s;
   transform-origin: center center;
-  opacity: 1;
-  visibility: visible;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 999999 !important;
+  display: block !important;
 }
 
 /* Hide custom cursor on touch devices and tablets */
@@ -288,7 +293,7 @@ body.keyboard-open #panel {
     max-height: 75vh;
     margin: 0;
     gap: 0.5rem;
-    border-radius: 1rem;
+    border-radius: var(--radius-lg);
   }
   
   body.keyboard-open #panel {
@@ -555,7 +560,7 @@ body.keyboard-open #panel {
   min-height: 44px;
   width: clamp(44px, 5vw, 48px);
   height: clamp(44px, 5vw, 48px);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(10px);
   border: 1.5px solid rgba(204, 255, 0, 0.3);
@@ -597,7 +602,7 @@ body.keyboard-open #panel {
   background: rgba(0, 0, 0, 0.9);
   color: white;
   padding: 1rem 1.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: 1px solid rgba(204, 255, 0, 0.3);
   z-index: 1000;
   pointer-events: none;
@@ -846,7 +851,7 @@ label {
 input[type="range"] { 
   flex: 1; 
   height: 8px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.1);
   outline: none;
   -webkit-appearance: none;
@@ -1022,7 +1027,7 @@ select:hover, input[type="number"]:hover {
   width: 100%;
   min-height: 44px;
   padding: clamp(0.75rem, 2vw, 0.875rem) clamp(1rem, 3vw, 1.25rem);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
@@ -1043,7 +1048,7 @@ select:hover, input[type="number"]:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--gap-xs);
 }
 
 .fullscreen-panel-btn:hover {
@@ -1169,7 +1174,7 @@ button.primary:active {
   box-shadow: 
     0 4px 12px rgba(204, 255, 0, 0.4),
     0 0 30px rgba(204, 255, 0, 0.2);
-  min-height: 48px;
+  min-height: var(--touch-target-comfortable);
   font-size: 0.875rem;
   letter-spacing: 1.5px;
 }
@@ -1193,7 +1198,7 @@ button.primary:active {
 /* Mobile Buttons */
 @media (max-width: 767px) {
   button {
-    min-height: 40px;
+    min-height: var(--touch-target-min);
     padding: 0.625rem 0.75rem;
     font-size: 0.75rem;
     width: 100%;
@@ -1464,7 +1469,7 @@ button.primary:active {
   background: rgba(40, 40, 40, 0.6);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   color: white;
   font-size: clamp(12px, 2.5vw, 13px);
   font-family: 'Space Grotesk', sans-serif;
@@ -1505,7 +1510,7 @@ button.primary:active {
   background: rgba(40, 40, 40, 0.6);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   color: white;
   font-size: clamp(11px, 2.5vw, 12px);
   font-weight: 600;
@@ -1527,7 +1532,7 @@ button.primary:active {
   background: rgba(40, 40, 40, 0.6);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   color: white;
   font-size: clamp(12px, 2.5vw, 13px);
   font-family: 'Space Grotesk', sans-serif;
@@ -1557,11 +1562,11 @@ button.primary:active {
 .start-recording-btn,
 #recordTimelapseBtn {
   width: 100%;
-  min-height: 56px;
+  min-height: var(--touch-target-large);
   padding: clamp(14px, 3vw, 16px) clamp(20px, 4vw, 24px);
   background: #CCFF00;
   border: 2px solid #CCFF00;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   color: #000000 !important;
   font-size: clamp(13px, 2.5vw, 14px);
   font-weight: 700;
@@ -1663,7 +1668,7 @@ hr {
   margin-top: clamp(0.5rem, 1.5vw, 0.75rem);
   padding: clamp(12px, 3vw, 16px);
   background: rgba(14, 165, 233, 0.1);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: 1px solid rgba(14, 165, 233, 0.3);
   animation: pulse 2s ease-in-out infinite;
   width: 100%;
@@ -1714,7 +1719,7 @@ hr {
   min-height: 44px;
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(14, 165, 233, 0.3);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   color: white;
   font-size: clamp(12px, 2.5vw, 13px);
   font-family: 'Courier New', monospace;
@@ -1733,7 +1738,7 @@ hr {
   min-height: 44px;
   background: #0ea5e9;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   color: white;
   font-size: clamp(12px, 2.5vw, 13px);
   font-weight: 600;
@@ -1775,7 +1780,7 @@ hr {
   opacity: 0.9;
   padding: clamp(10px, 2.5vw, 12px);
   margin-top: clamp(0.5rem, 1.5vw, 0.75rem);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.05);
   text-align: center;
   font-weight: 500;
@@ -2627,7 +2632,7 @@ body.keyboard-open #joinScreen {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   max-height: calc((var(--vh, 1vh) * 100) - 300px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -2649,17 +2654,17 @@ body.keyboard-open #joinScreen {
 #sessionsList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--gap-sm);
 }
 
 .session-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
+  gap: var(--gap-sm);
+  padding: var(--spacing-sm);
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   transition: all 0.2s ease;
 }
 
@@ -2693,7 +2698,7 @@ body.keyboard-open #joinScreen {
   font-size: 12px;
   background: #CCFF00;
   border: 2px solid #CCFF00;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   color: #0A0A0A;
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 600;
@@ -2732,7 +2737,7 @@ body.keyboard-open #joinScreen {
   background: #00FFFF;
   border: 2px solid #00FFFF;
   color: #0A0A0A;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 #refreshSessionsBtn:hover {
@@ -2743,7 +2748,7 @@ body.keyboard-open #joinScreen {
 #closeSessionsListBtn {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 #closeSessionsListBtn:hover {
@@ -2759,7 +2764,7 @@ body.keyboard-open #joinScreen {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   color: rgba(255, 255, 255, 0.9);
   font-size: clamp(0.75rem, 2vw, 0.8125rem);
   font-weight: 500;
@@ -2834,7 +2839,7 @@ body.keyboard-open #backToFirstBtn {
     padding-top: clamp(2.5rem, 6vw, 3rem);
     bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
     max-height: 75vh;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
@@ -2934,7 +2939,7 @@ body.keyboard-open #backToFirstBtn {
   
   #shareLink {
     flex-direction: column;
-    gap: 8px;
+    gap: var(--gap-xs);
   }
   
   #shareLinkInput {
@@ -2953,7 +2958,7 @@ body.keyboard-open #backToFirstBtn {
     width: calc(100% - 0.75rem);
     padding: clamp(0.75rem, 3vw, 0.875rem);
     padding-top: clamp(2.25rem, 6vw, 2.75rem);
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
@@ -3024,7 +3029,7 @@ body.keyboard-open #backToFirstBtn {
   max-width: 500px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--gap-sm);
 }
 
 .custom-alert {
@@ -3032,7 +3037,7 @@ body.keyboard-open #backToFirstBtn {
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   backdrop-filter: blur(20px) saturate(180%);
   border: 3px solid transparent;
-  border-radius: 0;
+  border-radius: var(--radius-lg);
   padding: clamp(1rem, 2vw, 1.25rem);
   color: white;
   font-family: 'Space Grotesk', sans-serif;
@@ -3125,7 +3130,7 @@ body.keyboard-open #backToFirstBtn {
 .custom-alert-content {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: var(--gap-sm);
 }
 
 .custom-alert-icon {
@@ -3154,7 +3159,7 @@ body.keyboard-open #backToFirstBtn {
   font-size: 20px;
   line-height: 1;
   cursor: pointer;
-  border-radius: 0;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3245,16 +3250,16 @@ body.keyboard-open #backToFirstBtn {
   border: 3px solid transparent;
   background-image: 
     linear-gradient(135deg, rgba(15, 15, 15, 0.4) 0%, rgba(26, 15, 31, 0.4) 100%),
-    linear-gradient(135deg, var(--warning), var(--spray-orange));
+    linear-gradient(135deg, var(--neon-lime), var(--neon-cyan));
   background-origin: border-box;
   background-clip: padding-box, border-box;
-  border-radius: 0;
+  border-radius: var(--radius-lg);
   padding: clamp(1.5rem, 3vw, 2rem);
   color: white;
   font-family: 'Space Grotesk', sans-serif;
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(255, 107, 53, 0.2);
+    0 0 0 1px rgba(204, 255, 0, 0.2);
   pointer-events: auto;
   opacity: 0;
   transform: scale(0.9) translateY(20px);
@@ -3271,7 +3276,7 @@ body.keyboard-open #backToFirstBtn {
   right: -3px;
   bottom: -3px;
   left: -3px;
-  background: linear-gradient(135deg, var(--warning), var(--spray-orange));
+  background: linear-gradient(135deg, var(--neon-lime), var(--neon-cyan));
   z-index: -1;
   opacity: 0.3;
   filter: blur(8px);
@@ -3290,7 +3295,7 @@ body.keyboard-open #backToFirstBtn {
 .custom-confirm-content {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--gap-md);
   align-items: center;
   text-align: center;
 }
@@ -3309,7 +3314,7 @@ body.keyboard-open #backToFirstBtn {
 
 .custom-confirm-buttons {
   display: flex;
-  gap: 12px;
+  gap: var(--gap-sm);
   width: 100%;
   margin-top: 8px;
 }
@@ -3318,36 +3323,36 @@ body.keyboard-open #backToFirstBtn {
   flex: 1;
   min-height: 44px;
   padding: clamp(0.75rem, 2vw, 0.875rem) clamp(1rem, 3vw, 1.25rem);
-  border-radius: 0;
+  border-radius: var(--radius-md);
   border: 2px solid transparent;
   background-image: 
     linear-gradient(135deg, rgba(15, 15, 15, 0.9) 0%, rgba(26, 15, 31, 0.9) 100%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 107, 53, 0.6));
+    linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(204, 255, 0, 0.3));
   background-origin: border-box;
   background-clip: padding-box, border-box;
   color: white;
   font-size: clamp(0.75rem, 2vw, 0.8125rem);
-  font-weight: 400;
+  font-weight: 600;
   font-family: 'Space Grotesk', sans-serif;
   letter-spacing: 0.5px;
   cursor: pointer;
   transition: all 0.15s ease;
   box-shadow: 
     0 1px 3px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(255, 107, 53, 0.15);
+    0 0 0 1px rgba(204, 255, 0, 0.15);
   text-transform: uppercase;
   touch-action: manipulation;
 }
 
 .custom-confirm-btn:hover {
   transform: translateY(-2px);
-  background: linear-gradient(135deg, rgba(255, 107, 53, 0.2) 0%, rgba(6, 255, 165, 0.2) 100%);
+  background: linear-gradient(135deg, rgba(204, 255, 0, 0.15) 0%, rgba(0, 255, 255, 0.15) 100%);
   background-image: 
-    linear-gradient(135deg, rgba(255, 107, 53, 0.2) 0%, rgba(6, 255, 165, 0.2) 100%),
-    linear-gradient(135deg, var(--spray-orange), var(--spray-green));
+    linear-gradient(135deg, rgba(204, 255, 0, 0.15) 0%, rgba(0, 255, 255, 0.15) 100%),
+    linear-gradient(135deg, var(--neon-lime), var(--neon-cyan));
   box-shadow: 
     0 2px 6px rgba(0, 0, 0, 0.15),
-    0 0 0 1px rgba(255, 107, 53, 0.25);
+    0 0 0 1px rgba(204, 255, 0, 0.25);
 }
 
 .custom-confirm-btn:active {
@@ -3355,43 +3360,60 @@ body.keyboard-open #backToFirstBtn {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.custom-confirm-ok {
-  background: var(--gradient-3);
-  border: 3px solid transparent;
-  background-image: 
-    var(--gradient-3),
-    linear-gradient(135deg, var(--spray-yellow), var(--spray-orange), var(--spray-pink));
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
+.custom-confirm-ok:active {
+  background: #A3CC00;
+  border-color: #A3CC00;
+  transform: translateY(0) scale(0.98);
   box-shadow: 
-    0 1px 4px rgba(255, 107, 53, 0.15),
-    0 0 0 1px rgba(255, 210, 63, 0.2);
+    0 2px 8px rgba(204, 255, 0, 0.4),
+    0 0 20px rgba(204, 255, 0, 0.2);
+}
+
+.custom-confirm-cancel:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.custom-confirm-ok {
+  background: var(--neon-lime);
+  border: 2px solid var(--neon-lime);
+  background-image: none;
+  background-origin: border-box;
+  background-clip: padding-box;
+  color: #000000 !important;
+  font-weight: 700;
+  box-shadow: 
+    0 2px 8px rgba(204, 255, 0, 0.3),
+    0 0 0 1px rgba(204, 255, 0, 0.25);
 }
 
 .custom-confirm-ok:hover {
-  background: linear-gradient(135deg, #ffd23f 0%, #ff6b35 50%, #ff1744 100%);
-  background-image: 
-    linear-gradient(135deg, #ffd23f 0%, #ff6b35 50%, #ff1744 100%),
-    linear-gradient(135deg, var(--spray-yellow), var(--spray-orange), var(--spray-pink), var(--spray-blue));
+  background: #B8E600;
+  border-color: #B8E600;
+  color: #000000 !important;
+  transform: translateY(-2px) scale(1.02);
   box-shadow: 
-    0 2px 6px rgba(255, 107, 53, 0.2),
-    0 0 0 1px rgba(255, 210, 63, 0.3);
+    0 4px 12px rgba(204, 255, 0, 0.5),
+    0 0 20px rgba(204, 255, 0, 0.3);
 }
 
 .custom-confirm-cancel {
-  background: rgba(255, 255, 255, 0.1);
-  background-image: 
-    rgba(255, 255, 255, 0.1),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  background-image: none;
   background-origin: border-box;
-  background-clip: padding-box, border-box;
+  background-clip: padding-box;
+  color: #FFFFFF !important;
 }
 
 .custom-confirm-cancel:hover {
-  background: rgba(255, 255, 255, 0.15);
-  background-image: 
-    rgba(255, 255, 255, 0.15),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(204, 255, 0, 0.4);
+  color: #FFFFFF !important;
+  transform: translateY(-2px);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(204, 255, 0, 0.2);
 }
 
 /* Responsive Styles for Confirm Dialog */
@@ -3411,10 +3433,68 @@ body.keyboard-open #backToFirstBtn {
   
   .custom-confirm-buttons {
     flex-direction: column;
-    gap: 8px;
+    gap: var(--gap-xs);
   }
   
   .custom-confirm-btn {
     width: 100%;
+  }
+}
+
+/* PIN Input Styles */
+.custom-pin-input {
+  width: 100%;
+  min-height: 44px;
+  padding: clamp(0.75rem, 2vw, 0.875rem) clamp(1rem, 3vw, 1.25rem);
+  border-radius: var(--radius-md);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  color: #FFFFFF !important;
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  font-weight: 600;
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: 4px;
+  text-align: center;
+  transition: all 0.15s ease;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(204, 255, 0, 0.15);
+  outline: none;
+}
+
+.custom-pin-input:focus {
+  border-color: #CCFF00;
+  background: rgba(0, 0, 0, 0.8);
+  color: #FFFFFF !important;
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    0 0 0 2px rgba(204, 255, 0, 0.25);
+}
+
+.custom-pin-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.5px;
+  font-weight: 400;
+}
+
+/* PIN Dialog Container Styles */
+#customPinContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .custom-pin-input {
+    letter-spacing: 2px;
+    font-size: clamp(0.9375rem, 2vw, 1rem);
   }
 }
