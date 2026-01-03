@@ -6,7 +6,8 @@ import { isMobileDevice, isFirefox } from './utils.js';
 import { enterViewerMode } from './viewer.js';
 import { stopRecordingTimelapse } from './recording.js';
 import { registerSession, unregisterSession } from './discovery.js';
-import { showAlert, showChoiceDialog, showPinInputDialog } from './alert.js';
+import { showAlert, showChoiceDialog, showPinInputDialog, showNameInputDialog } from './alert.js';
+import { updateParticipantsList } from './ui-controls.js';
 
 // Create a composite canvas stream (camera + overlay)
 function createCompositeStream() {
@@ -142,6 +143,85 @@ function createCompositeStream() {
   return stream;
 }
 
+// Helper function to generate auto participant name
+function generateParticipantName() {
+  state.participantCounter++;
+  return `Participant ${state.participantCounter}`;
+}
+
+// Helper function to add a participant
+function addParticipant(call, peerId, participantName = null, dataConnection = null) {
+  const friendlyName = participantName || generateParticipantName();
+  const participant = {
+    peerId: peerId,
+    friendlyName: friendlyName,
+    connectedAt: Date.now(),
+    call: call,
+    dataConnection: dataConnection
+  };
+  
+  state.participants.push(participant);
+  state.activeConnections.push(call);
+  
+  // Also set state.call for backward compatibility (use last connection)
+  state.call = call;
+  
+  console.log(`Participant added: ${friendlyName} (${peerId})`);
+  
+  // Update UI
+  updateParticipantsList();
+  
+  return participant;
+}
+
+// Helper function to remove a participant
+function removeParticipant(peerId) {
+  const index = state.participants.findIndex(p => p.peerId === peerId);
+  if (index === -1) return;
+  
+  const participant = state.participants[index];
+  
+  // Close data connection if exists
+  if (participant.dataConnection) {
+    participant.dataConnection.close();
+  }
+  
+  // Remove from arrays
+  state.participants.splice(index, 1);
+  state.activeConnections = state.activeConnections.filter(c => c !== participant.call);
+  
+  // Update state.call for backward compatibility
+  if (state.activeConnections.length > 0) {
+    state.call = state.activeConnections[state.activeConnections.length - 1];
+  } else {
+    state.call = null;
+  }
+  
+  console.log(`Participant removed: ${participant.friendlyName} (${peerId})`);
+  
+  // Update UI
+  updateParticipantsList();
+}
+
+// Export function to disconnect a specific participant
+export function disconnectParticipant(peerId) {
+  const participant = state.participants.find(p => p.peerId === peerId);
+  if (!participant) {
+    console.warn(`Participant not found: ${peerId}`);
+    return;
+  }
+  
+  // Close the call
+  if (participant.call) {
+    participant.call.close();
+  }
+  
+  // Remove from tracking
+  removeParticipant(peerId);
+  
+  showAlert(`Disconnected ${participant.friendlyName}`, 'info');
+}
+
 export function stopHosting() {
   // Unregister from discovery service
   if (state.currentShareCode) {
@@ -149,10 +229,28 @@ export function stopHosting() {
     state.currentShareCode = null;
   }
 
-  if (state.call) {
-    state.call.close();
-    state.call = null;
-  }
+  // Close all active connections
+  state.activeConnections.forEach(call => {
+    if (call) {
+      call.close();
+    }
+  });
+  
+  // Close all data connections
+  state.participants.forEach(participant => {
+    if (participant.dataConnection) {
+      participant.dataConnection.close();
+    }
+  });
+  
+  // Clear participant tracking
+  state.activeConnections = [];
+  state.participants = [];
+  state.participantCounter = 0;
+  state.call = null;
+  
+  // Update UI
+  updateParticipantsList();
   if (state.hostStream) {
     state.hostStream.getTracks().forEach(track => track.stop());
     state.hostStream = null;
@@ -368,22 +466,47 @@ export async function host() {
         return;
       }
       
-      // If session is private, validate PIN before answering
-      if (state.isPrivateSession && state.sessionPin) {
-        console.log("Private session: Validating PIN before accepting call");
+      const peerId = incomingCall.peer;
+      let dataConnection = null;
+      let pinValidated = false;
+      let participantName = null;
+      let nameReceived = false;
+      let pinValidationTimeout = null;
+      let nameTimeout = null;
+      
+      // Helper function to handle participant join after validation
+      function handleParticipantJoin(call, peerId, participantName, dataConnection) {
+        // Answer the call
+        call.answer(state.hostStream);
         
-        // Establish data connection to validate PIN
-        const dataConnection = state.peer.connect(incomingCall.peer, {
-          reliable: true
+        // Add participant
+        const participant = addParticipant(call, peerId, participantName, dataConnection);
+        
+        // Set up call event handlers
+        call.on("close", () => {
+          console.log("Call closed for participant:", participant.friendlyName);
+          removeParticipant(peerId);
         });
         
-        let pinValidated = false;
-        let pinValidationTimeout = null;
+        call.on("error", (err) => {
+          console.error("Call error for participant:", participant.friendlyName, err);
+          removeParticipant(peerId);
+        });
         
-        dataConnection.on('open', () => {
-          console.log("Data connection opened for PIN validation");
-          
-          // Request PIN from caller
+        showAlert(`${participant.friendlyName} joined the session`, 'success', 3000);
+      }
+      
+      // Establish data connection for PIN validation and name exchange
+      dataConnection = state.peer.connect(peerId, {
+        reliable: true
+      });
+      
+      dataConnection.on('open', () => {
+        console.log("Data connection opened with participant:", peerId);
+        
+        // If session is private, request PIN first
+        if (state.isPrivateSession && state.sessionPin) {
+          console.log("Private session: Requesting PIN");
           dataConnection.send(JSON.stringify({
             type: 'pin_request'
           }));
@@ -397,90 +520,117 @@ export async function host() {
               showAlert("Connection timeout: PIN not provided", 'warning');
             }
           }, 10000);
-        });
-        
-        dataConnection.on('data', (data) => {
-          try {
-            const message = JSON.parse(data);
-            if (message.type === 'pin_response') {
-              const providedPin = message.pin;
-              
-              if (providedPin === state.sessionPin) {
-                // PIN is correct
-                pinValidated = true;
-                if (pinValidationTimeout) {
-                  clearTimeout(pinValidationTimeout);
-                }
-                
-                // Send validation success
-                dataConnection.send(JSON.stringify({
-                  type: 'pin_validated',
-                  success: true
-                }));
-                
-                // Answer the call
-                incomingCall.answer(state.hostStream);
-                state.call = incomingCall;
-                
-                console.log("PIN validated, call accepted");
-                
-                state.call.on("close", () => {
-                  console.log("Call closed");
-                  dataConnection.close();
-                });
-                
-                state.call.on("error", (err) => {
-                  console.error("Call error:", err);
-                  dataConnection.close();
-                });
-              } else {
-                // PIN is incorrect
-                console.log("Incorrect PIN provided");
-                dataConnection.send(JSON.stringify({
-                  type: 'pin_validated',
-                  success: false
-                }));
-                
-                setTimeout(() => {
-                  dataConnection.close();
-                  incomingCall.close();
-                }, 500);
-                
-                showAlert("Incorrect PIN. Connection rejected.", 'error');
-              }
+        } else {
+          // Public session - request name immediately
+          dataConnection.send(JSON.stringify({
+            type: 'name_request'
+          }));
+          
+          // Set timeout for name (1 minute)
+          nameTimeout = setTimeout(() => {
+            if (!nameReceived) {
+              console.log("Name not received, using auto-generated name");
+              // Proceed with auto-generated name
+              handleParticipantJoin(incomingCall, peerId, null, dataConnection);
             }
-          } catch (err) {
-            console.error("Error parsing PIN validation message:", err);
+          }, 60000);
+        }
+      });
+      
+      dataConnection.on('data', (data) => {
+        try {
+          const message = JSON.parse(data);
+          
+          if (message.type === 'pin_response') {
+            const providedPin = message.pin;
+            
+            if (providedPin === state.sessionPin) {
+              // PIN is correct
+              pinValidated = true;
+              if (pinValidationTimeout) {
+                clearTimeout(pinValidationTimeout);
+              }
+              
+              // Send validation success
+              dataConnection.send(JSON.stringify({
+                type: 'pin_validated',
+                success: true
+              }));
+              
+              // Now request name
+              dataConnection.send(JSON.stringify({
+                type: 'name_request'
+              }));
+              
+              // Set timeout for name (1 minute)
+              nameTimeout = setTimeout(() => {
+                if (!nameReceived) {
+                  console.log("Name not received after PIN validation, using auto-generated name");
+                  handleParticipantJoin(incomingCall, peerId, null, dataConnection);
+                }
+              }, 60000);
+            } else {
+              // PIN is incorrect
+              console.log("Incorrect PIN provided");
+              dataConnection.send(JSON.stringify({
+                type: 'pin_validated',
+                success: false
+              }));
+              
+              setTimeout(() => {
+                dataConnection.close();
+                incomingCall.close();
+              }, 500);
+              
+              showAlert("Incorrect PIN. Connection rejected.", 'error');
+            }
+          } else if (message.type === 'name_response') {
+            // Name received
+            nameReceived = true;
+            if (nameTimeout) {
+              clearTimeout(nameTimeout);
+            }
+            
+            participantName = message.name || null; // Can be null if user skipped
+            
+            // If PIN was required, validate it was successful before proceeding
+            if (state.isPrivateSession && state.sessionPin) {
+              if (pinValidated) {
+                handleParticipantJoin(incomingCall, peerId, participantName, dataConnection);
+              } else {
+                console.log("Name received but PIN not validated yet");
+                // Wait for PIN validation
+              }
+            } else {
+              // Public session - proceed immediately
+              handleParticipantJoin(incomingCall, peerId, participantName, dataConnection);
+            }
           }
-        });
-        
-        dataConnection.on('error', (err) => {
-          console.error("Data connection error during PIN validation:", err);
-          if (pinValidationTimeout) {
-            clearTimeout(pinValidationTimeout);
-          }
-          incomingCall.close();
-        });
-        
-        dataConnection.on('close', () => {
-          console.log("Data connection closed");
-          if (pinValidationTimeout) {
-            clearTimeout(pinValidationTimeout);
-          }
-        });
-      } else {
-        // Public session or no PIN required - answer immediately
-        incomingCall.answer(state.hostStream);
-        state.call = incomingCall;
-        
-        state.call.on("close", () => {
-          console.log("Call closed");
-        });
-        
-        state.call.on("error", (err) => {
-          console.error("Call error:", err);
-        });
-      }
+        } catch (err) {
+          console.error("Error parsing data connection message:", err);
+        }
+      });
+      
+      dataConnection.on('error', (err) => {
+        console.error("Data connection error:", err);
+        if (pinValidationTimeout) {
+          clearTimeout(pinValidationTimeout);
+        }
+        if (nameTimeout) {
+          clearTimeout(nameTimeout);
+        }
+        incomingCall.close();
+      });
+      
+      dataConnection.on('close', () => {
+        console.log("Data connection closed");
+        if (pinValidationTimeout) {
+          clearTimeout(pinValidationTimeout);
+        }
+        if (nameTimeout) {
+          clearTimeout(nameTimeout);
+        }
+      });
     });
     
     state.peer.on("open", (id) => {
@@ -506,6 +656,9 @@ export async function host() {
         dom.shareId.textContent = `Share Code: ${code}${state.isPrivateSession ? ' 🔒 Private' : ''}`;
       }
       dom.shareId.className = "success";
+      
+      // Initialize participant list UI
+      updateParticipantsList();
       
       // Answer incoming calls with the stream we already have
       if (state.hostStream) {
@@ -607,6 +760,14 @@ export async function join(idOrLink, isPrivate = null) {
   // Store PIN temporarily for validation
   const joinPin = pin;
   
+  // Prompt for participant name (optional)
+  const participantName = await showNameInputDialog(
+    "Enter your name (optional):",
+    "Your name",
+    30
+  );
+  // participantName can be null if user skipped/cancelled
+  
   dom.shareId.textContent = "Connecting...";
   dom.shareId.className = "warning";
   
@@ -697,6 +858,7 @@ export async function join(idOrLink, isPrivate = null) {
             } else if (message.type === 'pin_validated') {
               if (message.success) {
                 console.log("PIN validated by host");
+                // PIN validated, wait for name request
               } else {
                 console.log("PIN rejected by host");
                 dom.shareId.textContent = "Incorrect PIN";
@@ -714,6 +876,13 @@ export async function join(idOrLink, isPrivate = null) {
                   dom.joinScreen.classList.remove("hidden");
                 }, 500);
               }
+            } else if (message.type === 'name_request') {
+              // Host is requesting name - send it
+              dataConnection.send(JSON.stringify({
+                type: 'name_response',
+                name: participantName || null
+              }));
+              console.log("Name sent to host:", participantName || "null (using auto-generated)");
             }
           } catch (err) {
             console.error("Error parsing data connection message:", err);

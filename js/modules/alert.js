@@ -382,6 +382,111 @@ export function showPinInputDialog(message, minLength = 4, maxLength = 6) {
   });
 }
 
+/**
+ * Show a name input dialog
+ * @param {string} message - The message to display
+ * @param {string} placeholder - Placeholder text for input (default: 'Enter your name')
+ * @param {number} maxLength - Maximum name length (default: 30)
+ * @returns {Promise<string|null>} Resolves with name string or null if cancelled/skipped
+ */
+export function showNameInputDialog(message, placeholder = 'Enter your name', maxLength = 30) {
+  return new Promise((resolve) => {
+    // Create name container if it doesn't exist
+    let nameContainer = document.getElementById('customNameContainer');
+    if (!nameContainer) {
+      nameContainer = document.createElement('div');
+      nameContainer.id = 'customNameContainer';
+      document.body.appendChild(nameContainer);
+    }
+
+    // Create backdrop overlay
+    const backdrop = document.createElement('div');
+    backdrop.className = 'custom-confirm-backdrop';
+    
+    // Create name dialog
+    const nameDialog = document.createElement('div');
+    nameDialog.className = 'custom-confirm';
+    
+    nameDialog.innerHTML = `
+      <div class="custom-confirm-content">
+        <span class="custom-confirm-icon">👤</span>
+        <span class="custom-confirm-message">${escapeHtml(message)}</span>
+        <input type="text" 
+               class="custom-name-input" 
+               maxlength="${maxLength}" 
+               placeholder="${escapeHtml(placeholder)}"
+               autocomplete="name"
+               autofocus>
+        <div class="custom-confirm-buttons">
+          <button class="custom-confirm-btn custom-confirm-cancel">Skip</button>
+          <button class="custom-confirm-btn custom-confirm-ok">OK</button>
+        </div>
+      </div>
+    `;
+
+    // Add to container
+    nameContainer.appendChild(backdrop);
+    nameContainer.appendChild(nameDialog);
+
+    // Get input element
+    const nameInput = nameDialog.querySelector('.custom-name-input');
+    
+    // Focus input
+    requestAnimationFrame(() => {
+      nameInput.focus();
+    });
+
+    // Sanitize input (remove special characters that might cause issues)
+    nameInput.addEventListener('input', (e) => {
+      // Allow alphanumeric, spaces, and common name characters
+      e.target.value = e.target.value.replace(/[<>\"'&]/g, '');
+    });
+
+    // Handle Enter key
+    nameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const okBtn = nameDialog.querySelector('.custom-confirm-ok');
+        okBtn.click();
+      }
+    });
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+      backdrop.classList.add('custom-confirm-show');
+      nameDialog.classList.add('custom-confirm-show');
+    });
+
+    // Close function
+    const closeNameDialog = (result) => {
+      backdrop.classList.remove('custom-confirm-show');
+      nameDialog.classList.remove('custom-confirm-show');
+      backdrop.classList.add('custom-confirm-hide');
+      nameDialog.classList.add('custom-confirm-hide');
+      
+      setTimeout(() => {
+        backdrop.remove();
+        nameDialog.remove();
+        resolve(result);
+      }, 300); // Match CSS animation duration
+    };
+
+    // Button handlers
+    const okBtn = nameDialog.querySelector('.custom-confirm-ok');
+    const cancelBtn = nameDialog.querySelector('.custom-confirm-cancel');
+    
+    okBtn.addEventListener('click', () => {
+      const name = nameInput.value.trim();
+      // Allow empty name (user can skip by clicking OK with empty input)
+      // Or require at least 1 character - let's allow empty for "skip" functionality
+      closeNameDialog(name || null);
+    });
+    
+    cancelBtn.addEventListener('click', () => closeNameDialog(null));
+    backdrop.addEventListener('click', () => closeNameDialog(null));
+  });
+}
+
 // Escape HTML to prevent XSS
 function escapeHtml(text) {
   const div = document.createElement('div');
