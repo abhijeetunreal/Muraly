@@ -662,7 +662,7 @@ export async function host() {
       });
       
       // Generate shareable link with code
-      const shareLink = `${window.location.origin}${window.location.pathname}?join=${code}`;
+      const shareLink = `${window.location.origin}/join.html?join=${code}`;
       
       if (dom.shareLinkInput) dom.shareLinkInput.value = shareLink;
       if (dom.shareLinkContainer) dom.shareLinkContainer.classList.remove("hidden");
@@ -875,9 +875,9 @@ export async function join(idOrLink, isPrivate = null) {
                   if (dom.camera) dom.camera.classList.add("hidden");
                   if (dom.overlayCanvas) dom.overlayCanvas.classList.add("hidden");
                   if (dom.gridCanvas) dom.gridCanvas.classList.add("hidden");
-                  dom.panel.classList.add("hidden");
-                  dom.topBar.classList.add("hidden");
-                  dom.joinScreen.classList.remove("hidden");
+                  if (dom.panel) dom.panel.classList.add("hidden");
+                  if (dom.topBar) dom.topBar.classList.add("hidden");
+                  if (dom.joinScreen) dom.joinScreen.classList.remove("hidden");
                 }, 500);
               }
             } else if (message.type === 'name_request') {
@@ -976,9 +976,9 @@ export async function join(idOrLink, isPrivate = null) {
           if (dom.camera) dom.camera.classList.add("hidden");
           if (dom.overlayCanvas) dom.overlayCanvas.classList.add("hidden");
           if (dom.gridCanvas) dom.gridCanvas.classList.add("hidden");
-          dom.panel.classList.add("hidden");
-          dom.topBar.classList.add("hidden");
-          dom.joinScreen.classList.remove("hidden");
+          if (dom.panel) dom.panel.classList.add("hidden");
+          if (dom.topBar) dom.topBar.classList.add("hidden");
+          if (dom.joinScreen) dom.joinScreen.classList.remove("hidden");
         }, 500);
       }
     }, 100);
@@ -992,9 +992,9 @@ export async function join(idOrLink, isPrivate = null) {
       if (dom.camera) dom.camera.classList.add("hidden");
       if (dom.overlayCanvas) dom.overlayCanvas.classList.add("hidden");
       if (dom.gridCanvas) dom.gridCanvas.classList.add("hidden");
-      dom.panel.classList.add("hidden");
-      dom.topBar.classList.add("hidden");
-      dom.joinScreen.classList.remove("hidden");
+      if (dom.panel) dom.panel.classList.add("hidden");
+      if (dom.topBar) dom.topBar.classList.add("hidden");
+      if (dom.joinScreen) dom.joinScreen.classList.remove("hidden");
     }, 500);
   });
 }

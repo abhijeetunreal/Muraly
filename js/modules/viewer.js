@@ -93,6 +93,11 @@ export function enterViewerMode(stream) {
   if (dom.overlayCanvas) dom.overlayCanvas.classList.add("hidden");
   if (dom.gridCanvas) dom.gridCanvas.classList.add("hidden");
 
+  if (!dom.remoteVideo || !dom.remoteVideoContainer) {
+    console.error("Remote video elements not found");
+    return;
+  }
+
   dom.remoteVideo.srcObject = stream;
   dom.remoteVideo.muted = true;
   dom.remoteVideo.play();
@@ -142,8 +147,10 @@ export function enterViewerMode(stream) {
   
   dom.remoteVideoContainer.classList.remove("hidden");
   
-  dom.shareId.textContent = "Connected to host";
-  dom.shareId.className = "success";
+  if (dom.shareId) {
+    dom.shareId.textContent = "Connected to host";
+    dom.shareId.className = "success";
+  }
   
   // Initialize viewer gestures
   initViewerGestures();
