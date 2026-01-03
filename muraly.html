@@ -134,22 +134,32 @@
 
 <!-- JOIN SCREEN: Enter key -->
 <div id="joinScreen" class="hidden">
-  <h2>Join a Session</h2>
-  <div class="form-container">
-    <input id="joinKeyInput" type="text" placeholder="Enter Share ID or Link">
-    <button id="joinKeyBtn">Join Session</button>
-    <div style="width: 100%; text-align: center; margin: 8px 0; color: rgba(255, 255, 255, 0.6); font-size: 12px;">OR</div>
-    <button id="browseSessionsBtn">Browse Available Sessions</button>
-  </div>
-  
-  <div id="sessionsListContainer" class="hidden">
-    <h3>Available Sessions</h3>
-    <div id="sessionsList"></div>
-    <button id="refreshSessionsBtn">Refresh</button>
-    <button id="closeSessionsListBtn">Close</button>
+  <div class="join-screen-content">
+    <h2>Join a Session</h2>
+    
+    <div class="join-layout">
+      <!-- Left Column: Join Form -->
+      <div class="join-form-column">
+        <div class="form-container">
+          <input id="joinKeyInput" type="text" placeholder="Enter Share ID or Link">
+          <button id="joinKeyBtn">Join Session</button>
+          <div class="divider">OR</div>
+          <button id="browseSessionsBtn">Browse Available Sessions</button>
+        </div>
+      </div>
+      
+      <!-- Right Column: Available Sessions -->
+      <div id="sessionsListContainer" class="sessions-column">
+        <h3>Available Sessions</h3>
+        <div id="sessionsList"></div>
+        <div class="sessions-actions">
+          <button id="refreshSessionsBtn">Refresh</button>
+          <button id="closeSessionsListBtn">Close</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-<button id="backToFirstBtn">← Back</button>
 
 <!-- HOST AR -->
 <video id="camera" autoplay playsinline></video>
@@ -184,11 +194,20 @@
   <div class="panel-section">
     <h3 class="section-title">Display</h3>
     <div class="button-group">
-      <button id="sketchBtn" class="mode-btn">✏️ Sketch</button>
-      <button id="imageBtn" class="mode-btn">🖼 Image</button>
+      <button id="sketchBtn" class="mode-btn">
+        <i data-lucide="pencil" class="icon"></i>
+        <span>Sketch</span>
+      </button>
+      <button id="imageBtn" class="mode-btn">
+        <i data-lucide="image" class="icon"></i>
+        <span>Image</span>
+      </button>
     </div>
     <div class="button-group" style="margin-top: var(--gap-xs);">
-      <button id="gridBtn">Grid</button>
+      <button id="gridBtn">
+        <i data-lucide="grid-3x3" class="icon"></i>
+        <span>Grid</span>
+      </button>
     </div>
   </div>
 
@@ -196,7 +215,10 @@
   <div class="panel-section">
     <h3 class="section-title">Transform</h3>
     <div class="button-group">
-      <button id="lockBtn">🔓 Move</button>
+      <button id="lockBtn">
+        <i data-lucide="unlock" class="icon"></i>
+        <span>Move</span>
+      </button>
     </div>
   </div>
 
@@ -204,8 +226,14 @@
   <div class="panel-section">
     <h3 class="section-title">Session</h3>
     <div class="button-group">
-      <button id="saveSessionBtn">💾 Save</button>
-      <button id="loadSessionBtn">📂 Load</button>
+      <button id="saveSessionBtn">
+        <i data-lucide="save" class="icon"></i>
+        <span>Save</span>
+      </button>
+      <button id="loadSessionBtn">
+        <i data-lucide="folder-open" class="icon"></i>
+        <span>Load</span>
+      </button>
     </div>
   </div>
 
@@ -252,7 +280,7 @@
     </div>
     <div class="recording-row">
       <button id="recordTimelapseBtn" class="start-recording-btn">
-        <span class="record-icon">🎬</span>
+        <i data-lucide="video" class="icon record-icon"></i>
         <span>Start Recording</span>
       </button>
     </div>

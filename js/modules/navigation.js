@@ -9,7 +9,6 @@ import { connectToDiscovery, startDiscoveryHost } from './discovery.js';
 export function showHostScreen() {
   dom.firstScreen.classList.add("hidden");
   dom.joinScreen.classList.add("hidden");
-  dom.backToFirstBtn.classList.add("hidden");
   dom.camera.classList.remove("hidden");
   dom.overlayCanvas.classList.remove("hidden");
   dom.gridCanvas.classList.remove("hidden");
@@ -24,8 +23,7 @@ export function showHostScreen() {
 export function showJoinScreen() {
   dom.firstScreen.classList.add("hidden");
   dom.joinScreen.classList.remove("hidden");
-  dom.backToFirstBtn.classList.remove("hidden");
-  dom.sessionsListContainer.classList.add("hidden");
+  dom.sessionsListContainer.classList.remove("hidden");
   dom.joinKeyInput.value = "";
   dom.joinKeyInput.focus();
 }
@@ -68,7 +66,6 @@ export async function doJoin(sessionCode, isPrivate = null) {
   
   dom.joinScreen.classList.add("hidden");
   dom.sessionsListContainer.classList.add("hidden");
-  dom.backToFirstBtn.classList.add("hidden");
   // Show host UI while waiting for stream
   dom.camera.classList.remove("hidden");
   dom.overlayCanvas.classList.remove("hidden");
@@ -79,22 +76,23 @@ export async function doJoin(sessionCode, isPrivate = null) {
 }
 
 export function browseSessions() {
-  // Show loading state
+  // Ensure sessions list is visible
   dom.sessionsListContainer.classList.remove("hidden");
-  dom.sessionsList.innerHTML = '<div style="text-align: center; color: rgba(255, 255, 255, 0.6); padding: 20px;">Loading sessions...</div>';
+  // Show loading state
+  dom.sessionsList.innerHTML = '<div style="text-align: center; color: rgba(255, 255, 255, 0.7); padding: 24px; font-size: 14px;">Loading sessions...</div>';
   
   // Connect to discovery and get sessions (this will try to start as host if needed)
   connectToDiscovery((sessions) => {
     displaySessions(sessions);
   }).catch(err => {
     console.error("Error browsing sessions:", err);
-    dom.sessionsList.innerHTML = '<div style="text-align: center; color: rgba(255, 107, 53, 0.8); padding: 20px;">Error loading sessions. Please try again.</div>';
+    dom.sessionsList.innerHTML = '<div style="text-align: center; color: rgba(255, 107, 53, 0.9); padding: 24px; font-size: 14px;">Error loading sessions. Please try again.</div>';
   });
 }
 
 function displaySessions(sessions) {
   if (!sessions || sessions.length === 0) {
-    dom.sessionsList.innerHTML = '<div style="text-align: center; color: rgba(255, 255, 255, 0.6); padding: 20px;">No active sessions available</div>';
+    dom.sessionsList.innerHTML = '<div style="text-align: center; color: rgba(255, 255, 255, 0.7); padding: 32px; font-size: 14px; line-height: 1.6;">No active sessions available</div>';
     return;
   }
   
@@ -156,7 +154,6 @@ export function initNavigation() {
   dom.gridCanvas.classList.add("hidden");
   dom.panel.classList.add("hidden");
   dom.topBar.classList.add("hidden");
-  dom.backToFirstBtn.classList.add("hidden");
   
   // Event listeners
   dom.hostSelectBtn.onclick = showHostScreen;
@@ -174,12 +171,7 @@ export function initNavigation() {
   if (dom.closeSessionsListBtn) {
     dom.closeSessionsListBtn.onclick = closeSessionsList;
   }
-  dom.backToFirstBtn.onclick = () => {
-    dom.joinScreen.classList.add("hidden");
-    dom.sessionsListContainer.classList.add("hidden");
-    dom.backToFirstBtn.classList.add("hidden");
-    dom.firstScreen.classList.remove("hidden");
-  };
+  // Back button removed - users can use browser back or refresh
   
   // Check URL parameters for auto-join
   window.addEventListener("DOMContentLoaded", () => {

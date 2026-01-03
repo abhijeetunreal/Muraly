@@ -13,7 +13,19 @@ export function initUIControls() {
   // Lock button
   dom.lockBtn.onclick = () => {
     state.locked = !state.locked;
-    dom.lockBtn.textContent = state.locked ? "🔒 Locked" : "🔓 Move";
+    const icon = dom.lockBtn.querySelector('i[data-lucide]');
+    const span = dom.lockBtn.querySelector('span');
+    if (state.locked) {
+      icon.setAttribute('data-lucide', 'lock');
+      if (span) span.textContent = 'Locked';
+    } else {
+      icon.setAttribute('data-lucide', 'unlock');
+      if (span) span.textContent = 'Move';
+    }
+    // Reinitialize Lucide icon
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
   };
   
   // Grid toggle
