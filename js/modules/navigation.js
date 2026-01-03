@@ -1,4 +1,11 @@
-// ================= NAVIGATION =================
+// ================= NAVIGATION (LEGACY) =================
+// NOTE: This module is now legacy code for the old single-page architecture (muraly.js)
+// The new modular architecture uses:
+// - muraly.html: Router page that navigates to hoist.html or join.html
+// - hoist.html + hoist.js: Host AR session page
+// - join.html + join.js: Join session page
+// URL parameter handling for join.html is now in join.js
+
 import { state } from './state.js';
 import { dom } from './dom.js';
 import { startCamera } from './camera.js';
@@ -9,7 +16,6 @@ import { connectToDiscovery, startDiscoveryHost } from './discovery.js';
 export function showHostScreen() {
   dom.firstScreen.classList.add("hidden");
   dom.joinScreen.classList.add("hidden");
-  dom.backToFirstBtn.classList.add("hidden");
   dom.camera.classList.remove("hidden");
   dom.overlayCanvas.classList.remove("hidden");
   dom.gridCanvas.classList.remove("hidden");
@@ -24,47 +30,76 @@ export function showHostScreen() {
 export function showJoinScreen() {
   dom.firstScreen.classList.add("hidden");
   dom.joinScreen.classList.remove("hidden");
-  dom.backToFirstBtn.classList.remove("hidden");
-  dom.sessionsListContainer.classList.add("hidden");
+  dom.sessionsListContainer.classList.remove("hidden");
   dom.joinKeyInput.value = "";
   dom.joinKeyInput.focus();
 }
 
-export function doJoin(sessionCode) {
-  const idOrLink = sessionCode || dom.joinKeyInput.value.trim();
+export async function doJoin(sessionCode, isPrivate = null) {
+  // Handle case where event object is passed instead of session code
+  if (sessionCode && typeof sessionCode !== 'string') {
+    sessionCode = null;
+  }
+  
+  const idOrLink = sessionCode || (dom.joinKeyInput && dom.joinKeyInput.value ? dom.joinKeyInput.value.trim() : '');
   if (!idOrLink) {
-    dom.joinKeyInput.focus();
+    if (dom.joinKeyInput) {
+      dom.joinKeyInput.focus();
+    }
     return;
   }
+  
+  // Extract session ID from link if it's a full URL
+  let sessionId = idOrLink.trim();
+  if (sessionId.includes('?join=')) {
+    sessionId = sessionId.split('?join=')[1].split('&')[0];
+  } else if (sessionId.includes('join=')) {
+    sessionId = sessionId.split('join=')[1].split('&')[0];
+  }
+  
+  // If isPrivate is not explicitly set, try to check discovery service
+  if (isPrivate === null && sessionId) {
+    try {
+      const sessions = await connectToDiscovery();
+      const foundSession = sessions.find(s => s.code === sessionId);
+      if (foundSession) {
+        isPrivate = foundSession.isPrivate === true ? true : null;
+      }
+    } catch (err) {
+      // If discovery fails, continue with null (unknown privacy status)
+      console.log("Could not check discovery service, proceeding with unknown privacy status");
+    }
+  }
+  
   dom.joinScreen.classList.add("hidden");
   dom.sessionsListContainer.classList.add("hidden");
-  dom.backToFirstBtn.classList.add("hidden");
   // Show host UI while waiting for stream
   dom.camera.classList.remove("hidden");
   dom.overlayCanvas.classList.remove("hidden");
   dom.gridCanvas.classList.remove("hidden");
   dom.panel.classList.remove("hidden");
   dom.topBar.classList.remove("hidden");
-  join(idOrLink);
+  join(idOrLink, isPrivate);
 }
 
 export function browseSessions() {
-  // Show loading state
+  // Ensure sessions list is visible
   dom.sessionsListContainer.classList.remove("hidden");
-  dom.sessionsList.innerHTML = '<div style="text-align: center; color: rgba(255, 255, 255, 0.6); padding: 20px;">Loading sessions...</div>';
+  // Show loading state
+  dom.sessionsList.innerHTML = '<div style="text-align: center; color: rgba(255, 255, 255, 0.7); padding: 24px; font-size: 14px;">Loading sessions...</div>';
   
   // Connect to discovery and get sessions (this will try to start as host if needed)
   connectToDiscovery((sessions) => {
     displaySessions(sessions);
   }).catch(err => {
     console.error("Error browsing sessions:", err);
-    dom.sessionsList.innerHTML = '<div style="text-align: center; color: rgba(255, 107, 53, 0.8); padding: 20px;">Error loading sessions. Please try again.</div>';
+    dom.sessionsList.innerHTML = '<div style="text-align: center; color: rgba(255, 107, 53, 0.9); padding: 24px; font-size: 14px;">Error loading sessions. Please try again.</div>';
   });
 }
 
 function displaySessions(sessions) {
   if (!sessions || sessions.length === 0) {
-    dom.sessionsList.innerHTML = '<div style="text-align: center; color: rgba(255, 255, 255, 0.6); padding: 20px;">No active sessions available</div>';
+    dom.sessionsList.innerHTML = '<div style="text-align: center; color: rgba(255, 255, 255, 0.7); padding: 32px; font-size: 14px; line-height: 1.6;">No active sessions available</div>';
     return;
   }
   
@@ -82,6 +117,17 @@ function displaySessions(sessions) {
     sessionCode.className = 'session-code';
     sessionCode.textContent = session.code;
     
+    // Add private indicator if session is private
+    if (session.isPrivate) {
+      const privateBadge = document.createElement('span');
+      privateBadge.className = 'session-private-badge';
+      privateBadge.textContent = '🔒 Private';
+      privateBadge.style.marginLeft = '8px';
+      privateBadge.style.fontSize = '0.85em';
+      privateBadge.style.opacity = '0.8';
+      sessionCode.appendChild(privateBadge);
+    }
+    
     const sessionInfo = document.createElement('div');
     sessionInfo.className = 'session-info';
     const timeAgo = Math.floor((Date.now() - session.timestamp) / 1000 / 60);
@@ -90,7 +136,7 @@ function displaySessions(sessions) {
     const joinBtn = document.createElement('button');
     joinBtn.className = 'session-join-btn';
     joinBtn.textContent = 'Join';
-    joinBtn.onclick = () => doJoin(session.code);
+    joinBtn.onclick = () => doJoin(session.code, session.isPrivate === true ? true : null);
     
     sessionItem.appendChild(sessionCode);
     sessionItem.appendChild(sessionInfo);
@@ -115,12 +161,11 @@ export function initNavigation() {
   dom.gridCanvas.classList.add("hidden");
   dom.panel.classList.add("hidden");
   dom.topBar.classList.add("hidden");
-  dom.backToFirstBtn.classList.add("hidden");
   
   // Event listeners
   dom.hostSelectBtn.onclick = showHostScreen;
   dom.joinSelectBtn.onclick = showJoinScreen;
-  dom.joinKeyBtn.onclick = doJoin;
+  dom.joinKeyBtn.onclick = () => doJoin();
   dom.joinKeyInput.addEventListener("keydown", e => { 
     if (e.key === "Enter") doJoin(); 
   });
@@ -133,12 +178,7 @@ export function initNavigation() {
   if (dom.closeSessionsListBtn) {
     dom.closeSessionsListBtn.onclick = closeSessionsList;
   }
-  dom.backToFirstBtn.onclick = () => {
-    dom.joinScreen.classList.add("hidden");
-    dom.sessionsListContainer.classList.add("hidden");
-    dom.backToFirstBtn.classList.add("hidden");
-    dom.firstScreen.classList.remove("hidden");
-  };
+  // Back button removed - users can use browser back or refresh
   
   // Check URL parameters for auto-join
   window.addEventListener("DOMContentLoaded", () => {

@@ -5,7 +5,7 @@
 <!-- Primary Meta Tags -->
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
-<title>Muraly — AR Mural Maker & Wall Visualization App</title>
+<title>Muraly — Join AR Session</title>
 <meta name="title" content="Muraly — AR Mural Maker & Wall Visualization App" />
 <meta name="description" content="Muraly is an augmented reality mural maker that lets you visualize wall art and murals in real spaces before painting or printing." />
 <meta name="author" content="Codefrydev" />
@@ -106,20 +106,45 @@
 <div class="cursor-dot"></div>
 <div class="cursor-outline"></div>
 
-
-<!-- ROUTER SCREEN: Host/Join selection -->
-<div id="firstScreen">
-  <div class="absolute inset-0 overflow-hidden pointer-events-none">
-    <div data-speed="0.05" class="parallax-blob absolute top-1/4 left-1/4 w-64 md:w-96 h-64 md:h-96 bg-neon-pink/20 rounded-full blur-[80px] md:blur-[100px]"></div>
-    <div data-speed="0.08" class="parallax-blob absolute bottom-1/4 right-1/4 w-72 md:w-[500px] h-72 md:h-[500px] bg-neon-cyan/10 rounded-full blur-[80px] md:blur-[120px]"></div>
-    <div data-speed="0.12" class="parallax-blob absolute top-1/2 left-1/2 w-32 h-32 bg-neon-lime/20 rounded-full blur-[60px]"></div>
-  </div>
-  <h2 class="font-marker">MURALY<span class="text-neon-lime">.</span></h2>
-  <div class="button-group">
-    <button id="hostSelectBtn" class="primary" onclick="window.location.href='hoist.html'">Host Session</button>
-    <button id="joinSelectBtn" onclick="window.location.href='join.html'">Join Session</button>
+<!-- JOIN SCREEN: Enter key -->
+<div id="joinScreen">
+  <div class="join-screen-content">
+    <h2>Join a Session</h2>
+    
+    <!-- Connection Status -->
+    <div id="shareId" style="text-align: center; margin-bottom: 1rem;"></div>
+    
+    <div class="join-layout">
+      <!-- Left Column: Join Form -->
+      <div class="join-form-column">
+        <div class="form-container">
+          <input id="joinKeyInput" type="text" placeholder="Enter Share ID or Link">
+          <button id="joinKeyBtn">Join Session</button>
+          <div class="divider">OR</div>
+          <button id="browseSessionsBtn">Browse Available Sessions</button>
+        </div>
+      </div>
+      
+      <!-- Right Column: Available Sessions -->
+      <div id="sessionsListContainer" class="sessions-column">
+        <h3>Available Sessions</h3>
+        <div id="sessionsList"></div>
+        <div class="sessions-actions">
+          <button id="refreshSessionsBtn">Refresh</button>
+          <button id="closeSessionsListBtn">Close</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
+<!-- VIEWER -->
+<div id="remoteVideoContainer" class="hidden">
+  <video id="remoteVideo" autoplay playsinline muted></video>
+</div>
+
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script type="module" src="js/join.js"></script>
 
 <script>
   // Initialize Lucide icons
@@ -194,21 +219,8 @@
     cursorDot.style.display = 'none';
     cursorOutline.style.display = 'none';
   }
-
-  // Mouse Parallax Effect for firstScreen
-  document.addEventListener('mousemove', (e) => {
-    const x = (window.innerWidth - e.pageX * 2) / 100;
-    const y = (window.innerHeight - e.pageY * 2) / 100;
-
-    document.querySelectorAll('.parallax-blob').forEach(el => {
-      const speed = parseFloat(el.getAttribute('data-speed')) || 0.05;
-      const xPos = x * speed * 100;
-      const yPos = y * speed * 100;
-      
-      el.style.transform = `translate(${xPos}px, ${yPos}px)`;
-    });
-  });
 </script>
 
 </body>
 </html>
+

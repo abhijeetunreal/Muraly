@@ -185,6 +185,308 @@ export function showConfirm(message, confirmText = 'OK', cancelText = 'Cancel') 
   });
 }
 
+/**
+ * Show a choice dialog (e.g., Public/Private)
+ * @param {string} message - The message to display
+ * @param {string} option1Text - Text for first option (default: 'Public')
+ * @param {string} option2Text - Text for second option (default: 'Private')
+ * @returns {Promise<string|null>} Resolves with 'option1', 'option2', or null if cancelled
+ */
+export function showChoiceDialog(message, option1Text = 'Public', option2Text = 'Private') {
+  return new Promise((resolve) => {
+    // Use the same container as PIN dialog for consistent positioning
+    let choiceContainer = document.getElementById('customPinContainer');
+    if (!choiceContainer) {
+      choiceContainer = document.createElement('div');
+      choiceContainer.id = 'customPinContainer';
+      document.body.appendChild(choiceContainer);
+    }
+
+    // Create backdrop overlay
+    const backdrop = document.createElement('div');
+    backdrop.className = 'custom-confirm-backdrop';
+    
+    // Create choice dialog matching PIN dialog structure
+    const choice = document.createElement('div');
+    choice.className = 'custom-confirm';
+    
+    choice.innerHTML = `
+      <div class="custom-confirm-content">
+        <span class="custom-confirm-icon">🔒</span>
+        <span class="custom-confirm-message">${escapeHtml(message)}</span>
+        <div class="custom-confirm-buttons choice-buttons">
+          <button class="choice-option-btn unselected" data-option="option1">${escapeHtml(option1Text)}</button>
+          <button class="choice-option-btn selected" data-option="option2">${escapeHtml(option2Text)}</button>
+        </div>
+      </div>
+    `;
+
+    // Add to container
+    choiceContainer.appendChild(backdrop);
+    choiceContainer.appendChild(choice);
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+      backdrop.classList.add('custom-confirm-show');
+      choice.classList.add('custom-confirm-show');
+    });
+
+    // Close function
+    const closeChoice = (result) => {
+      backdrop.classList.remove('custom-confirm-show');
+      choice.classList.remove('custom-confirm-show');
+      backdrop.classList.add('custom-confirm-hide');
+      choice.classList.add('custom-confirm-hide');
+      
+      setTimeout(() => {
+        backdrop.remove();
+        choice.remove();
+        resolve(result);
+      }, 300); // Match CSS animation duration
+    };
+
+    // Button handlers with selection state management
+    const option1Btn = choice.querySelector('[data-option="option1"]');
+    const option2Btn = choice.querySelector('[data-option="option2"]');
+    
+    // Handle button clicks with visual feedback
+    option1Btn.addEventListener('click', () => {
+      option1Btn.classList.add('selected');
+      option1Btn.classList.remove('unselected');
+      option2Btn.classList.add('unselected');
+      option2Btn.classList.remove('selected');
+      setTimeout(() => closeChoice('option1'), 150);
+    });
+    
+    option2Btn.addEventListener('click', () => {
+      option2Btn.classList.add('selected');
+      option2Btn.classList.remove('unselected');
+      option1Btn.classList.add('unselected');
+      option1Btn.classList.remove('selected');
+      setTimeout(() => closeChoice('option2'), 150);
+    });
+    
+    backdrop.addEventListener('click', () => closeChoice(null));
+  });
+}
+
+/**
+ * Show a PIN input dialog
+ * @param {string} message - The message to display
+ * @param {number} minLength - Minimum PIN length (default: 4)
+ * @param {number} maxLength - Maximum PIN length (default: 6)
+ * @returns {Promise<string|null>} Resolves with PIN string or null if cancelled
+ */
+export function showPinInputDialog(message, minLength = 4, maxLength = 6) {
+  return new Promise((resolve) => {
+    // Create PIN container if it doesn't exist
+    let pinContainer = document.getElementById('customPinContainer');
+    if (!pinContainer) {
+      pinContainer = document.createElement('div');
+      pinContainer.id = 'customPinContainer';
+      document.body.appendChild(pinContainer);
+    }
+
+    // Create backdrop overlay
+    const backdrop = document.createElement('div');
+    backdrop.className = 'custom-confirm-backdrop';
+    
+    // Create PIN dialog
+    const pinDialog = document.createElement('div');
+    pinDialog.className = 'custom-confirm';
+    
+    pinDialog.innerHTML = `
+      <div class="custom-confirm-content">
+        <span class="custom-confirm-icon">🔐</span>
+        <span class="custom-confirm-message">${escapeHtml(message)}</span>
+        <input type="text" 
+               class="custom-pin-input" 
+               inputmode="numeric" 
+               pattern="[0-9]*" 
+               maxlength="${maxLength}" 
+               placeholder="Enter ${minLength}-${maxLength} digit PIN"
+               autocomplete="off">
+        <div class="custom-confirm-buttons">
+          <button class="custom-confirm-btn custom-confirm-cancel">Cancel</button>
+          <button class="custom-confirm-btn custom-confirm-ok">OK</button>
+        </div>
+      </div>
+    `;
+
+    // Add to container
+    pinContainer.appendChild(backdrop);
+    pinContainer.appendChild(pinDialog);
+
+    // Get input element
+    const pinInput = pinDialog.querySelector('.custom-pin-input');
+    
+    // Focus input
+    requestAnimationFrame(() => {
+      pinInput.focus();
+    });
+
+    // Only allow numeric input
+    pinInput.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+    });
+
+    // Handle Enter key
+    pinInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const okBtn = pinDialog.querySelector('.custom-confirm-ok');
+        okBtn.click();
+      }
+    });
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+      backdrop.classList.add('custom-confirm-show');
+      pinDialog.classList.add('custom-confirm-show');
+    });
+
+    // Close function
+    const closePinDialog = (result) => {
+      backdrop.classList.remove('custom-confirm-show');
+      pinDialog.classList.remove('custom-confirm-show');
+      backdrop.classList.add('custom-confirm-hide');
+      pinDialog.classList.add('custom-confirm-hide');
+      
+      setTimeout(() => {
+        backdrop.remove();
+        pinDialog.remove();
+        resolve(result);
+      }, 300); // Match CSS animation duration
+    };
+
+    // Button handlers
+    const okBtn = pinDialog.querySelector('.custom-confirm-ok');
+    const cancelBtn = pinDialog.querySelector('.custom-confirm-cancel');
+    
+    okBtn.addEventListener('click', () => {
+      const pin = pinInput.value.trim();
+      if (pin.length >= minLength && pin.length <= maxLength) {
+        closePinDialog(pin);
+      } else {
+        // Show error feedback
+        pinInput.style.borderColor = 'var(--danger, #ff1744)';
+        setTimeout(() => {
+          pinInput.style.borderColor = '';
+          pinInput.focus();
+        }, 1000);
+      }
+    });
+    
+    cancelBtn.addEventListener('click', () => closePinDialog(null));
+    backdrop.addEventListener('click', () => closePinDialog(null));
+  });
+}
+
+/**
+ * Show a name input dialog
+ * @param {string} message - The message to display
+ * @param {string} placeholder - Placeholder text for input (default: 'Enter your name')
+ * @param {number} maxLength - Maximum name length (default: 30)
+ * @returns {Promise<string|null>} Resolves with name string or null if cancelled/skipped
+ */
+export function showNameInputDialog(message, placeholder = 'Enter your name', maxLength = 30) {
+  return new Promise((resolve) => {
+    // Create name container if it doesn't exist
+    let nameContainer = document.getElementById('customNameContainer');
+    if (!nameContainer) {
+      nameContainer = document.createElement('div');
+      nameContainer.id = 'customNameContainer';
+      document.body.appendChild(nameContainer);
+    }
+
+    // Create backdrop overlay
+    const backdrop = document.createElement('div');
+    backdrop.className = 'custom-confirm-backdrop';
+    
+    // Create name dialog
+    const nameDialog = document.createElement('div');
+    nameDialog.className = 'custom-confirm';
+    
+    nameDialog.innerHTML = `
+      <div class="custom-confirm-content">
+        <span class="custom-confirm-icon">👤</span>
+        <span class="custom-confirm-message">${escapeHtml(message)}</span>
+        <input type="text" 
+               class="custom-name-input" 
+               maxlength="${maxLength}" 
+               placeholder="${escapeHtml(placeholder)}"
+               autocomplete="name"
+               autofocus>
+        <div class="custom-confirm-buttons">
+          <button class="custom-confirm-btn custom-confirm-cancel">Skip</button>
+          <button class="custom-confirm-btn custom-confirm-ok">OK</button>
+        </div>
+      </div>
+    `;
+
+    // Add to container
+    nameContainer.appendChild(backdrop);
+    nameContainer.appendChild(nameDialog);
+
+    // Get input element
+    const nameInput = nameDialog.querySelector('.custom-name-input');
+    
+    // Focus input
+    requestAnimationFrame(() => {
+      nameInput.focus();
+    });
+
+    // Sanitize input (remove special characters that might cause issues)
+    nameInput.addEventListener('input', (e) => {
+      // Allow alphanumeric, spaces, and common name characters
+      e.target.value = e.target.value.replace(/[<>\"'&]/g, '');
+    });
+
+    // Handle Enter key
+    nameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const okBtn = nameDialog.querySelector('.custom-confirm-ok');
+        okBtn.click();
+      }
+    });
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+      backdrop.classList.add('custom-confirm-show');
+      nameDialog.classList.add('custom-confirm-show');
+    });
+
+    // Close function
+    const closeNameDialog = (result) => {
+      backdrop.classList.remove('custom-confirm-show');
+      nameDialog.classList.remove('custom-confirm-show');
+      backdrop.classList.add('custom-confirm-hide');
+      nameDialog.classList.add('custom-confirm-hide');
+      
+      setTimeout(() => {
+        backdrop.remove();
+        nameDialog.remove();
+        resolve(result);
+      }, 300); // Match CSS animation duration
+    };
+
+    // Button handlers
+    const okBtn = nameDialog.querySelector('.custom-confirm-ok');
+    const cancelBtn = nameDialog.querySelector('.custom-confirm-cancel');
+    
+    okBtn.addEventListener('click', () => {
+      const name = nameInput.value.trim();
+      // Allow empty name (user can skip by clicking OK with empty input)
+      // Or require at least 1 character - let's allow empty for "skip" functionality
+      closeNameDialog(name || null);
+    });
+    
+    cancelBtn.addEventListener('click', () => closeNameDialog(null));
+    backdrop.addEventListener('click', () => closeNameDialog(null));
+  });
+}
+
 // Escape HTML to prevent XSS
 function escapeHtml(text) {
   const div = document.createElement('div');

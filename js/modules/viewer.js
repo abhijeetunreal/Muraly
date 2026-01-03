@@ -83,15 +83,20 @@ export function enterViewerMode(stream) {
   state.appMode = "viewer";
   state.renderActive = false;
 
-  if (dom.camera.srcObject) {
+  if (dom.camera && dom.camera.srcObject) {
     dom.camera.srcObject.getTracks().forEach(t => t.stop());
     dom.camera.srcObject = null;
   }
 
-  dom.panel.classList.add("hidden");
-  dom.topBar.classList.add("hidden");
-  dom.overlayCanvas.classList.add("hidden");
-  dom.gridCanvas.classList.add("hidden");
+  if (dom.panel) dom.panel.classList.add("hidden");
+  if (dom.topBar) dom.topBar.classList.add("hidden");
+  if (dom.overlayCanvas) dom.overlayCanvas.classList.add("hidden");
+  if (dom.gridCanvas) dom.gridCanvas.classList.add("hidden");
+
+  if (!dom.remoteVideo || !dom.remoteVideoContainer) {
+    console.error("Remote video elements not found");
+    return;
+  }
 
   dom.remoteVideo.srcObject = stream;
   dom.remoteVideo.muted = true;
@@ -142,8 +147,10 @@ export function enterViewerMode(stream) {
   
   dom.remoteVideoContainer.classList.remove("hidden");
   
-  dom.shareId.textContent = "Connected to host";
-  dom.shareId.className = "success";
+  if (dom.shareId) {
+    dom.shareId.textContent = "Connected to host";
+    dom.shareId.className = "success";
+  }
   
   // Initialize viewer gestures
   initViewerGestures();

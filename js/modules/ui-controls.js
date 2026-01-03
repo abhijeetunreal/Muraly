@@ -13,7 +13,19 @@ export function initUIControls() {
   // Lock button
   dom.lockBtn.onclick = () => {
     state.locked = !state.locked;
-    dom.lockBtn.textContent = state.locked ? "🔒 Locked" : "🔓 Move";
+    const icon = dom.lockBtn.querySelector('i[data-lucide]');
+    const span = dom.lockBtn.querySelector('span');
+    if (state.locked) {
+      icon.setAttribute('data-lucide', 'lock');
+      if (span) span.textContent = 'Locked';
+    } else {
+      icon.setAttribute('data-lucide', 'unlock');
+      if (span) span.textContent = 'Move';
+    }
+    // Reinitialize Lucide icon
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
   };
   
   // Grid toggle
@@ -155,5 +167,60 @@ export function initUIControls() {
       }, 2000);
     }
   });
+}
+
+// Update participant list UI
+export function updateParticipantsList() {
+  if (!dom.participantsContainer || !dom.participantsList) {
+    return; // DOM elements not available
+  }
+  
+  // Clear existing list
+  dom.participantsList.innerHTML = '';
+  
+  // Show/hide container based on hosting state and participant count
+  if (state.isHosting && state.participants.length > 0) {
+    dom.participantsContainer.classList.remove("hidden");
+    
+    // Create list items for each participant
+    state.participants.forEach(participant => {
+      const listItem = document.createElement('div');
+      listItem.className = 'participant-item';
+      listItem.dataset.peerId = participant.peerId;
+      
+      // Participant info
+      const infoDiv = document.createElement('div');
+      infoDiv.className = 'participant-info';
+      
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'participant-name';
+      nameSpan.textContent = participant.friendlyName;
+      
+      const peerIdSpan = document.createElement('span');
+      peerIdSpan.className = 'participant-peer-id';
+      peerIdSpan.textContent = `(${participant.peerId.substring(0, 8)}...)`;
+      
+      infoDiv.appendChild(nameSpan);
+      infoDiv.appendChild(peerIdSpan);
+      
+      // Disconnect button
+      const disconnectBtn = document.createElement('button');
+      disconnectBtn.className = 'participant-disconnect-btn';
+      disconnectBtn.textContent = 'Disconnect';
+      disconnectBtn.title = `Disconnect ${participant.friendlyName}`;
+      disconnectBtn.onclick = async () => {
+        // Import dynamically to avoid circular dependency
+        const { disconnectParticipant } = await import('./hosting.js');
+        disconnectParticipant(participant.peerId);
+      };
+      
+      listItem.appendChild(infoDiv);
+      listItem.appendChild(disconnectBtn);
+      
+      dom.participantsList.appendChild(listItem);
+    });
+  } else {
+    dom.participantsContainer.classList.add("hidden");
+  }
 }
 

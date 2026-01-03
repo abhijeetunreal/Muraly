@@ -2,22 +2,22 @@
   /* Color System */
   --glass: rgba(15, 15, 15, 0.85);
   --glass-light: rgba(255, 255, 255, 0.15);
-  --primary: #ff6b35;
-  --primary-dark: #e55a2b;
+  --primary: #CCFF00;
+  --primary-dark: #aacc00;
   --success: #06ffa5;
   --warning: #ffd23f;
-  --danger: #ff1744;
+  --danger: #FF0055;
   --neon-pink: #FF0055;
   --neon-lime: #CCFF00;
   --neon-cyan: #00FFFF;
   --dark-void: #0A0A0A;
   --concrete: #1a1a1a;
   --paper: #f0e6d2;
-  --gradient-1: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff1744 100%);
+  --gradient-1: linear-gradient(135deg, #FF0055 0%, #CCFF00 50%, #00FFFF 100%);
   --gradient-2: linear-gradient(135deg, #06ffa5 0%, #00d4ff 50%, #667eea 100%);
-  --gradient-3: linear-gradient(135deg, #ffd23f 0%, #ff6b35 50%, #ff1744 100%);
-  --spray-blue: #00d4ff;
-  --spray-pink: #ff1744;
+  --gradient-3: linear-gradient(135deg, #CCFF00 0%, #FF0055 50%, #00FFFF 100%);
+  --spray-blue: #00FFFF;
+  --spray-pink: #FF0055;
   --spray-yellow: #ffd23f;
   --spray-green: #06ffa5;
   --spray-orange: #ff6b35;
@@ -143,7 +143,7 @@ img, video, svg {
 /* Hide scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #0A0A0A; }
-::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: var(--radius-sm); }
 ::-webkit-scrollbar-thumb:hover { background: #CCFF00; }
 .hide-scroll::-webkit-scrollbar { display: none; }
 .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
@@ -155,17 +155,20 @@ img, video, svg {
   left: 0;
   transform: translate(-50%, -50%);
   border-radius: 50%; 
-  z-index: 9999; 
+  z-index: 999999 !important; 
   pointer-events: none;
   display: block;
   opacity: 1;
+  visibility: visible !important;
 }
 .cursor-dot { 
   width: 8px; 
   height: 8px; 
   background-color: #CCFF00; 
-  display: block;
-  opacity: 1;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 999999 !important;
 }
 .cursor-outline {
   width: 40px; 
@@ -173,8 +176,10 @@ img, video, svg {
   border: 1px solid rgba(255, 255, 255, 0.5);
   transition: width 0.2s, height 0.2s, background-color 0.2s;
   transform-origin: center center;
-  display: block;
-  opacity: 1;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 999999 !important;
 }
 
 /* Paint Splatter */
@@ -1095,8 +1100,8 @@ footer .flex.gap-4 a {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(204, 255, 0, 0.3);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
   min-width: 240px;
   max-width: 280px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
@@ -1328,7 +1333,7 @@ footer .flex.gap-4 a {
   .tooltip-content {
     min-width: 200px;
     max-width: 240px;
-    padding: 12px;
+    padding: var(--spacing-sm);
   }
   
   .tooltip-content h4 {
@@ -1393,6 +1398,20 @@ footer .flex.gap-4 a {
   pointer-events: none;
 }
 
+/* PIN Dialog Container Styles */
+#customPinContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
 .custom-confirm-backdrop {
   position: absolute;
   top: 0;
@@ -1417,10 +1436,16 @@ footer .flex.gap-4 a {
 
 .custom-confirm {
   position: relative;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(15, 15, 15, 0.4) 0%, rgba(26, 15, 31, 0.4) 100%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 3px solid transparent;
+  background-image: 
+    linear-gradient(135deg, rgba(15, 15, 15, 0.4) 0%, rgba(26, 15, 31, 0.4) 100%),
+    linear-gradient(135deg, var(--neon-lime), var(--neon-cyan));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  border-radius: var(--radius-lg);
   padding: clamp(1.5rem, 3vw, 2rem);
   color: white;
   font-family: 'Space Grotesk', sans-serif;
@@ -1443,11 +1468,11 @@ footer .flex.gap-4 a {
   right: -3px;
   bottom: -3px;
   left: -3px;
-  background: linear-gradient(135deg, #FF0055, #CCFF00);
+  background: linear-gradient(135deg, var(--neon-lime), var(--neon-cyan));
   z-index: -1;
   opacity: 0.3;
   filter: blur(8px);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
 }
 
 .custom-confirm-show {
@@ -1491,12 +1516,16 @@ footer .flex.gap-4 a {
   flex: 1;
   min-height: 44px;
   padding: clamp(0.75rem, 2vw, 0.875rem) clamp(1rem, 3vw, 1.25rem);
-  border-radius: 8px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  border: 2px solid transparent;
+  background-image: 
+    linear-gradient(135deg, rgba(15, 15, 15, 0.9) 0%, rgba(26, 15, 31, 0.9) 100%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(204, 255, 0, 0.3));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
   color: white;
   font-size: clamp(0.75rem, 2vw, 0.8125rem);
-  font-weight: 400;
+  font-weight: 600;
   font-family: 'Space Grotesk', sans-serif;
   letter-spacing: 0.5px;
   cursor: pointer;
@@ -1510,8 +1539,10 @@ footer .flex.gap-4 a {
 
 .custom-confirm-btn:hover {
   transform: translateY(-2px);
-  background: rgba(204, 255, 0, 0.2);
-  border-color: #CCFF00;
+  background: linear-gradient(135deg, rgba(204, 255, 0, 0.15) 0%, rgba(0, 255, 255, 0.15) 100%);
+  background-image: 
+    linear-gradient(135deg, rgba(204, 255, 0, 0.15) 0%, rgba(0, 255, 255, 0.15) 100%),
+    linear-gradient(135deg, var(--neon-lime), var(--neon-cyan));
   box-shadow: 
     0 2px 6px rgba(0, 0, 0, 0.15),
     0 0 0 1px rgba(204, 255, 0, 0.25);
@@ -1523,31 +1554,96 @@ footer .flex.gap-4 a {
 }
 
 .custom-confirm-ok {
-  background: #CCFF00;
-  border: 2px solid #CCFF00;
-  color: #0A0A0A;
+  background: var(--neon-lime);
+  border: 2px solid var(--neon-lime);
+  background-image: none;
+  background-origin: border-box;
+  background-clip: padding-box;
+  color: #000000 !important;
+  font-weight: 700;
   box-shadow: 
-    0 1px 4px rgba(204, 255, 0, 0.15),
-    0 0 0 1px rgba(204, 255, 0, 0.2);
+    0 2px 8px rgba(204, 255, 0, 0.3),
+    0 0 0 1px rgba(204, 255, 0, 0.25);
 }
 
 .custom-confirm-ok:hover {
-  background: #FF0055;
-  border-color: #FF0055;
-  color: white;
+  background: #B8E600;
+  border-color: #B8E600;
+  color: #000000 !important;
+  transform: translateY(-2px) scale(1.02);
   box-shadow: 
-    0 2px 6px rgba(255, 0, 85, 0.2),
-    0 0 0 1px rgba(255, 0, 85, 0.3);
+    0 4px 12px rgba(204, 255, 0, 0.5),
+    0 0 20px rgba(204, 255, 0, 0.3);
 }
 
 .custom-confirm-cancel {
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  background-image: none;
+  background-origin: border-box;
+  background-clip: padding-box;
+  color: #FFFFFF !important;
 }
 
 .custom-confirm-cancel:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(204, 255, 0, 0.4);
+  color: #FFFFFF !important;
+  transform: translateY(-2px);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(204, 255, 0, 0.2);
+}
+
+.custom-confirm-ok:active {
+  background: #A3CC00;
+  border-color: #A3CC00;
+  transform: translateY(0) scale(0.98);
+  box-shadow: 
+    0 2px 8px rgba(204, 255, 0, 0.4),
+    0 0 20px rgba(204, 255, 0, 0.2);
+}
+
+.custom-confirm-cancel:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* PIN Input Styles */
+.custom-pin-input {
+  width: 100%;
+  min-height: 44px;
+  padding: clamp(0.75rem, 2vw, 0.875rem) clamp(1rem, 3vw, 1.25rem);
+  border-radius: var(--radius-md);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  color: #FFFFFF !important;
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  font-weight: 600;
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: 4px;
+  text-align: center;
+  transition: all 0.15s ease;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(204, 255, 0, 0.15);
+  outline: none;
+}
+
+.custom-pin-input:focus {
+  border-color: #CCFF00;
+  background: rgba(0, 0, 0, 0.8);
+  color: #FFFFFF !important;
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    0 0 0 2px rgba(204, 255, 0, 0.25);
+}
+
+.custom-pin-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.5px;
+  font-weight: 400;
 }
 
 /* Responsive Styles for Confirm Dialog */
@@ -1572,6 +1668,11 @@ footer .flex.gap-4 a {
   
   .custom-confirm-btn {
     width: 100%;
+  }
+  
+  .custom-pin-input {
+    letter-spacing: 2px;
+    font-size: clamp(0.9375rem, 2vw, 1rem);
   }
 }
 

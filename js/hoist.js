@@ -1,29 +1,29 @@
-// ================= MAIN ENTRY POINT =================
+// ================= HOIST ENTRY POINT =================
 // Muraly - AR Mural Maker & Wall Visualization App
-// Main orchestrator that imports and initializes all modules
+// Host-specific entry point for AR session hosting
 
 import { state } from './modules/state.js';
 import { dom } from './modules/dom.js';
 import { initCanvas } from './modules/canvas.js';
 import { initImageUpload } from './modules/image.js';
-import { initNavigation } from './modules/navigation.js';
 import { initUIControls } from './modules/ui-controls.js';
 import { initGestures } from './modules/gestures.js';
 import { startRenderer } from './modules/renderer.js';
 import { host } from './modules/hosting.js';
-import { saveSession, loadSession } from './modules/session.js';
+import { saveSession, loadSession, tryLoadFromLocalStorage } from './modules/session.js';
 import { startRecordingTimelapse, initRecording } from './modules/recording.js';
+import { startCamera } from './modules/camera.js';
 
-// Initialize the application
+// Initialize the host application
 function init() {
+  // Start camera immediately for host
+  startCamera();
+  
   // Initialize canvas
   initCanvas();
   
   // Initialize image upload
   initImageUpload();
-  
-  // Initialize navigation (includes URL parameter checking)
-  initNavigation();
   
   // Initialize UI controls
   initUIControls();
@@ -71,25 +71,19 @@ function init() {
     };
   }
   
+  // Try to load saved session from localStorage
+  tryLoadFromLocalStorage();
+  
   // Show double-click hint for first-time users
   const hintElement = document.getElementById('doubleClickHint');
   if (hintElement && !localStorage.getItem('doubleClickHintSeen')) {
-    // Check if we're in the AR view (not on first/join screen)
-    const firstScreen = document.getElementById('firstScreen');
-    const joinScreen = document.getElementById('joinScreen');
-    
-    // Only show hint if we're past the first/join screens
+    // Show hint after a short delay
     setTimeout(() => {
-      if (firstScreen.classList.contains('hidden') && joinScreen.classList.contains('hidden')) {
-        // Dismiss hint after animation completes
-        setTimeout(() => {
-          hintElement.classList.add('dismissed');
-          localStorage.setItem('doubleClickHintSeen', 'true');
-        }, 5000);
-      } else {
-        // If we're still on first/join screen, hide hint
+      // Dismiss hint after animation completes
+      setTimeout(() => {
         hintElement.classList.add('dismissed');
-      }
+        localStorage.setItem('doubleClickHintSeen', 'true');
+      }, 5000);
     }, 100);
   } else if (hintElement) {
     // User has seen it before, hide immediately
@@ -103,3 +97,4 @@ if (document.readyState === 'loading') {
 } else {
   init();
 }
+

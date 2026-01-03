@@ -41,13 +41,19 @@ export const state = {
   
   // Hosting state
   peer: null,
-  call: null,
+  call: null, // Keep for backward compatibility, but use activeConnections instead
+  activeConnections: [], // Array of active PeerJS call objects
+  participants: [], // Array of participant metadata: { peerId, friendlyName, connectedAt, call, dataConnection }
+  participantCounter: 0, // Counter for auto-generating participant names
   hostStream: null,
   isHosting: false,
   canvasStream: null,
   canvasStreamInterval: null,
   resizeHandler: null,
   currentShareCode: null,
+  sessionPin: null,
+  isPrivateSession: false,
+  hostName: null,
   
   // Gesture state
   g: null,

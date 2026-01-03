@@ -1,0 +1,51 @@
+/* Custom cursor only on desktop with mouse */
+@media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
+  body { cursor: none; }
+}
+
+/* Custom Cursor */
+.cursor-dot, .cursor-outline {
+  position: fixed; 
+  top: 0; 
+  left: 0;
+  transform: translate(-50%, -50%);
+  border-radius: 50%; 
+  z-index: 999999 !important; 
+  pointer-events: none;
+  display: block;
+  visibility: visible !important;
+}
+
+.cursor-dot { 
+  width: 8px; 
+  height: 8px; 
+  background-color: #CCFF00;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 999999 !important;
+  display: block !important;
+}
+
+.cursor-outline {
+  width: 40px; 
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: width 0.2s, height 0.2s, background-color 0.2s, transform 0.2s;
+  transform-origin: center center;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 999999 !important;
+  display: block !important;
+}
+
+/* Hide custom cursor on touch devices and tablets */
+@media (hover: none) and (pointer: coarse), (max-width: 1023px) {
+  .cursor-dot, .cursor-outline {
+    display: none !important;
+  }
+  
+  body {
+    cursor: default !important;
+  }
+}
+

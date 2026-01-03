@@ -6,7 +6,7 @@ const SESSION_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 
 let discoveryPeer = null;
 let discoveryDataConnection = null;
-let sessionRegistry = new Map(); // code -> {code, timestamp, name?}
+let sessionRegistry = new Map(); // code -> {code, timestamp, name?, isPrivate?}
 let isDiscoveryHost = false;
 let discoveryCleanupInterval = null;
 
@@ -112,12 +112,25 @@ function handleDiscoveryMessage(message, dataConnection) {
   switch (message.type) {
     case 'register':
       // Register a new session
-      sessionRegistry.set(message.code, {
+      // Explicitly convert to boolean to preserve true values
+      // Handle undefined/null/false explicitly
+      const isPrivateValue = message.isPrivate === true ? true : false;
+      const sessionData = {
         code: message.code,
         timestamp: message.timestamp || Date.now(),
-        name: message.name
+        name: message.name || null,
+        isPrivate: isPrivateValue
+      };
+      console.log('[DISCOVERY] Received registration request:', {
+        code: message.code,
+        name: message.name,
+        isPrivate: message.isPrivate,
+        isPrivateConverted: isPrivateValue,
+        type: typeof message.isPrivate
       });
-      console.log('Registered session:', message.code);
+      sessionRegistry.set(message.code, sessionData);
+      console.log('[DISCOVERY] Registered session:', message.code, sessionData.isPrivate ? '(private)' : '(public)');
+      console.log('[DISCOVERY] Session registry entry:', sessionRegistry.get(message.code));
       
       // Send confirmation
       dataConnection.send(JSON.stringify({
@@ -140,14 +153,25 @@ function handleDiscoveryMessage(message, dataConnection) {
         .map(session => ({
           code: session.code,
           timestamp: session.timestamp,
-          name: session.name
+          name: session.name || null,
+          isPrivate: session.isPrivate === true ? true : false // Explicit ternary
         }));
+      
+      console.log('[DISCOVERY] Building session list response:', sessions.length, 'sessions');
+      sessions.forEach((session, index) => {
+        console.log(`[DISCOVERY] Session ${index + 1}:`, {
+          code: session.code,
+          name: session.name,
+          isPrivate: session.isPrivate,
+          type: typeof session.isPrivate
+        });
+      });
       
       dataConnection.send(JSON.stringify({
         type: 'list_response',
         sessions: sessions
       }));
-      console.log('Sent session list:', sessions.length, 'sessions');
+      console.log('[DISCOVERY] Sent session list:', sessions.length, 'sessions');
       break;
 
     default:
@@ -165,13 +189,26 @@ export function connectToDiscovery(onSessionsReceived) {
     setTimeout(() => {
       if (isDiscoveryHost) {
         // We're the host, return our registry
+        console.log('[DISCOVERY] We are the discovery host, returning local registry');
+        console.log('[DISCOVERY] Registry size:', sessionRegistry.size);
         const sessions = Array.from(sessionRegistry.values())
           .filter(session => Date.now() - session.timestamp < SESSION_TIMEOUT)
           .map(session => ({
             code: session.code,
             timestamp: session.timestamp,
-            name: session.name
+            name: session.name || null,
+            isPrivate: session.isPrivate === true ? true : false // Explicit ternary
           }));
+        
+        console.log('[DISCOVERY] Returning sessions from local registry:', sessions);
+        sessions.forEach((session, index) => {
+          console.log(`[DISCOVERY] Local session ${index + 1}:`, {
+            code: session.code,
+            name: session.name,
+            isPrivate: session.isPrivate,
+            type: typeof session.isPrivate
+          });
+        });
         
         if (onSessionsReceived) {
           onSessionsReceived(sessions);
@@ -267,15 +304,27 @@ export function connectToDiscovery(onSessionsReceived) {
 }
 
 // Register a session with discovery service
-export function registerSession(code, name) {
+export function registerSession(code, name, isPrivate = false) {
+  console.log('[DISCOVERY] registerSession called with:', {
+    code: code,
+    name: name,
+    isPrivate: isPrivate,
+    isDiscoveryHost: isDiscoveryHost
+  });
+  
   if (isDiscoveryHost) {
     // We're the host, add directly
-    sessionRegistry.set(code, {
+    // Explicitly convert to boolean to preserve true values
+    const isPrivateValue = isPrivate === true ? true : false;
+    const sessionData = {
       code: code,
       timestamp: Date.now(),
-      name: name
-    });
-    console.log('Registered session locally:', code);
+      name: name || null,
+      isPrivate: isPrivateValue
+    };
+    sessionRegistry.set(code, sessionData);
+    console.log('[DISCOVERY] Registered session locally:', code, isPrivateValue ? '(private)' : '(public)');
+    console.log('[DISCOVERY] Local registry entry:', sessionRegistry.get(code));
     return Promise.resolve();
   }
 
@@ -299,12 +348,15 @@ export function registerSession(code, name) {
 
         dataConnection.on('open', () => {
           // Send registration
-          dataConnection.send(JSON.stringify({
+          const registrationMessage = {
             type: 'register',
             code: code,
             timestamp: Date.now(),
-            name: name
-          }));
+            name: name,
+            isPrivate: isPrivate
+          };
+          console.log('[DISCOVERY] Sending registration message to discovery peer:', registrationMessage);
+          dataConnection.send(JSON.stringify(registrationMessage));
 
           // Wait for acknowledgment
           dataConnection.on('data', (data) => {
@@ -333,7 +385,7 @@ export function registerSession(code, name) {
           // If discovery peer doesn't exist, start as host and register
           if (err.type === 'peer-unavailable' || err.message?.includes('Could not connect')) {
             startDiscoveryHost();
-            registerSession(code, name).then(resolve).catch(reject);
+            registerSession(code, name, isPrivate).then(resolve).catch(reject);
           } else {
             reject(err);
           }
@@ -350,7 +402,7 @@ export function registerSession(code, name) {
       // If discovery peer doesn't exist, start as host
       if (err.type === 'peer-unavailable' || err.message?.includes('Could not connect')) {
         startDiscoveryHost();
-        registerSession(code, name).then(resolve).catch(reject);
+        registerSession(code, name, isPrivate).then(resolve).catch(reject);
       } else {
         reject(err);
       }

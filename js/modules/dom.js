@@ -49,6 +49,8 @@ export const dom = {
   timelapseOptions: document.getElementById("timelapseOptions"),
   sessionsListContainer: document.getElementById("sessionsListContainer"),
   sessionsList: document.getElementById("sessionsList"),
+  participantsContainer: document.getElementById("participantsContainer"),
+  participantsList: document.getElementById("participantsList"),
   
   // Canvas contexts (initialized after DOM is ready)
   ctx: null,

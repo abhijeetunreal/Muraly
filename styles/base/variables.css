@@ -1,0 +1,86 @@
+:root { 
+  --vh: 1vh;
+  --kb-height: 0px;
+  
+  /* Color System - Modern Palette */
+  --glass: rgba(15, 15, 20, 0.95);
+  --glass-light: rgba(255, 255, 255, 0.1);
+  --primary: #00D4FF;
+  --primary-dark: #00A8CC;
+  --primary-light: #33E0FF;
+  --accent-secondary: #7C3AED;
+  --accent-secondary-dark: #6D28D9;
+  --success: #10B981;
+  --success-dark: #059669;
+  --warning: #F59E0B;
+  --warning-dark: #D97706;
+  --danger: #EF4444;
+  --danger-dark: #DC2626;
+  --neon-pink: #EC4899;
+  --neon-lime: #84CC16;
+  --neon-cyan: #00D4FF;
+  --dark-void: #0A0A0A;
+  --concrete: #1a1a1a;
+  --bg-panel: rgba(15, 15, 20, 0.95);
+  --bg-card: rgba(255, 255, 255, 0.05);
+  --bg-card-hover: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --border-accent: rgba(0, 212, 255, 0.3);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --gradient-1: linear-gradient(135deg, #00D4FF 0%, #7C3AED 50%, #EC4899 100%);
+  --gradient-2: linear-gradient(135deg, #10B981 0%, #00D4FF 50%, #7C3AED 100%);
+  --gradient-3: linear-gradient(135deg, #00D4FF 0%, #EC4899 50%, #7C3AED 100%);
+  --gradient-accent: linear-gradient(135deg, #00D4FF 0%, #7C3AED 100%);
+  --spray-blue: #00D4FF;
+  --spray-pink: #EC4899;
+  --spray-yellow: #F59E0B;
+  --spray-green: #10B981;
+  --spray-orange: #F97316;
+  
+  /* Responsive Spacing System */
+  --spacing-xs: clamp(0.5rem, 1vw, 0.75rem);
+  --spacing-sm: clamp(0.75rem, 2vw, 1rem);
+  --spacing-md: clamp(1rem, 2.5vw, 1.5rem);
+  --spacing-lg: clamp(1.5rem, 4vw, 2.5rem);
+  --spacing-xl: clamp(2rem, 6vw, 4rem);
+  --spacing-2xl: clamp(3rem, 8vw, 6rem);
+  
+  /* Fluid Typography */
+  --font-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --font-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --font-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --font-md: clamp(1.125rem, 1rem + 0.625vw, 1.5rem);
+  --font-lg: clamp(1.25rem, 1.1rem + 0.75vw, 1.75rem);
+  --font-xl: clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);
+  --font-2xl: clamp(1.875rem, 1.5rem + 1.875vw, 3rem);
+  --font-3xl: clamp(2.25rem, 1.75rem + 2.5vw, 3.75rem);
+  --font-4xl: clamp(3rem, 2rem + 5vw, 4.5rem);
+  --font-5xl: clamp(3.75rem, 2.5rem + 6.25vw, 6rem);
+  
+  /* Touch Target Sizes */
+  --touch-target-min: 44px;
+  --touch-target-comfortable: 48px;
+  --touch-target-large: 56px;
+  
+  /* Grid Gaps */
+  --gap-xs: clamp(0.5rem, 1.5vw, 0.75rem);
+  --gap-sm: clamp(0.75rem, 2vw, 1rem);
+  --gap-md: clamp(1rem, 3vw, 1.5rem);
+  --gap-lg: clamp(1.5rem, 4vw, 2.5rem);
+  --gap-xl: clamp(2rem, 5vw, 3rem);
+  
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
+}
+

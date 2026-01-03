@@ -1,0 +1,21 @@
+/* Font Classes */
+.font-marker {
+  font-family: 'Permanent Marker', cursive;
+}
+
+.font-grotesk {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.text-neon-lime {
+  color: #CCFF00;
+}
+
+.text-neon-pink {
+  color: #FF0055;
+}
+
+.text-neon-cyan {
+  color: #00FFFF;
+}
+

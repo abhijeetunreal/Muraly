@@ -6,7 +6,17 @@ import { isMobileDevice, isFirefox } from './utils.js';
 import { enterViewerMode } from './viewer.js';
 import { stopRecordingTimelapse } from './recording.js';
 import { registerSession, unregisterSession } from './discovery.js';
-import { showAlert } from './alert.js';
+import { showAlert, showChoiceDialog, showPinInputDialog, showNameInputDialog } from './alert.js';
+import { updateParticipantsList } from './ui-controls.js';
+
+// Helper function to safely update shareId status (handles missing element)
+function updateShareIdStatus(text, className = "") {
+  if (dom.shareId) {
+    dom.shareId.textContent = text;
+    dom.shareId.className = className;
+  }
+  console.log(`Status: ${text} (${className})`);
+}
 
 // Create a composite canvas stream (camera + overlay)
 function createCompositeStream() {
@@ -142,6 +152,85 @@ function createCompositeStream() {
   return stream;
 }
 
+// Helper function to generate auto participant name
+function generateParticipantName() {
+  state.participantCounter++;
+  return `Participant ${state.participantCounter}`;
+}
+
+// Helper function to add a participant
+function addParticipant(call, peerId, participantName = null, dataConnection = null) {
+  const friendlyName = participantName || generateParticipantName();
+  const participant = {
+    peerId: peerId,
+    friendlyName: friendlyName,
+    connectedAt: Date.now(),
+    call: call,
+    dataConnection: dataConnection
+  };
+  
+  state.participants.push(participant);
+  state.activeConnections.push(call);
+  
+  // Also set state.call for backward compatibility (use last connection)
+  state.call = call;
+  
+  console.log(`Participant added: ${friendlyName} (${peerId})`);
+  
+  // Update UI
+  updateParticipantsList();
+  
+  return participant;
+}
+
+// Helper function to remove a participant
+function removeParticipant(peerId) {
+  const index = state.participants.findIndex(p => p.peerId === peerId);
+  if (index === -1) return;
+  
+  const participant = state.participants[index];
+  
+  // Close data connection if exists
+  if (participant.dataConnection) {
+    participant.dataConnection.close();
+  }
+  
+  // Remove from arrays
+  state.participants.splice(index, 1);
+  state.activeConnections = state.activeConnections.filter(c => c !== participant.call);
+  
+  // Update state.call for backward compatibility
+  if (state.activeConnections.length > 0) {
+    state.call = state.activeConnections[state.activeConnections.length - 1];
+  } else {
+    state.call = null;
+  }
+  
+  console.log(`Participant removed: ${participant.friendlyName} (${peerId})`);
+  
+  // Update UI
+  updateParticipantsList();
+}
+
+// Export function to disconnect a specific participant
+export function disconnectParticipant(peerId) {
+  const participant = state.participants.find(p => p.peerId === peerId);
+  if (!participant) {
+    console.warn(`Participant not found: ${peerId}`);
+    return;
+  }
+  
+  // Close the call
+  if (participant.call) {
+    participant.call.close();
+  }
+  
+  // Remove from tracking
+  removeParticipant(peerId);
+  
+  showAlert(`Disconnected ${participant.friendlyName}`, 'info');
+}
+
 export function stopHosting() {
   // Unregister from discovery service
   if (state.currentShareCode) {
@@ -149,10 +238,28 @@ export function stopHosting() {
     state.currentShareCode = null;
   }
 
-  if (state.call) {
-    state.call.close();
-    state.call = null;
-  }
+  // Close all active connections
+  state.activeConnections.forEach(call => {
+    if (call) {
+      call.close();
+    }
+  });
+  
+  // Close all data connections
+  state.participants.forEach(participant => {
+    if (participant.dataConnection) {
+      participant.dataConnection.close();
+    }
+  });
+  
+  // Clear participant tracking
+  state.activeConnections = [];
+  state.participants = [];
+  state.participantCounter = 0;
+  state.call = null;
+  
+  // Update UI
+  updateParticipantsList();
   if (state.hostStream) {
     state.hostStream.getTracks().forEach(track => track.stop());
     state.hostStream = null;
@@ -170,10 +277,12 @@ export function stopHosting() {
     state.resizeHandler = null;
   }
   state.isHosting = false;
-  dom.shareId.textContent = "";
-  dom.shareId.className = "";
-  dom.shareLinkContainer.classList.add("hidden");
-  dom.shareLinkInput.value = "";
+  state.sessionPin = null;
+  state.isPrivateSession = false;
+  state.hostName = null;
+  updateShareIdStatus("", "");
+  if (dom.shareLinkContainer) dom.shareLinkContainer.classList.add("hidden");
+  if (dom.shareLinkInput) dom.shareLinkInput.value = "";
   
   // Re-enable host button
   if (dom.hostBtn) {
@@ -193,10 +302,56 @@ export async function host() {
     return;
   }
   
+  // Ask user for public/private choice
+  const sessionType = await showChoiceDialog(
+    "Create a public or private session?",
+    "Public",
+    "Private"
+  );
+  
+  if (sessionType === null) {
+    // User cancelled
+    return;
+  }
+  
+  // If private, get PIN
+  let pin = null;
+  if (sessionType === 'option2') {
+    // Private selected
+    pin = await showPinInputDialog(
+      "Set up a PIN to protect your session (4-6 digits)",
+      4,
+      6
+    );
+    
+    if (pin === null) {
+      // User cancelled PIN entry
+      return;
+    }
+    
+    state.sessionPin = pin;
+    state.isPrivateSession = true;
+    console.log('[HOSTING] Private session selected, isPrivateSession set to:', state.isPrivateSession);
+  } else {
+    // Public selected
+    state.sessionPin = null;
+    state.isPrivateSession = false;
+    console.log('[HOSTING] Public session selected, isPrivateSession set to:', state.isPrivateSession);
+  }
+  
+  // Ask for host name
+  const hostName = await showNameInputDialog(
+    "Enter your name (optional):",
+    "Your name",
+    30
+  );
+  
+  // Store host name
+  state.hostName = hostName || null;
+  
   // Basic UI setup (synchronous, doesn't break gesture context)
   state.isHosting = true;
-  dom.shareId.textContent = "Starting host...";
-  dom.shareId.className = "warning";
+  updateShareIdStatus("Starting host...", "warning");
   
   if (dom.hostBtn) {
     dom.hostBtn.disabled = true;
@@ -312,9 +467,8 @@ export async function host() {
     
     state.peer.on("error", (err) => {
       console.error("Peer error:", err);
-      dom.shareId.textContent = "Error: " + err.message;
-      dom.shareId.className = "error";
-      dom.shareLinkContainer.classList.add("hidden");
+      updateShareIdStatus("Error: " + err.message, "error");
+      if (dom.shareLinkContainer) dom.shareLinkContainer.classList.add("hidden");
       state.isHosting = false;
       
       // Re-enable host button on error
@@ -325,21 +479,177 @@ export async function host() {
     });
     
     state.peer.on("call", (incomingCall) => {
-      if (state.hostStream) {
-        incomingCall.answer(state.hostStream);
-        state.call = incomingCall;
-        
-        state.call.on("close", () => {
-          console.log("Call closed");
-        });
-        
-        state.call.on("error", (err) => {
-          console.error("Call error:", err);
-        });
-      } else {
+      if (!state.hostStream) {
         console.error("No stream available to answer call");
         incomingCall.close();
+        return;
       }
+      
+      const peerId = incomingCall.peer;
+      let dataConnection = null;
+      let pinValidated = false;
+      let participantName = null;
+      let nameReceived = false;
+      let pinValidationTimeout = null;
+      let nameTimeout = null;
+      
+      // Helper function to handle participant join after validation
+      function handleParticipantJoin(call, peerId, participantName, dataConnection) {
+        // Answer the call
+        call.answer(state.hostStream);
+        
+        // Add participant
+        const participant = addParticipant(call, peerId, participantName, dataConnection);
+        
+        // Set up call event handlers
+        call.on("close", () => {
+          console.log("Call closed for participant:", participant.friendlyName);
+          removeParticipant(peerId);
+        });
+        
+        call.on("error", (err) => {
+          console.error("Call error for participant:", participant.friendlyName, err);
+          removeParticipant(peerId);
+        });
+        
+        showAlert(`${participant.friendlyName} joined the session`, 'success', 3000);
+      }
+      
+      // Establish data connection for PIN validation and name exchange
+      dataConnection = state.peer.connect(peerId, {
+        reliable: true
+      });
+      
+      dataConnection.on('open', () => {
+        console.log("Data connection opened with participant:", peerId);
+        
+        // If session is private, request PIN first
+        if (state.isPrivateSession && state.sessionPin) {
+          console.log("Private session: Requesting PIN");
+          dataConnection.send(JSON.stringify({
+            type: 'pin_request'
+          }));
+          
+          // Set timeout for PIN validation (10 seconds)
+          pinValidationTimeout = setTimeout(() => {
+            if (!pinValidated) {
+              console.log("PIN validation timeout");
+              dataConnection.close();
+              incomingCall.close();
+              showAlert("Connection timeout: PIN not provided", 'warning');
+            }
+          }, 10000);
+        } else {
+          // Public session - request name immediately
+          dataConnection.send(JSON.stringify({
+            type: 'name_request'
+          }));
+          
+          // Set timeout for name (1 minute)
+          nameTimeout = setTimeout(() => {
+            if (!nameReceived) {
+              console.log("Name not received, using auto-generated name");
+              // Proceed with auto-generated name
+              handleParticipantJoin(incomingCall, peerId, null, dataConnection);
+            }
+          }, 60000);
+        }
+      });
+      
+      dataConnection.on('data', (data) => {
+        try {
+          const message = JSON.parse(data);
+          
+          if (message.type === 'pin_response') {
+            const providedPin = message.pin;
+            
+            if (providedPin === state.sessionPin) {
+              // PIN is correct
+              pinValidated = true;
+              if (pinValidationTimeout) {
+                clearTimeout(pinValidationTimeout);
+              }
+              
+              // Send validation success
+              dataConnection.send(JSON.stringify({
+                type: 'pin_validated',
+                success: true
+              }));
+              
+              // Now request name
+              dataConnection.send(JSON.stringify({
+                type: 'name_request'
+              }));
+              
+              // Set timeout for name (1 minute)
+              nameTimeout = setTimeout(() => {
+                if (!nameReceived) {
+                  console.log("Name not received after PIN validation, using auto-generated name");
+                  handleParticipantJoin(incomingCall, peerId, null, dataConnection);
+                }
+              }, 60000);
+            } else {
+              // PIN is incorrect
+              console.log("Incorrect PIN provided");
+              dataConnection.send(JSON.stringify({
+                type: 'pin_validated',
+                success: false
+              }));
+              
+              setTimeout(() => {
+                dataConnection.close();
+                incomingCall.close();
+              }, 500);
+              
+              showAlert("Incorrect PIN. Connection rejected.", 'error');
+            }
+          } else if (message.type === 'name_response') {
+            // Name received
+            nameReceived = true;
+            if (nameTimeout) {
+              clearTimeout(nameTimeout);
+            }
+            
+            participantName = message.name || null; // Can be null if user skipped
+            
+            // If PIN was required, validate it was successful before proceeding
+            if (state.isPrivateSession && state.sessionPin) {
+              if (pinValidated) {
+                handleParticipantJoin(incomingCall, peerId, participantName, dataConnection);
+              } else {
+                console.log("Name received but PIN not validated yet");
+                // Wait for PIN validation
+              }
+            } else {
+              // Public session - proceed immediately
+              handleParticipantJoin(incomingCall, peerId, participantName, dataConnection);
+            }
+          }
+        } catch (err) {
+          console.error("Error parsing data connection message:", err);
+        }
+      });
+      
+      dataConnection.on('error', (err) => {
+        console.error("Data connection error:", err);
+        if (pinValidationTimeout) {
+          clearTimeout(pinValidationTimeout);
+        }
+        if (nameTimeout) {
+          clearTimeout(nameTimeout);
+        }
+        incomingCall.close();
+      });
+      
+      dataConnection.on('close', () => {
+        console.log("Data connection closed");
+        if (pinValidationTimeout) {
+          clearTimeout(pinValidationTimeout);
+        }
+        if (nameTimeout) {
+          clearTimeout(nameTimeout);
+        }
+      });
     });
     
     state.peer.on("open", (id) => {
@@ -348,23 +658,30 @@ export async function host() {
       state.currentShareCode = code;
       
       // Register with discovery service
-      registerSession(code).catch(err => {
+      console.log('[HOSTING] Registering session with discovery service:', {
+        code: code,
+        hostName: state.hostName,
+        isPrivateSession: state.isPrivateSession
+      });
+      registerSession(code, state.hostName, state.isPrivateSession).catch(err => {
         console.warn("Failed to register session with discovery service:", err);
         // Continue anyway - discovery is optional
       });
       
       // Generate shareable link with code
-      const shareLink = `${window.location.origin}${window.location.pathname}?join=${code}`;
+      const shareLink = `${window.location.origin}/join.html?join=${code}`;
       
-      dom.shareLinkInput.value = shareLink;
-      dom.shareLinkContainer.classList.remove("hidden");
+      if (dom.shareLinkInput) dom.shareLinkInput.value = shareLink;
+      if (dom.shareLinkContainer) dom.shareLinkContainer.classList.remove("hidden");
       
       if (isMobile || !hasDisplayMedia) {
-        dom.shareId.textContent = `Share Code: ${code} (Mobile Mode)`;
+        updateShareIdStatus(`Share Code: ${code} (Mobile Mode)${state.isPrivateSession ? ' 🔒 Private' : ''}`, "success");
       } else {
-        dom.shareId.textContent = `Share Code: ${code}`;
+        updateShareIdStatus(`Share Code: ${code}${state.isPrivateSession ? ' 🔒 Private' : ''}`, "success");
       }
-      dom.shareId.className = "success";
+      
+      // Initialize participant list UI
+      updateParticipantsList();
       
       // Answer incoming calls with the stream we already have
       if (state.hostStream) {
@@ -378,9 +695,8 @@ export async function host() {
   } catch (err) {
     console.error("Error getting media stream:", err);
     state.isHosting = false;
-    dom.shareId.textContent = "Error: Could not start sharing";
-    dom.shareId.className = "error";
-    dom.shareLinkContainer.classList.add("hidden");
+    updateShareIdStatus("Error: Could not start sharing", "error");
+    if (dom.shareLinkContainer) dom.shareLinkContainer.classList.add("hidden");
     
     // Re-enable host button on error
     if (dom.hostBtn) {
@@ -417,7 +733,7 @@ export async function host() {
   }
 }
 
-export function join(idOrLink) {
+export async function join(idOrLink, isPrivate = null) {
   // Clean up any existing peer
   if (state.peer) {
     state.peer.destroy();
@@ -436,8 +752,37 @@ export function join(idOrLink) {
     return;
   }
   
-  dom.shareId.textContent = "Connecting...";
-  dom.shareId.className = "warning";
+  // If session is private, prompt for PIN (required)
+  // For public sessions (isPrivate === false or null), skip PIN prompt entirely
+  let pin = null;
+  if (isPrivate === true) {
+    // Known private session - PIN is required
+    pin = await showPinInputDialog(
+      "This is a private session. Enter the PIN to connect:",
+      4,
+      6
+    );
+    
+    if (pin === null || pin === "") {
+      // User cancelled or didn't enter PIN - cannot join private session
+      showAlert("PIN is required to join this private session.", 'warning');
+      return;
+    }
+  }
+  // If isPrivate is false or null, skip PIN prompt - this is a public session
+  
+  // Store PIN temporarily for validation
+  const joinPin = pin;
+  
+  // Prompt for participant name (optional)
+  const participantName = await showNameInputDialog(
+    "Enter your name (optional):",
+    "Your name",
+    30
+  );
+  // participantName can be null if user skipped/cancelled
+  
+  updateShareIdStatus("Connecting...", "warning");
   
   state.peer = new Peer({
     debug: 2,
@@ -454,6 +799,116 @@ export function join(idOrLink) {
     
     // Use the code/ID directly (should be 18 chars, it's a custom PeerJS ID)
     const peerIdToCall = id.trim();
+    
+    // Set up data connection listener for PIN validation
+    state.peer.on("connection", (dataConnection) => {
+      console.log("Data connection received from host");
+      
+      dataConnection.on('open', () => {
+        console.log("Data connection opened with host");
+        
+        // Listen for PIN request
+        dataConnection.on('data', (data) => {
+          try {
+            const message = JSON.parse(data);
+            
+            if (message.type === 'pin_request') {
+              // Host is requesting PIN - this session is private
+              if (joinPin) {
+                // Send PIN
+                dataConnection.send(JSON.stringify({
+                  type: 'pin_response',
+                  pin: joinPin
+                }));
+                console.log("PIN sent to host");
+              } else {
+                // No PIN available - prompt user for PIN now (session is confirmed private)
+                console.log("No PIN available, prompting user for PIN");
+                showPinInputDialog(
+                  "This session is private. Enter the PIN to connect:",
+                  4,
+                  6
+                ).then(promptedPin => {
+                  if (promptedPin && promptedPin !== "") {
+                    // Send PIN to host
+                    dataConnection.send(JSON.stringify({
+                      type: 'pin_response',
+                      pin: promptedPin
+                    }));
+                    console.log("PIN sent to host after prompt");
+                  } else {
+                    // User cancelled or didn't enter PIN
+                    console.log("User cancelled PIN entry");
+                    dataConnection.send(JSON.stringify({
+                      type: 'pin_response',
+                      pin: ''
+                    }));
+                    
+                    // Show error message
+                    updateShareIdStatus("PIN required", "error");
+                    setTimeout(() => {
+                      showAlert("PIN is required to join this private session.", 'error');
+                      if (state.call) {
+                        state.call.close();
+                      }
+                      if (dom.camera) dom.camera.classList.add("hidden");
+                      if (dom.overlayCanvas) dom.overlayCanvas.classList.add("hidden");
+                      if (dom.gridCanvas) dom.gridCanvas.classList.add("hidden");
+                      dom.panel.classList.add("hidden");
+                      dom.topBar.classList.add("hidden");
+                      dom.joinScreen.classList.remove("hidden");
+                    }, 500);
+                  }
+                }).catch(err => {
+                  console.error("Error getting PIN:", err);
+                  dataConnection.send(JSON.stringify({
+                    type: 'pin_response',
+                    pin: ''
+                  }));
+                });
+              }
+            } else if (message.type === 'pin_validated') {
+              if (message.success) {
+                console.log("PIN validated by host");
+                // PIN validated, wait for name request
+              } else {
+                console.log("PIN rejected by host");
+                updateShareIdStatus("Incorrect PIN", "error");
+                setTimeout(() => {
+                  showAlert("Incorrect PIN. Connection rejected.", 'error');
+                  if (state.call) {
+                    state.call.close();
+                  }
+                  if (dom.camera) dom.camera.classList.add("hidden");
+                  if (dom.overlayCanvas) dom.overlayCanvas.classList.add("hidden");
+                  if (dom.gridCanvas) dom.gridCanvas.classList.add("hidden");
+                  if (dom.panel) dom.panel.classList.add("hidden");
+                  if (dom.topBar) dom.topBar.classList.add("hidden");
+                  if (dom.joinScreen) dom.joinScreen.classList.remove("hidden");
+                }, 500);
+              }
+            } else if (message.type === 'name_request') {
+              // Host is requesting name - send it
+              dataConnection.send(JSON.stringify({
+                type: 'name_response',
+                name: participantName || null
+              }));
+              console.log("Name sent to host:", participantName || "null (using auto-generated)");
+            }
+          } catch (err) {
+            console.error("Error parsing data connection message:", err);
+          }
+        });
+      });
+      
+      dataConnection.on('error', (err) => {
+        console.error("Data connection error:", err);
+      });
+      
+      dataConnection.on('close', () => {
+        console.log("Data connection closed");
+      });
+    });
     
     // PeerJS requires a stream when calling, so we create a minimal dummy stream
     // We'll use a canvas-based video stream to avoid requesting camera permissions
@@ -499,8 +954,7 @@ export function join(idOrLink) {
           if (stream) {
             stream.getTracks().forEach(track => track.stop());
           }
-          dom.shareId.textContent = "Connection lost";
-          dom.shareId.className = "error";
+          updateShareIdStatus("Connection lost", "error");
           setTimeout(() => {
             showAlert("Connection to host lost", 'error');
             location.reload();
@@ -512,8 +966,7 @@ export function join(idOrLink) {
           if (stream) {
             stream.getTracks().forEach(track => track.stop());
           }
-          dom.shareId.textContent = "Connection error";
-          dom.shareId.className = "error";
+          updateShareIdStatus("Connection error", "error");
           setTimeout(() => {
             showAlert("Connection error: " + err.message, 'error');
             location.reload();
@@ -524,16 +977,15 @@ export function join(idOrLink) {
         if (stream) {
           stream.getTracks().forEach(track => track.stop());
         }
-        dom.shareId.textContent = "Connection failed";
-        dom.shareId.className = "error";
+        updateShareIdStatus("Connection failed", "error");
         setTimeout(() => {
           showAlert("Could not connect to host. Please check the Share ID and try again.", 'error');
-          dom.camera.classList.add("hidden");
-          dom.overlayCanvas.classList.add("hidden");
-          dom.gridCanvas.classList.add("hidden");
-          dom.panel.classList.add("hidden");
-          dom.topBar.classList.add("hidden");
-          dom.joinScreen.classList.remove("hidden");
+          if (dom.camera) dom.camera.classList.add("hidden");
+          if (dom.overlayCanvas) dom.overlayCanvas.classList.add("hidden");
+          if (dom.gridCanvas) dom.gridCanvas.classList.add("hidden");
+          if (dom.panel) dom.panel.classList.add("hidden");
+          if (dom.topBar) dom.topBar.classList.add("hidden");
+          if (dom.joinScreen) dom.joinScreen.classList.remove("hidden");
         }, 500);
       }
     }, 100);
@@ -541,16 +993,15 @@ export function join(idOrLink) {
   
   state.peer.on("error", (err) => {
     console.error("Peer error:", err);
-    dom.shareId.textContent = "Connection error";
-    dom.shareId.className = "error";
+    updateShareIdStatus("Connection error", "error");
     setTimeout(() => {
       showAlert("Connection error: " + err.message, 'error');
-      dom.camera.classList.add("hidden");
-      dom.overlayCanvas.classList.add("hidden");
-      dom.gridCanvas.classList.add("hidden");
-      dom.panel.classList.add("hidden");
-      dom.topBar.classList.add("hidden");
-      dom.joinScreen.classList.remove("hidden");
+      if (dom.camera) dom.camera.classList.add("hidden");
+      if (dom.overlayCanvas) dom.overlayCanvas.classList.add("hidden");
+      if (dom.gridCanvas) dom.gridCanvas.classList.add("hidden");
+      if (dom.panel) dom.panel.classList.add("hidden");
+      if (dom.topBar) dom.topBar.classList.add("hidden");
+      if (dom.joinScreen) dom.joinScreen.classList.remove("hidden");
     }, 500);
   });
 }
