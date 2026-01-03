@@ -194,11 +194,11 @@ export function showConfirm(message, confirmText = 'OK', cancelText = 'Cancel') 
  */
 export function showChoiceDialog(message, option1Text = 'Public', option2Text = 'Private') {
   return new Promise((resolve) => {
-    // Create choice container if it doesn't exist
-    let choiceContainer = document.getElementById('customChoiceContainer');
+    // Use the same container as PIN dialog for consistent positioning
+    let choiceContainer = document.getElementById('customPinContainer');
     if (!choiceContainer) {
       choiceContainer = document.createElement('div');
-      choiceContainer.id = 'customChoiceContainer';
+      choiceContainer.id = 'customPinContainer';
       document.body.appendChild(choiceContainer);
     }
 
@@ -206,7 +206,7 @@ export function showChoiceDialog(message, option1Text = 'Public', option2Text = 
     const backdrop = document.createElement('div');
     backdrop.className = 'custom-confirm-backdrop';
     
-    // Create choice dialog
+    // Create choice dialog matching PIN dialog structure
     const choice = document.createElement('div');
     choice.className = 'custom-confirm';
     
@@ -214,9 +214,9 @@ export function showChoiceDialog(message, option1Text = 'Public', option2Text = 
       <div class="custom-confirm-content">
         <span class="custom-confirm-icon">🔒</span>
         <span class="custom-confirm-message">${escapeHtml(message)}</span>
-        <div class="custom-confirm-buttons">
-          <button class="custom-confirm-btn custom-confirm-cancel">${escapeHtml(option1Text)}</button>
-          <button class="custom-confirm-btn custom-confirm-ok">${escapeHtml(option2Text)}</button>
+        <div class="custom-confirm-buttons choice-buttons">
+          <button class="choice-option-btn unselected" data-option="option1">${escapeHtml(option1Text)}</button>
+          <button class="choice-option-btn selected" data-option="option2">${escapeHtml(option2Text)}</button>
         </div>
       </div>
     `;
@@ -245,12 +245,27 @@ export function showChoiceDialog(message, option1Text = 'Public', option2Text = 
       }, 300); // Match CSS animation duration
     };
 
-    // Button handlers
-    const option1Btn = choice.querySelector('.custom-confirm-cancel');
-    const option2Btn = choice.querySelector('.custom-confirm-ok');
+    // Button handlers with selection state management
+    const option1Btn = choice.querySelector('[data-option="option1"]');
+    const option2Btn = choice.querySelector('[data-option="option2"]');
     
-    option1Btn.addEventListener('click', () => closeChoice('option1'));
-    option2Btn.addEventListener('click', () => closeChoice('option2'));
+    // Handle button clicks with visual feedback
+    option1Btn.addEventListener('click', () => {
+      option1Btn.classList.add('selected');
+      option1Btn.classList.remove('unselected');
+      option2Btn.classList.add('unselected');
+      option2Btn.classList.remove('selected');
+      setTimeout(() => closeChoice('option1'), 150);
+    });
+    
+    option2Btn.addEventListener('click', () => {
+      option2Btn.classList.add('selected');
+      option2Btn.classList.remove('unselected');
+      option1Btn.classList.add('unselected');
+      option1Btn.classList.remove('selected');
+      setTimeout(() => closeChoice('option2'), 150);
+    });
+    
     backdrop.addEventListener('click', () => closeChoice(null));
   });
 }
