@@ -131,11 +131,11 @@
   <div class="panel-section">
     <h3 class="section-title">Content</h3>
     <div class="row">
-      <label>Image</label>
+      <label for="upload">Image</label>
       <input type="file" id="upload" accept="image/*">
     </div>
     <div class="row">
-      <label>Opacity</label>
+      <label for="opacity">Opacity</label>
       <input type="range" id="opacity" min="0" max="1" step="0.01" value="0.6">
     </div>
   </div>
@@ -195,7 +195,7 @@
     </div>
     <div id="shareLinkContainer" class="hidden">
       <div id="shareLink">
-        <input type="text" id="shareLinkInput" readonly placeholder="Share link will appear here">
+        <input type="text" id="shareLinkInput" readonly placeholder="Share link will appear here" aria-label="Share link">
         <button id="copyBtn">Copy</button>
       </div>
     </div>
@@ -215,14 +215,14 @@
       </div>
     </div>
     <div class="recording-row">
-      <label class="recording-field-label">Mode</label>
+      <label class="recording-field-label" for="recordMode">Mode</label>
       <select id="recordMode" class="recording-select">
         <option value="timelapse">Timelapse</option>
         <option value="full">Full Video</option>
       </select>
     </div>
     <div class="recording-row" id="timelapseOptions">
-      <label class="recording-field-label">Interval</label>
+      <label class="recording-field-label" for="customInterval">Interval</label>
       <div class="interval-controls">
         <button id="interval1sBtn" class="interval-unit-btn">1S</button>
         <input type="number" id="customInterval" class="interval-input" min="0.1" step="0.1" value="1">
