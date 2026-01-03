@@ -30,12 +30,42 @@ export function showJoinScreen() {
   dom.joinKeyInput.focus();
 }
 
-export function doJoin(sessionCode) {
-  const idOrLink = sessionCode || dom.joinKeyInput.value.trim();
+export async function doJoin(sessionCode, isPrivate = null) {
+  // Handle case where event object is passed instead of session code
+  if (sessionCode && typeof sessionCode !== 'string') {
+    sessionCode = null;
+  }
+  
+  const idOrLink = sessionCode || (dom.joinKeyInput && dom.joinKeyInput.value ? dom.joinKeyInput.value.trim() : '');
   if (!idOrLink) {
-    dom.joinKeyInput.focus();
+    if (dom.joinKeyInput) {
+      dom.joinKeyInput.focus();
+    }
     return;
   }
+  
+  // Extract session ID from link if it's a full URL
+  let sessionId = idOrLink.trim();
+  if (sessionId.includes('?join=')) {
+    sessionId = sessionId.split('?join=')[1].split('&')[0];
+  } else if (sessionId.includes('join=')) {
+    sessionId = sessionId.split('join=')[1].split('&')[0];
+  }
+  
+  // If isPrivate is not explicitly set, try to check discovery service
+  if (isPrivate === null && sessionId) {
+    try {
+      const sessions = await connectToDiscovery();
+      const foundSession = sessions.find(s => s.code === sessionId);
+      if (foundSession) {
+        isPrivate = foundSession.isPrivate === true ? true : null;
+      }
+    } catch (err) {
+      // If discovery fails, continue with null (unknown privacy status)
+      console.log("Could not check discovery service, proceeding with unknown privacy status");
+    }
+  }
+  
   dom.joinScreen.classList.add("hidden");
   dom.sessionsListContainer.classList.add("hidden");
   dom.backToFirstBtn.classList.add("hidden");
@@ -45,7 +75,7 @@ export function doJoin(sessionCode) {
   dom.gridCanvas.classList.remove("hidden");
   dom.panel.classList.remove("hidden");
   dom.topBar.classList.remove("hidden");
-  join(idOrLink);
+  join(idOrLink, isPrivate);
 }
 
 export function browseSessions() {
@@ -82,6 +112,17 @@ function displaySessions(sessions) {
     sessionCode.className = 'session-code';
     sessionCode.textContent = session.code;
     
+    // Add private indicator if session is private
+    if (session.isPrivate) {
+      const privateBadge = document.createElement('span');
+      privateBadge.className = 'session-private-badge';
+      privateBadge.textContent = '🔒 Private';
+      privateBadge.style.marginLeft = '8px';
+      privateBadge.style.fontSize = '0.85em';
+      privateBadge.style.opacity = '0.8';
+      sessionCode.appendChild(privateBadge);
+    }
+    
     const sessionInfo = document.createElement('div');
     sessionInfo.className = 'session-info';
     const timeAgo = Math.floor((Date.now() - session.timestamp) / 1000 / 60);
@@ -90,7 +131,7 @@ function displaySessions(sessions) {
     const joinBtn = document.createElement('button');
     joinBtn.className = 'session-join-btn';
     joinBtn.textContent = 'Join';
-    joinBtn.onclick = () => doJoin(session.code);
+    joinBtn.onclick = () => doJoin(session.code, session.isPrivate === true ? true : null);
     
     sessionItem.appendChild(sessionCode);
     sessionItem.appendChild(sessionInfo);
@@ -120,7 +161,7 @@ export function initNavigation() {
   // Event listeners
   dom.hostSelectBtn.onclick = showHostScreen;
   dom.joinSelectBtn.onclick = showJoinScreen;
-  dom.joinKeyBtn.onclick = doJoin;
+  dom.joinKeyBtn.onclick = () => doJoin();
   dom.joinKeyInput.addEventListener("keydown", e => { 
     if (e.key === "Enter") doJoin(); 
   });

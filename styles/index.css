@@ -1393,6 +1393,20 @@ footer .flex.gap-4 a {
   pointer-events: none;
 }
 
+/* PIN Dialog Container Styles */
+#customPinContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
 .custom-confirm-backdrop {
   position: absolute;
   top: 0;
@@ -1550,6 +1564,41 @@ footer .flex.gap-4 a {
   border-color: rgba(255, 255, 255, 0.3);
 }
 
+/* PIN Input Styles */
+.custom-pin-input {
+  width: 100%;
+  min-height: 44px;
+  padding: clamp(0.75rem, 2vw, 0.875rem) clamp(1rem, 3vw, 1.25rem);
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  font-weight: 500;
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: 4px;
+  text-align: center;
+  transition: all 0.15s ease;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(204, 255, 0, 0.15);
+  outline: none;
+}
+
+.custom-pin-input:focus {
+  border-color: #CCFF00;
+  background: rgba(204, 255, 0, 0.1);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    0 0 0 2px rgba(204, 255, 0, 0.25);
+}
+
+.custom-pin-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.5px;
+  font-weight: 400;
+}
+
 /* Responsive Styles for Confirm Dialog */
 @media (max-width: 768px) {
   .custom-confirm {
@@ -1572,6 +1621,11 @@ footer .flex.gap-4 a {
   
   .custom-confirm-btn {
     width: 100%;
+  }
+  
+  .custom-pin-input {
+    letter-spacing: 2px;
+    font-size: clamp(0.9375rem, 2vw, 1rem);
   }
 }
 

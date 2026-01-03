@@ -6,7 +6,7 @@ const SESSION_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 
 let discoveryPeer = null;
 let discoveryDataConnection = null;
-let sessionRegistry = new Map(); // code -> {code, timestamp, name?}
+let sessionRegistry = new Map(); // code -> {code, timestamp, name?, isPrivate?}
 let isDiscoveryHost = false;
 let discoveryCleanupInterval = null;
 
@@ -115,9 +115,10 @@ function handleDiscoveryMessage(message, dataConnection) {
       sessionRegistry.set(message.code, {
         code: message.code,
         timestamp: message.timestamp || Date.now(),
-        name: message.name
+        name: message.name,
+        isPrivate: message.isPrivate || false
       });
-      console.log('Registered session:', message.code);
+      console.log('Registered session:', message.code, message.isPrivate ? '(private)' : '(public)');
       
       // Send confirmation
       dataConnection.send(JSON.stringify({
@@ -140,7 +141,8 @@ function handleDiscoveryMessage(message, dataConnection) {
         .map(session => ({
           code: session.code,
           timestamp: session.timestamp,
-          name: session.name
+          name: session.name,
+          isPrivate: session.isPrivate || false
         }));
       
       dataConnection.send(JSON.stringify({
@@ -170,7 +172,8 @@ export function connectToDiscovery(onSessionsReceived) {
           .map(session => ({
             code: session.code,
             timestamp: session.timestamp,
-            name: session.name
+            name: session.name,
+            isPrivate: session.isPrivate || false
           }));
         
         if (onSessionsReceived) {
@@ -267,15 +270,16 @@ export function connectToDiscovery(onSessionsReceived) {
 }
 
 // Register a session with discovery service
-export function registerSession(code, name) {
+export function registerSession(code, name, isPrivate = false) {
   if (isDiscoveryHost) {
     // We're the host, add directly
     sessionRegistry.set(code, {
       code: code,
       timestamp: Date.now(),
-      name: name
+      name: name,
+      isPrivate: isPrivate
     });
-    console.log('Registered session locally:', code);
+    console.log('Registered session locally:', code, isPrivate ? '(private)' : '(public)');
     return Promise.resolve();
   }
 
@@ -303,7 +307,8 @@ export function registerSession(code, name) {
             type: 'register',
             code: code,
             timestamp: Date.now(),
-            name: name
+            name: name,
+            isPrivate: isPrivate
           }));
 
           // Wait for acknowledgment
@@ -333,7 +338,7 @@ export function registerSession(code, name) {
           // If discovery peer doesn't exist, start as host and register
           if (err.type === 'peer-unavailable' || err.message?.includes('Could not connect')) {
             startDiscoveryHost();
-            registerSession(code, name).then(resolve).catch(reject);
+            registerSession(code, name, isPrivate).then(resolve).catch(reject);
           } else {
             reject(err);
           }
@@ -350,7 +355,7 @@ export function registerSession(code, name) {
       // If discovery peer doesn't exist, start as host
       if (err.type === 'peer-unavailable' || err.message?.includes('Could not connect')) {
         startDiscoveryHost();
-        registerSession(code, name).then(resolve).catch(reject);
+        registerSession(code, name, isPrivate).then(resolve).catch(reject);
       } else {
         reject(err);
       }

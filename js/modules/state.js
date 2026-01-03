@@ -48,6 +48,8 @@ export const state = {
   canvasStreamInterval: null,
   resizeHandler: null,
   currentShareCode: null,
+  sessionPin: null,
+  isPrivateSession: false,
   
   // Gesture state
   g: null,
