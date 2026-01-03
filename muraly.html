@@ -160,16 +160,16 @@
   <div class="iconBtn" id="fullscreenBtn">⛶</div>
 </div>
 
-<div id="panel">
+<aside id="panel" role="complementary" aria-label="Properties panel">
   <button id="closePanelBtn" class="close-panel-btn" aria-label="Close Panel">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </button>
 
-  <!-- Media Controls Section -->
+  <!-- Content Section - What you're working with -->
   <div class="panel-section">
-    <h3 class="section-title">Media</h3>
+    <h3 class="section-title">Content</h3>
     <div class="row">
       <label>Image</label>
       <input type="file" id="upload" accept="image/*">
@@ -180,25 +180,36 @@
     </div>
   </div>
 
-  <!-- View Mode Section -->
+  <!-- Display Section - How you see it -->
   <div class="panel-section">
-    <h3 class="section-title">View Mode</h3>
+    <h3 class="section-title">Display</h3>
     <div class="button-group">
       <button id="sketchBtn" class="mode-btn">✏️ Sketch</button>
       <button id="imageBtn" class="mode-btn">🖼 Image</button>
     </div>
-  </div>
-
-  <!-- Transform Controls Section -->
-  <div class="panel-section">
-    <h3 class="section-title">Controls</h3>
-    <div class="button-group">
-      <button id="lockBtn">🔓 Move</button>
+    <div class="button-group" style="margin-top: var(--gap-xs);">
       <button id="gridBtn">Grid</button>
     </div>
   </div>
 
-  <!-- Hosting Section -->
+  <!-- Transform Section - How you interact -->
+  <div class="panel-section">
+    <h3 class="section-title">Transform</h3>
+    <div class="button-group">
+      <button id="lockBtn">🔓 Move</button>
+    </div>
+  </div>
+
+  <!-- Session Section - Save/Load work -->
+  <div class="panel-section">
+    <h3 class="section-title">Session</h3>
+    <div class="button-group">
+      <button id="saveSessionBtn">💾 Save</button>
+      <button id="loadSessionBtn">📂 Load</button>
+    </div>
+  </div>
+
+  <!-- Sharing Section - Collaboration -->
   <div class="panel-section">
     <h3 class="section-title">Sharing</h3>
     <div class="row">
@@ -217,32 +228,23 @@
     </div>
   </div>
 
-  <!-- Session Management Section -->
-  <div class="panel-section">
-    <h3 class="section-title">Session</h3>
-    <div class="button-group">
-      <button id="saveSessionBtn">💾 Save</button>
-      <button id="loadSessionBtn">📂 Load</button>
-    </div>
-  </div>
-
-  <!-- Recording Section -->
+  <!-- Recording Section - Export/Capture -->
   <div class="panel-section">
     <div class="recording-header">
-      <span class="recording-label">RECORDING</span>
+      <span class="recording-label">Recording</span>
       <div class="recording-indicator">
         <div class="indicator-dot"></div>
       </div>
     </div>
     <div class="recording-row">
-      <label class="recording-field-label">MODE</label>
+      <label class="recording-field-label">Mode</label>
       <select id="recordMode" class="recording-select">
         <option value="timelapse">Timelapse</option>
         <option value="full">Full Video</option>
       </select>
     </div>
     <div class="recording-row" id="timelapseOptions">
-      <label class="recording-field-label">INTERVAL</label>
+      <label class="recording-field-label">Interval</label>
       <div class="interval-controls">
         <button id="interval1sBtn" class="interval-unit-btn">1S</button>
         <input type="number" id="customInterval" class="interval-input" min="0.1" step="0.1" value="1">
@@ -251,11 +253,11 @@
     <div class="recording-row">
       <button id="recordTimelapseBtn" class="start-recording-btn">
         <span class="record-icon">🎬</span>
-        <span>START RECORDING</span>
+        <span>Start Recording</span>
       </button>
     </div>
   </div>
-</div>
+</aside>
 
 <!-- VIEWER -->
 <div id="remoteVideoContainer" class="hidden">
