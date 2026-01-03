@@ -46,29 +46,7 @@ document.addEventListener('mousemove', (e) => {
   });
 });
 
-// 2. Mobile Menu Logic
-const menuBtn = document.getElementById('menu-btn');
-const mobileMenu = document.getElementById('mobile-menu');
-const mobileLinks = document.querySelectorAll('.mobile-link');
-let isMenuOpen = false;
-
-if (menuBtn && mobileMenu) {
-  menuBtn.addEventListener('click', () => {
-    isMenuOpen = !isMenuOpen;
-    mobileMenu.classList.toggle('translate-x-full', !isMenuOpen);
-    document.body.style.overflow = isMenuOpen ? 'hidden' : '';
-  });
-
-  mobileLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      isMenuOpen = false;
-      mobileMenu.classList.add('translate-x-full');
-      document.body.style.overflow = '';
-    });
-  });
-}
-
-// 3. Custom Cursor & Interaction
+// 2. Custom Cursor & Interaction
 const cursorDot = document.querySelector('.cursor-dot');
 const cursorOutline = document.querySelector('.cursor-outline');
 const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;

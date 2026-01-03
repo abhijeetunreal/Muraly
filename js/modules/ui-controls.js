@@ -106,11 +106,27 @@ export function initUIControls() {
   }, { passive: false });
   
   // Double-click for desktop/mouse users
+  let lastClickTime = 0;
   dom.overlayCanvas.addEventListener("dblclick", (e) => {
+    const now = Date.now();
+    // Prevent rapid double-clicks
+    if (now - lastClickTime < 100) return;
+    lastClickTime = now;
+    
     e.preventDefault();
     e.stopPropagation();
-    dom.panel.classList.toggle("hidden");
-    dom.topBar.classList.toggle("hidden");
+    
+    // Toggle panel and topBar
+    const panelHidden = dom.panel.classList.contains("hidden");
+    if (panelHidden) {
+      dom.panel.classList.remove("hidden");
+      dom.topBar.classList.remove("hidden");
+    } else {
+      dom.panel.classList.add("hidden");
+      dom.topBar.classList.add("hidden");
+    }
+    
+    console.log("Panel toggled via double-click:", panelHidden ? "showing" : "hiding");
   });
   
   // Copy to clipboard

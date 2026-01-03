@@ -59,14 +59,46 @@ function init() {
   // Set up close panel button
   const closePanelBtn = document.getElementById('closePanelBtn');
   const panel = document.getElementById('panel');
+  const topBar = document.getElementById('topBar');
   if (closePanelBtn && panel) {
-    closePanelBtn.onclick = () => {
+    closePanelBtn.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       panel.classList.add('hidden');
+      if (topBar) {
+        topBar.classList.add('hidden');
+      }
+      console.log("Panel closed via close button");
     };
   }
   
   // Register service worker for PWA
   registerServiceWorker();
+  
+  // Show double-click hint for first-time users
+  const hintElement = document.getElementById('doubleClickHint');
+  if (hintElement && !localStorage.getItem('doubleClickHintSeen')) {
+    // Check if we're in the AR view (not on first/join screen)
+    const firstScreen = document.getElementById('firstScreen');
+    const joinScreen = document.getElementById('joinScreen');
+    
+    // Only show hint if we're past the first/join screens
+    setTimeout(() => {
+      if (firstScreen.classList.contains('hidden') && joinScreen.classList.contains('hidden')) {
+        // Dismiss hint after animation completes
+        setTimeout(() => {
+          hintElement.classList.add('dismissed');
+          localStorage.setItem('doubleClickHintSeen', 'true');
+        }, 5000);
+      } else {
+        // If we're still on first/join screen, hide hint
+        hintElement.classList.add('dismissed');
+      }
+    }, 100);
+  } else if (hintElement) {
+    // User has seen it before, hide immediately
+    hintElement.classList.add('dismissed');
+  }
 }
 
 // Initialize when DOM is ready
