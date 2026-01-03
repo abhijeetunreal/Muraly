@@ -292,10 +292,10 @@ export async function host() {
       startCamera();
     }
     
-    // Generate 3-character shareable code first
+    // Generate 18-character shareable code first
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Exclude confusing chars
     let shareCode = '';
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 18; i++) {
       shareCode += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     
@@ -353,7 +353,7 @@ export async function host() {
         // Continue anyway - discovery is optional
       });
       
-      // Generate shareable link with short code
+      // Generate shareable link with code
       const shareLink = `${window.location.origin}${window.location.pathname}?join=${code}`;
       
       dom.shareLinkInput.value = shareLink;
@@ -452,7 +452,7 @@ export function join(idOrLink) {
   state.peer.on("open", () => {
     console.log("Joining with code/ID:", id);
     
-    // Use the code/ID directly (if it's 3 chars, it's a custom PeerJS ID)
+    // Use the code/ID directly (should be 18 chars, it's a custom PeerJS ID)
     const peerIdToCall = id.trim();
     
     // PeerJS requires a stream when calling, so we create a minimal dummy stream
