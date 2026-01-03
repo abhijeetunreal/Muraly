@@ -9,6 +9,15 @@ import { registerSession, unregisterSession } from './discovery.js';
 import { showAlert, showChoiceDialog, showPinInputDialog, showNameInputDialog } from './alert.js';
 import { updateParticipantsList } from './ui-controls.js';
 
+// Helper function to safely update shareId status (handles missing element)
+function updateShareIdStatus(text, className = "") {
+  if (dom.shareId) {
+    dom.shareId.textContent = text;
+    dom.shareId.className = className;
+  }
+  console.log(`Status: ${text} (${className})`);
+}
+
 // Create a composite canvas stream (camera + overlay)
 function createCompositeStream() {
   // Create a new canvas for compositing
@@ -270,10 +279,9 @@ export function stopHosting() {
   state.isHosting = false;
   state.sessionPin = null;
   state.isPrivateSession = false;
-  dom.shareId.textContent = "";
-  dom.shareId.className = "";
-  dom.shareLinkContainer.classList.add("hidden");
-  dom.shareLinkInput.value = "";
+  updateShareIdStatus("", "");
+  if (dom.shareLinkContainer) dom.shareLinkContainer.classList.add("hidden");
+  if (dom.shareLinkInput) dom.shareLinkInput.value = "";
   
   // Re-enable host button
   if (dom.hostBtn) {
@@ -330,8 +338,7 @@ export async function host() {
   
   // Basic UI setup (synchronous, doesn't break gesture context)
   state.isHosting = true;
-  dom.shareId.textContent = "Starting host...";
-  dom.shareId.className = "warning";
+  updateShareIdStatus("Starting host...", "warning");
   
   if (dom.hostBtn) {
     dom.hostBtn.disabled = true;
@@ -447,9 +454,8 @@ export async function host() {
     
     state.peer.on("error", (err) => {
       console.error("Peer error:", err);
-      dom.shareId.textContent = "Error: " + err.message;
-      dom.shareId.className = "error";
-      dom.shareLinkContainer.classList.add("hidden");
+      updateShareIdStatus("Error: " + err.message, "error");
+      if (dom.shareLinkContainer) dom.shareLinkContainer.classList.add("hidden");
       state.isHosting = false;
       
       // Re-enable host button on error
@@ -647,15 +653,14 @@ export async function host() {
       // Generate shareable link with code
       const shareLink = `${window.location.origin}${window.location.pathname}?join=${code}`;
       
-      dom.shareLinkInput.value = shareLink;
-      dom.shareLinkContainer.classList.remove("hidden");
+      if (dom.shareLinkInput) dom.shareLinkInput.value = shareLink;
+      if (dom.shareLinkContainer) dom.shareLinkContainer.classList.remove("hidden");
       
       if (isMobile || !hasDisplayMedia) {
-        dom.shareId.textContent = `Share Code: ${code} (Mobile Mode)${state.isPrivateSession ? ' 🔒 Private' : ''}`;
+        updateShareIdStatus(`Share Code: ${code} (Mobile Mode)${state.isPrivateSession ? ' 🔒 Private' : ''}`, "success");
       } else {
-        dom.shareId.textContent = `Share Code: ${code}${state.isPrivateSession ? ' 🔒 Private' : ''}`;
+        updateShareIdStatus(`Share Code: ${code}${state.isPrivateSession ? ' 🔒 Private' : ''}`, "success");
       }
-      dom.shareId.className = "success";
       
       // Initialize participant list UI
       updateParticipantsList();
@@ -672,9 +677,8 @@ export async function host() {
   } catch (err) {
     console.error("Error getting media stream:", err);
     state.isHosting = false;
-    dom.shareId.textContent = "Error: Could not start sharing";
-    dom.shareId.className = "error";
-    dom.shareLinkContainer.classList.add("hidden");
+    updateShareIdStatus("Error: Could not start sharing", "error");
+    if (dom.shareLinkContainer) dom.shareLinkContainer.classList.add("hidden");
     
     // Re-enable host button on error
     if (dom.hostBtn) {
@@ -768,8 +772,7 @@ export async function join(idOrLink, isPrivate = null) {
   );
   // participantName can be null if user skipped/cancelled
   
-  dom.shareId.textContent = "Connecting...";
-  dom.shareId.className = "warning";
+  updateShareIdStatus("Connecting...", "warning");
   
   state.peer = new Peer({
     debug: 2,
@@ -832,16 +835,15 @@ export async function join(idOrLink, isPrivate = null) {
                     }));
                     
                     // Show error message
-                    dom.shareId.textContent = "PIN required";
-                    dom.shareId.className = "error";
+                    updateShareIdStatus("PIN required", "error");
                     setTimeout(() => {
                       showAlert("PIN is required to join this private session.", 'error');
                       if (state.call) {
                         state.call.close();
                       }
-                      dom.camera.classList.add("hidden");
-                      dom.overlayCanvas.classList.add("hidden");
-                      dom.gridCanvas.classList.add("hidden");
+                      if (dom.camera) dom.camera.classList.add("hidden");
+                      if (dom.overlayCanvas) dom.overlayCanvas.classList.add("hidden");
+                      if (dom.gridCanvas) dom.gridCanvas.classList.add("hidden");
                       dom.panel.classList.add("hidden");
                       dom.topBar.classList.add("hidden");
                       dom.joinScreen.classList.remove("hidden");
@@ -861,16 +863,15 @@ export async function join(idOrLink, isPrivate = null) {
                 // PIN validated, wait for name request
               } else {
                 console.log("PIN rejected by host");
-                dom.shareId.textContent = "Incorrect PIN";
-                dom.shareId.className = "error";
+                updateShareIdStatus("Incorrect PIN", "error");
                 setTimeout(() => {
                   showAlert("Incorrect PIN. Connection rejected.", 'error');
                   if (state.call) {
                     state.call.close();
                   }
-                  dom.camera.classList.add("hidden");
-                  dom.overlayCanvas.classList.add("hidden");
-                  dom.gridCanvas.classList.add("hidden");
+                  if (dom.camera) dom.camera.classList.add("hidden");
+                  if (dom.overlayCanvas) dom.overlayCanvas.classList.add("hidden");
+                  if (dom.gridCanvas) dom.gridCanvas.classList.add("hidden");
                   dom.panel.classList.add("hidden");
                   dom.topBar.classList.add("hidden");
                   dom.joinScreen.classList.remove("hidden");
@@ -943,8 +944,7 @@ export async function join(idOrLink, isPrivate = null) {
           if (stream) {
             stream.getTracks().forEach(track => track.stop());
           }
-          dom.shareId.textContent = "Connection lost";
-          dom.shareId.className = "error";
+          updateShareIdStatus("Connection lost", "error");
           setTimeout(() => {
             showAlert("Connection to host lost", 'error');
             location.reload();
@@ -956,8 +956,7 @@ export async function join(idOrLink, isPrivate = null) {
           if (stream) {
             stream.getTracks().forEach(track => track.stop());
           }
-          dom.shareId.textContent = "Connection error";
-          dom.shareId.className = "error";
+          updateShareIdStatus("Connection error", "error");
           setTimeout(() => {
             showAlert("Connection error: " + err.message, 'error');
             location.reload();
@@ -968,13 +967,12 @@ export async function join(idOrLink, isPrivate = null) {
         if (stream) {
           stream.getTracks().forEach(track => track.stop());
         }
-        dom.shareId.textContent = "Connection failed";
-        dom.shareId.className = "error";
+        updateShareIdStatus("Connection failed", "error");
         setTimeout(() => {
           showAlert("Could not connect to host. Please check the Share ID and try again.", 'error');
-          dom.camera.classList.add("hidden");
-          dom.overlayCanvas.classList.add("hidden");
-          dom.gridCanvas.classList.add("hidden");
+          if (dom.camera) dom.camera.classList.add("hidden");
+          if (dom.overlayCanvas) dom.overlayCanvas.classList.add("hidden");
+          if (dom.gridCanvas) dom.gridCanvas.classList.add("hidden");
           dom.panel.classList.add("hidden");
           dom.topBar.classList.add("hidden");
           dom.joinScreen.classList.remove("hidden");
@@ -985,13 +983,12 @@ export async function join(idOrLink, isPrivate = null) {
   
   state.peer.on("error", (err) => {
     console.error("Peer error:", err);
-    dom.shareId.textContent = "Connection error";
-    dom.shareId.className = "error";
+    updateShareIdStatus("Connection error", "error");
     setTimeout(() => {
       showAlert("Connection error: " + err.message, 'error');
-      dom.camera.classList.add("hidden");
-      dom.overlayCanvas.classList.add("hidden");
-      dom.gridCanvas.classList.add("hidden");
+      if (dom.camera) dom.camera.classList.add("hidden");
+      if (dom.overlayCanvas) dom.overlayCanvas.classList.add("hidden");
+      if (dom.gridCanvas) dom.gridCanvas.classList.add("hidden");
       dom.panel.classList.add("hidden");
       dom.topBar.classList.add("hidden");
       dom.joinScreen.classList.remove("hidden");

@@ -5,7 +5,7 @@
 <!-- Primary Meta Tags -->
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
-<title>Muraly — AR Mural Maker & Wall Visualization App</title>
+<title>Muraly — Host AR Session</title>
 <meta name="title" content="Muraly — AR Mural Maker & Wall Visualization App" />
 <meta name="description" content="Muraly is an augmented reality mural maker that lets you visualize wall art and murals in real spaces before painting or printing." />
 <meta name="author" content="Codefrydev" />
@@ -113,20 +113,139 @@
 <div class="cursor-dot"></div>
 <div class="cursor-outline"></div>
 
-
-<!-- ROUTER SCREEN: Host/Join selection -->
-<div id="firstScreen">
-  <div class="absolute inset-0 overflow-hidden pointer-events-none">
-    <div data-speed="0.05" class="parallax-blob absolute top-1/4 left-1/4 w-64 md:w-96 h-64 md:h-96 bg-neon-pink/20 rounded-full blur-[80px] md:blur-[100px]"></div>
-    <div data-speed="0.08" class="parallax-blob absolute bottom-1/4 right-1/4 w-72 md:w-[500px] h-72 md:h-[500px] bg-neon-cyan/10 rounded-full blur-[80px] md:blur-[120px]"></div>
-    <div data-speed="0.12" class="parallax-blob absolute top-1/2 left-1/2 w-32 h-32 bg-neon-lime/20 rounded-full blur-[60px]"></div>
-  </div>
-  <h2 class="font-marker">MURALY<span class="text-neon-lime">.</span></h2>
-  <div class="button-group">
-    <button id="hostSelectBtn" class="primary" onclick="window.location.href='hoist.html'">Host Session</button>
-    <button id="joinSelectBtn" onclick="window.location.href='join.html'">Join Session</button>
-  </div>
+<!-- Double-Click Hint -->
+<div id="doubleClickHint" class="double-click-hint">
+  <p>💡 Double-click anywhere to show/hide menu</p>
 </div>
+
+<!-- HOST AR -->
+<video id="camera" autoplay playsinline></video>
+<canvas id="overlayCanvas"></canvas>
+<canvas id="gridCanvas"></canvas>
+
+<div id="topBar">
+  <div class="iconBtn" id="fullscreenBtn">⛶</div>
+</div>
+
+<aside id="panel" role="complementary" aria-label="Properties panel">
+  <button id="closePanelBtn" class="close-panel-btn" aria-label="Close Panel">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  <!-- Content Section - What you're working with -->
+  <div class="panel-section">
+    <h3 class="section-title">Content</h3>
+    <div class="row">
+      <label>Image</label>
+      <input type="file" id="upload" accept="image/*">
+    </div>
+    <div class="row">
+      <label>Opacity</label>
+      <input type="range" id="opacity" min="0" max="1" step="0.01" value="0.6">
+    </div>
+  </div>
+
+  <!-- Display Section - How you see it -->
+  <div class="panel-section">
+    <h3 class="section-title">Display</h3>
+    <div class="button-group">
+      <button id="sketchBtn" class="mode-btn">
+        <i data-lucide="pencil" class="icon"></i>
+        <span>Sketch</span>
+      </button>
+      <button id="imageBtn" class="mode-btn">
+        <i data-lucide="image" class="icon"></i>
+        <span>Image</span>
+      </button>
+    </div>
+    <div class="button-group" style="margin-top: var(--gap-xs);">
+      <button id="gridBtn">
+        <i data-lucide="grid-3x3" class="icon"></i>
+        <span>Grid</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Transform Section - How you interact -->
+  <div class="panel-section">
+    <h3 class="section-title">Transform</h3>
+    <div class="button-group">
+      <button id="lockBtn">
+        <i data-lucide="unlock" class="icon"></i>
+        <span>Move</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Session Section - Save/Load work -->
+  <div class="panel-section">
+    <h3 class="section-title">Session</h3>
+    <div class="button-group">
+      <button id="saveSessionBtn">
+        <i data-lucide="save" class="icon"></i>
+        <span>Save</span>
+      </button>
+      <button id="loadSessionBtn">
+        <i data-lucide="folder-open" class="icon"></i>
+        <span>Load</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Sharing Section - Collaboration -->
+  <div class="panel-section">
+    <h3 class="section-title">Sharing</h3>
+    <div class="row">
+      <button id="hostBtn" class="primary">Host Session</button>
+    </div>
+    <div id="shareLinkContainer" class="hidden">
+      <div id="shareLink">
+        <input type="text" id="shareLinkInput" readonly placeholder="Share link will appear here">
+        <button id="copyBtn">Copy</button>
+      </div>
+    </div>
+    <div id="shareId"></div>
+    <div id="participantsContainer" class="hidden">
+      <h4 class="participants-title">Connected Participants</h4>
+      <div id="participantsList"></div>
+    </div>
+  </div>
+
+  <!-- Recording Section - Export/Capture -->
+  <div class="panel-section">
+    <div class="recording-header">
+      <span class="recording-label">Recording</span>
+      <div class="recording-indicator">
+        <div class="indicator-dot"></div>
+      </div>
+    </div>
+    <div class="recording-row">
+      <label class="recording-field-label">Mode</label>
+      <select id="recordMode" class="recording-select">
+        <option value="timelapse">Timelapse</option>
+        <option value="full">Full Video</option>
+      </select>
+    </div>
+    <div class="recording-row" id="timelapseOptions">
+      <label class="recording-field-label">Interval</label>
+      <div class="interval-controls">
+        <button id="interval1sBtn" class="interval-unit-btn">1S</button>
+        <input type="number" id="customInterval" class="interval-input" min="0.1" step="0.1" value="1">
+      </div>
+    </div>
+    <div class="recording-row">
+      <button id="recordTimelapseBtn" class="start-recording-btn">
+        <i data-lucide="video" class="icon record-icon"></i>
+        <span>Start Recording</span>
+      </button>
+    </div>
+  </div>
+</aside>
+
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script type="module" src="js/hoist.js"></script>
 
 <script>
   // Initialize Lucide icons
@@ -201,21 +320,8 @@
     cursorDot.style.display = 'none';
     cursorOutline.style.display = 'none';
   }
-
-  // Mouse Parallax Effect for firstScreen
-  document.addEventListener('mousemove', (e) => {
-    const x = (window.innerWidth - e.pageX * 2) / 100;
-    const y = (window.innerHeight - e.pageY * 2) / 100;
-
-    document.querySelectorAll('.parallax-blob').forEach(el => {
-      const speed = parseFloat(el.getAttribute('data-speed')) || 0.05;
-      const xPos = x * speed * 100;
-      const yPos = y * speed * 100;
-      
-      el.style.transform = `translate(${xPos}px, ${yPos}px)`;
-    });
-  });
 </script>
 
 </body>
 </html>
+

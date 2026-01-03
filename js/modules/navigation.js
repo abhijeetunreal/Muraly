@@ -1,4 +1,11 @@
-// ================= NAVIGATION =================
+// ================= NAVIGATION (LEGACY) =================
+// NOTE: This module is now legacy code for the old single-page architecture (muraly.js)
+// The new modular architecture uses:
+// - muraly.html: Router page that navigates to hoist.html or join.html
+// - hoist.html + hoist.js: Host AR session page
+// - join.html + join.js: Join session page
+// URL parameter handling for join.html is now in join.js
+
 import { state } from './state.js';
 import { dom } from './dom.js';
 import { startCamera } from './camera.js';
