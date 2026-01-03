@@ -73,6 +73,35 @@
 </script>
 
 <link rel="stylesheet" href="styles/muraly.css">
+
+<!-- Dynamic viewport units & keyboard detection -->
+<script>
+  (function() {
+    const docEl = document.documentElement;
+    const applyViewportUnits = () => {
+      const vv = window.visualViewport;
+      const height = (vv && vv.height) ? vv.height : window.innerHeight;
+      docEl.style.setProperty('--vh', `${height * 0.01}px`);
+      const kbHeight = Math.max(window.innerHeight - height, 0);
+      docEl.style.setProperty('--kb-height', `${kbHeight}px`);
+      const keyboardOpen = kbHeight > 120;
+      const body = document.body;
+      if (body) {
+        body.classList.toggle('keyboard-open', keyboardOpen);
+      }
+    };
+    window.addEventListener('resize', applyViewportUnits);
+    window.addEventListener('orientationchange', applyViewportUnits);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', applyViewportUnits);
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', applyViewportUnits);
+    } else {
+      applyViewportUnits();
+    }
+  })();
+</script>
 </head>
 
 <body class="font-grotesk antialiased">

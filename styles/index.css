@@ -1054,3 +1054,21 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* Small-screen hero adjustments */
+#hero-title {
+  word-break: break-word;
+}
+
+@media (max-width: 640px) {
+  #hero-section {
+    padding-top: 32px;
+  }
+  #hero-title {
+    font-size: clamp(48px, 16vw, 72px) !important;
+    line-height: 0.95 !important;
+  }
+  #hero-cta p {
+    font-size: 15px;
+  }
+}
