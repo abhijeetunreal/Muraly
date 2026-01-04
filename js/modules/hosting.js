@@ -6,7 +6,7 @@ import { isMobileDevice, isFirefox, isDesktopOrLaptop } from './utils.js';
 import { enterViewerMode } from './viewer.js';
 import { stopRecordingTimelapse } from './recording.js';
 import { registerSession, unregisterSession } from './discovery.js';
-import { showAlert, showChoiceDialog, showPinInputDialog, showNameInputDialog } from './alert.js';
+import { showAlert, showChoiceDialog, showPinInputDialog, showNameInputDialog, showApprovalDialog } from './alert.js';
 import { updateParticipantsList } from './ui-controls.js';
 
 // Helper function to safely update shareId status (handles missing element)
@@ -252,9 +252,29 @@ export function stopHosting() {
     }
   });
   
+  // Close all pending participants
+  state.pendingParticipants.forEach(pending => {
+    if (pending.dataConnection) {
+      // Notify participant that session ended
+      try {
+        pending.dataConnection.send(JSON.stringify({
+          type: 'approval_denied',
+          reason: 'Session ended'
+        }));
+      } catch (err) {
+        // Connection may already be closed
+      }
+      pending.dataConnection.close();
+    }
+    if (pending.call) {
+      pending.call.close();
+    }
+  });
+  
   // Clear participant tracking
   state.activeConnections = [];
   state.participants = [];
+  state.pendingParticipants = [];
   state.participantCounter = 0;
   state.call = null;
   
@@ -654,6 +674,76 @@ export async function host() {
       let pinValidationTimeout = null;
       let nameTimeout = null;
       
+      // Helper function to request host approval for participant
+      async function requestHostApproval(call, peerId, participantName, dataConnection, pinValidated) {
+        // Store pending participant
+        const pendingParticipant = {
+          call: call,
+          peerId: peerId,
+          participantName: participantName,
+          dataConnection: dataConnection,
+          pinValidated: pinValidated
+        };
+        state.pendingParticipants.push(pendingParticipant);
+        
+        // Send approval_pending message to participant
+        dataConnection.send(JSON.stringify({
+          type: 'approval_pending'
+        }));
+        
+        // Update status
+        const displayName = participantName || `Participant ${peerId.substring(0, 8)}`;
+        updateShareIdStatus(`${displayName} is waiting for approval...`, "warning");
+        
+        // Show approval dialog
+        try {
+          const approved = await showApprovalDialog(participantName, peerId, pinValidated);
+          
+          // Remove from pending list
+          const pendingIndex = state.pendingParticipants.findIndex(p => p.peerId === peerId);
+          if (pendingIndex !== -1) {
+            state.pendingParticipants.splice(pendingIndex, 1);
+          }
+          
+          if (approved) {
+            // Send approval message
+            dataConnection.send(JSON.stringify({
+              type: 'approval_approved'
+            }));
+            
+            // Proceed with join
+            handleParticipantJoin(call, peerId, participantName, dataConnection);
+          } else {
+            // Send denial message
+            dataConnection.send(JSON.stringify({
+              type: 'approval_denied'
+            }));
+            
+            // Close connections
+            setTimeout(() => {
+              dataConnection.close();
+              call.close();
+            }, 500);
+            
+            showAlert(`${displayName} was denied access`, 'info', 3000);
+          }
+        } catch (err) {
+          console.error("Error in approval dialog:", err);
+          // On error, deny access
+          const pendingIndex = state.pendingParticipants.findIndex(p => p.peerId === peerId);
+          if (pendingIndex !== -1) {
+            state.pendingParticipants.splice(pendingIndex, 1);
+          }
+          dataConnection.send(JSON.stringify({
+            type: 'approval_denied'
+          }));
+          setTimeout(() => {
+            dataConnection.close();
+            call.close();
+          }, 500);
+        }
+      }
+      
       // Helper function to handle participant join after validation
       function handleParticipantJoin(call, peerId, participantName, dataConnection) {
         // Answer the call
@@ -710,8 +800,8 @@ export async function host() {
           nameTimeout = setTimeout(() => {
             if (!nameReceived) {
               console.log("Name not received, using auto-generated name");
-              // Proceed with auto-generated name
-              handleParticipantJoin(incomingCall, peerId, null, dataConnection);
+              // Proceed with approval request (name will be auto-generated)
+              requestHostApproval(incomingCall, peerId, null, dataConnection, false);
             }
           }, 60000);
         }
@@ -746,7 +836,8 @@ export async function host() {
               nameTimeout = setTimeout(() => {
                 if (!nameReceived) {
                   console.log("Name not received after PIN validation, using auto-generated name");
-                  handleParticipantJoin(incomingCall, peerId, null, dataConnection);
+                  // Proceed with approval request (name will be auto-generated, PIN was validated)
+                  requestHostApproval(incomingCall, peerId, null, dataConnection, true);
                 }
               }, 60000);
             } else {
@@ -776,14 +867,15 @@ export async function host() {
             // If PIN was required, validate it was successful before proceeding
             if (state.isPrivateSession && state.sessionPin) {
               if (pinValidated) {
-                handleParticipantJoin(incomingCall, peerId, participantName, dataConnection);
+                // PIN validated and name received - show approval dialog
+                requestHostApproval(incomingCall, peerId, participantName, dataConnection, pinValidated);
               } else {
                 console.log("Name received but PIN not validated yet");
                 // Wait for PIN validation
               }
             } else {
-              // Public session - proceed immediately
-              handleParticipantJoin(incomingCall, peerId, participantName, dataConnection);
+              // Public session - show approval dialog
+              requestHostApproval(incomingCall, peerId, participantName, dataConnection, false);
             }
           }
         } catch (err) {
@@ -799,6 +891,13 @@ export async function host() {
         if (nameTimeout) {
           clearTimeout(nameTimeout);
         }
+        
+        // Clean up pending participant if exists
+        const pendingIndex = state.pendingParticipants.findIndex(p => p.peerId === peerId);
+        if (pendingIndex !== -1) {
+          state.pendingParticipants.splice(pendingIndex, 1);
+        }
+        
         incomingCall.close();
       });
       
@@ -809,6 +908,12 @@ export async function host() {
         }
         if (nameTimeout) {
           clearTimeout(nameTimeout);
+        }
+        
+        // Clean up pending participant if exists
+        const pendingIndex = state.pendingParticipants.findIndex(p => p.peerId === peerId);
+        if (pendingIndex !== -1) {
+          state.pendingParticipants.splice(pendingIndex, 1);
         }
       });
     });
@@ -1068,6 +1173,32 @@ export async function join(idOrLink, isPrivate = null) {
                 name: participantName || null
               }));
               console.log("Name sent to host:", participantName || "null (using auto-generated)");
+            } else if (message.type === 'approval_pending') {
+              // Host is reviewing join request
+              console.log("Waiting for host approval...");
+              updateShareIdStatus("Waiting for host approval...", "warning");
+            } else if (message.type === 'approval_approved') {
+              // Host approved the join request
+              console.log("Host approved join request");
+              updateShareIdStatus("Approved! Connecting...", "success");
+              // Continue normal flow - wait for stream
+            } else if (message.type === 'approval_denied') {
+              // Host denied the join request
+              console.log("Host denied join request");
+              const reason = message.reason || "Host denied your request to join";
+              updateShareIdStatus("Access denied", "error");
+              setTimeout(() => {
+                showAlert(reason === 'Session ended' ? "The session has ended." : "Host denied your request to join the session.", 'error');
+                if (state.call) {
+                  state.call.close();
+                }
+                if (dom.camera) dom.camera.classList.add("hidden");
+                if (dom.overlayCanvas) dom.overlayCanvas.classList.add("hidden");
+                if (dom.gridCanvas) dom.gridCanvas.classList.add("hidden");
+                if (dom.panel) dom.panel.classList.add("hidden");
+                if (dom.topBar) dom.topBar.classList.add("hidden");
+                if (dom.joinScreen) dom.joinScreen.classList.remove("hidden");
+              }, 500);
             }
           } catch (err) {
             console.error("Error parsing data connection message:", err);

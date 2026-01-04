@@ -339,6 +339,20 @@
   pointer-events: none;
 }
 
+/* Approval Dialog Container Styles */
+#customApprovalContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
 @media (max-width: 767px) {
   .custom-name-input {
     font-size: clamp(0.9375rem, 2vw, 1rem);
