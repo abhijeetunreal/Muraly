@@ -149,11 +149,10 @@ async function doJoin(sessionCode, isPrivate = null) {
     }
   }
   
-  // Hide join screen, show viewer
-  dom.joinScreen.classList.add("hidden");
+  // Hide sessions list container, but keep join screen visible to show status updates
   dom.sessionsListContainer.classList.add("hidden");
   
-  // Join the session
+  // Join the session (join screen will be hidden when stream is received in viewer.js)
   join(idOrLink, isPrivate);
 }
 
