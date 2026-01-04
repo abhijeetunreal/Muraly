@@ -35,13 +35,13 @@
 }
 
 .mode-btn.active {
-  background: rgba(0, 212, 255, 0.15);
-  border-color: var(--primary);
-  color: var(--primary);
+  background: rgba(204, 255, 0, 0.15);
+  border-color: var(--neon-lime);
+  color: var(--neon-lime);
   box-shadow: 
-    0 0 12px rgba(0, 212, 255, 0.3),
+    0 0 12px rgba(204, 255, 0, 0.4),
     inset 0 1px 2px rgba(255, 255, 255, 0.1),
-    0 0 0 1px rgba(0, 212, 255, 0.2);
+    0 0 0 1px rgba(204, 255, 0, 0.3);
   font-weight: 700;
   position: relative;
 }
@@ -53,7 +53,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--gradient-accent);
+  background: linear-gradient(135deg, #CCFF00 0%, #00FFFF 100%);
   border-radius: 0 0 var(--radius-md) var(--radius-md);
 }
 
@@ -138,11 +138,11 @@ button:hover::before {
 button:hover {
   transform: translateY(-2px);
   background: var(--bg-card-hover);
-  border-color: var(--border-accent);
+  border-color: var(--border-accent-lime-hover);
   color: var(--text-primary) !important;
   box-shadow: 
     0 4px 16px rgba(0, 0, 0, 0.3),
-    0 0 0 1px var(--border-accent),
+    0 0 0 1px rgba(204, 255, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
@@ -150,16 +150,16 @@ button:active {
   transform: translateY(0);
   box-shadow: 
     0 2px 8px rgba(0, 0, 0, 0.25),
-    0 0 0 1px var(--border-accent);
+    0 0 0 1px rgba(204, 255, 0, 0.4);
 }
 
 button.primary {
-  background: var(--gradient-accent);
-  border: 1px solid var(--primary);
-  color: #FFFFFF !important;
+  background: var(--gradient-lime-cyan);
+  border: 1px solid var(--neon-lime);
+  color: var(--dark-void) !important;
   box-shadow: 
-    0 4px 16px rgba(0, 212, 255, 0.3),
-    0 0 0 1px rgba(0, 212, 255, 0.2),
+    0 4px 16px rgba(204, 255, 0, 0.4),
+    0 0 0 1px rgba(204, 255, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   font-weight: 700;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -167,32 +167,32 @@ button.primary {
 }
 
 button.primary:hover {
-  background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent-secondary) 100%);
-  border-color: var(--primary-light);
-  color: #FFFFFF !important;
+  background: linear-gradient(135deg, #CCFF00 0%, #00FFFF 100%);
+  border-color: var(--neon-lime);
+  color: #0A0A0A !important;
   box-shadow: 
-    0 6px 24px rgba(0, 212, 255, 0.4),
-    0 0 0 1px rgba(0, 212, 255, 0.3),
+    0 6px 24px rgba(204, 255, 0, 0.5),
+    0 0 0 1px rgba(204, 255, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
   transform: translateY(-3px) scale(1.02);
 }
 
 button.primary:active {
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent-secondary-dark) 100%);
-  border-color: var(--primary-dark);
+  background: linear-gradient(135deg, var(--neon-lime-dark) 0%, var(--neon-cyan-dark) 100%);
+  border-color: var(--neon-lime-dark);
   transform: translateY(-1px) scale(0.98);
 }
 
 /* Host Button - Enhanced Styling */
 #hostBtn {
-  background: var(--gradient-accent);
-  border: 1px solid var(--primary);
-  color: #FFFFFF !important;
+  background: var(--gradient-lime-cyan);
+  border: 1px solid var(--neon-lime);
+  color: var(--dark-void) !important;
   font-weight: 700;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   box-shadow: 
-    0 6px 24px rgba(0, 212, 255, 0.35),
-    0 0 0 1px rgba(0, 212, 255, 0.25),
+    0 6px 24px rgba(204, 255, 0, 0.4),
+    0 0 0 1px rgba(204, 255, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.25);
   min-height: var(--touch-target-comfortable);
   font-size: 0.875rem;
@@ -200,19 +200,19 @@ button.primary:active {
 }
 
 #hostBtn:hover {
-  background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent-secondary) 100%);
-  border-color: var(--primary-light);
-  color: #FFFFFF !important;
+  background: linear-gradient(135deg, #CCFF00 0%, #00FFFF 100%);
+  border-color: var(--neon-lime);
+  color: #0A0A0A !important;
   transform: translateY(-3px) scale(1.02);
   box-shadow: 
-    0 8px 32px rgba(0, 212, 255, 0.45),
-    0 0 0 1px rgba(0, 212, 255, 0.35),
+    0 8px 32px rgba(204, 255, 0, 0.5),
+    0 0 0 1px rgba(204, 255, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 #hostBtn:active {
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent-secondary-dark) 100%);
-  border-color: var(--primary-dark);
+  background: linear-gradient(135deg, var(--neon-lime-dark) 0%, var(--neon-cyan-dark) 100%);
+  border-color: var(--neon-lime-dark);
   transform: translateY(-1px) scale(0.98);
 }
 
