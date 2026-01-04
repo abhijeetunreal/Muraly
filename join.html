@@ -5,13 +5,18 @@
 <!-- Primary Meta Tags -->
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
-<title>Muraly — Join AR Session</title>
-<meta name="title" content="Muraly — AR Mural Maker & Wall Visualization App" />
-<meta name="description" content="Muraly is an augmented reality mural maker that lets you visualize wall art and murals in real spaces before painting or printing." />
-<meta name="author" content="Codefrydev" />
-<meta name="keywords" content="Muraly, AR mural maker, augmented reality wall art, mural visualization, AR design app, wall design, interior visualization" />
+<title>Join AR Mural Session - Muraly Multi-Device Collaboration Tool</title>
+<meta name="title" content="Join AR Mural Session - Muraly Multi-Device Collaboration Tool" />
+<meta name="description" content="Join an existing AR mural session with Muraly. Enter a share ID or browse available sessions to view murals in real-time on multiple devices. Perfect for teams and collaboration." />
+<meta name="author" content="Codefrydev, Agurutwa Foundation" />
+<meta name="keywords" content="Muraly, AR mural maker, join AR session, augmented reality wall art, mural visualization, multi-device AR" />
 <meta name="robots" content="index, follow" />
-<link rel="canonical" href="https://codefrydev.in/metatag/" />
+<link rel="canonical" href="https://muraly.codefrydev.in/join.html" />
+
+<!-- Hreflang Tags -->
+<link rel="alternate" hreflang="en" href="https://muraly.codefrydev.in/join.html" />
+<link rel="alternate" hreflang="en-US" href="https://muraly.codefrydev.in/join.html" />
+<link rel="alternate" hreflang="x-default" href="https://muraly.codefrydev.in/join.html" />
 
 <!-- Theme & Icons -->
 <meta name="theme-color" content="#0A0A0A" />
@@ -20,17 +25,18 @@
 
 <!-- Open Graph -->
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://codefrydev.in/metatag/" />
-<meta property="og:title" content="Muraly — Design & Preview Murals in AR" />
-<meta property="og:description" content="Preview murals on real walls using augmented reality. Muraly helps artists and designers plan wall art with confidence." />
-<meta property="og:image" content="https://codefrydev.in/images/IconCodefrydev.svg" />
-<meta property="og:site_name" content="Muraly -AR Mural Maker & Wall Visualization App" />
+<meta property="og:url" content="https://muraly.codefrydev.in/join.html" />
+<meta property="og:title" content="Muraly — Join AR Session" />
+<meta property="og:description" content="Join an existing AR mural session with Muraly. Enter a share ID or browse available sessions to view murals in real-time on multiple devices." />
+<meta property="og:image" content="https://muraly.codefrydev.in/assets/og-image.jpg" />
+<meta property="og:site_name" content="Muraly - AR Mural Maker & Wall Visualization App" />
+<meta property="og:locale" content="en_US" />
 
 <!-- Twitter -->
-<meta name="twitter:card" content="Visualize murals and wall art in real spaces using AR. Create, preview, and design with Muraly." />
-<meta name="twitter:title" content="Muraly — Design & Preview Murals in AR" />
-<meta name="twitter:description" content="Preview murals on real walls using augmented reality. Muraly helps artists and designers plan wall art with confidence." />
-<meta name="twitter:image" content="https://codefrydev.in/images/IconCodefrydev.svg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Muraly — Join AR Session" />
+<meta name="twitter:description" content="Join an existing AR mural session with Muraly. Enter a share ID or browse available sessions to view murals in real-time on multiple devices." />
+<meta name="twitter:image" content="https://muraly.codefrydev.in/assets/og-image.jpg" />
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -66,6 +72,67 @@
 </script>
 
 <link rel="stylesheet" href="styles/muraly.css">
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://muraly.codefrydev.in/join.html#webpage",
+      "url": "https://muraly.codefrydev.in/join.html",
+      "name": "Muraly — Join AR Session",
+      "description": "Join an existing AR mural session. Enter a share ID or browse available sessions to view murals in real-time on multiple devices.",
+      "inLanguage": "en-US",
+      "isPartOf": {
+        "@id": "https://muraly.codefrydev.in/#website"
+      },
+      "image": {
+        "@type": "ImageObject",
+        "url": "https://muraly.codefrydev.in/assets/og-image.jpg",
+        "width": 1200,
+        "height": 630
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://muraly.codefrydev.in/assets/og-image.jpg",
+        "width": 1200,
+        "height": 630
+      },
+      "potentialAction": {
+        "@type": "JoinAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://muraly.codefrydev.in/join.html",
+          "actionPlatform": [
+            "http://schema.org/DesktopWebPlatform",
+            "http://schema.org/MobileWebPlatform"
+          ]
+        }
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://muraly.codefrydev.in/join.html#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://muraly.codefrydev.in/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Join Session",
+          "item": "https://muraly.codefrydev.in/join.html"
+        }
+      ]
+    }
+  ]
+}
+</script>
 
 <!-- Dynamic viewport units & keyboard detection -->
 <script>
@@ -109,6 +176,7 @@
 <!-- JOIN SCREEN: Enter key -->
 <div id="joinScreen">
   <div class="join-screen-content">
+    <h1 class="sr-only">Join AR Mural Session - Muraly</h1>
     <h2>Join a Session</h2>
     
     <!-- Connection Status -->
