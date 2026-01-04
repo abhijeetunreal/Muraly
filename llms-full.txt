@@ -122,7 +122,7 @@ Muraly believes expression is a human right. The application is completely free 
 ## SEO & Metadata
 
 ### Structured Data (JSON-LD)
-- Organization schema (Muraly Initiative)
+- Organization schema (Codefrydev, Agurutwa Foundation)
 - WebApplication schema
 - SoftwareApplication schema
 - WebPage schemas
@@ -159,12 +159,12 @@ Muraly believes expression is a human right. The application is completely free 
 ## Development
 - Non-profit initiative
 - Open to community contributions
-- Supported by Muraly Initiative and Agurutwa Foundation
+- Supported by Codefrydev, Agurutwa Foundation
 
 ## Contact Information
 - Email: codefrydev@gmail.com
 - Website: https://muraly.codefrydev.in/
-- Organization: Muraly Initiative
+- Organization: Codefrydev, Agurutwa Foundation
 
 ## Social Media
 - Instagram: https://instagram.com/muraly
@@ -172,7 +172,7 @@ Muraly believes expression is a human right. The application is completely free 
 
 ## Related Organizations
 - Agurutwa Foundation: Partner organization providing free education to underprivileged children
-- Muraly Initiative: Non-profit organization behind the project
+- Codefrydev, Agurutwa Foundation: Organizations behind the project
 
 ## License & Usage
 - Free to use

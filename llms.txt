@@ -24,5 +24,5 @@ https://muraly.codefrydev.in/
 Email: codefrydev@gmail.com
 
 ## License
-Free, non-profit initiative supported by Muraly Initiative and Agurutwa Foundation
+Free, non-profit initiative supported by Codefrydev, Agurutwa Foundation
 
