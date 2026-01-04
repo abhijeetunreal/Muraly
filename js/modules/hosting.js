@@ -2,7 +2,7 @@
 import { state } from './state.js';
 import { dom } from './dom.js';
 import { startCamera } from './camera.js';
-import { isMobileDevice, isFirefox } from './utils.js';
+import { isMobileDevice, isFirefox, isDesktopOrLaptop } from './utils.js';
 import { enterViewerMode } from './viewer.js';
 import { stopRecordingTimelapse } from './recording.js';
 import { registerSession, unregisterSession } from './discovery.js';
@@ -293,6 +293,162 @@ export function stopHosting() {
   // Stop recording if active
   if (state.isRecording) {
     stopRecordingTimelapse();
+  }
+  
+  // Hide change screen button
+  if (dom.changeScreenContainer) {
+    dom.changeScreenContainer.classList.add("hidden");
+  }
+}
+
+export async function changeScreenShare() {
+  // Only available when hosting is active
+  if (!state.isHosting) {
+    showAlert("Please start hosting first.", 'warning');
+    return;
+  }
+  
+  // Only available on desktop/laptop with screen sharing (not tablets or smartphones)
+  const isDesktop = isDesktopOrLaptop();
+  const hasDisplayMedia = navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia;
+  
+  if (!isDesktop || !hasDisplayMedia) {
+    showAlert("Screen sharing change is only available on desktop and laptop devices.", 'warning');
+    return;
+  }
+  
+  // Only works if we're using screen share (not canvas capture)
+  if (state.canvasStream) {
+    showAlert("Cannot change screen in mobile/canvas mode.", 'warning');
+    return;
+  }
+  
+  try {
+    // Get new screen share stream
+    const isFirefoxBrowser = isFirefox();
+    let newStream = null;
+    
+    if (isFirefoxBrowser) {
+      // Firefox: Try different constraint approaches
+      try {
+        newStream = await navigator.mediaDevices.getDisplayMedia({});
+      } catch (err) {
+        try {
+          newStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+        } catch (err2) {
+          newStream = await navigator.mediaDevices.getDisplayMedia({ 
+            video: { mediaSource: 'screen' } 
+          });
+        }
+      }
+    } else {
+      // Chrome/others: Use full constraints
+      newStream = await navigator.mediaDevices.getDisplayMedia({
+        video: { 
+          cursor: "always",
+          displaySurface: "monitor"
+        },
+        audio: false 
+      });
+    }
+    
+    // Validate stream was obtained
+    if (!newStream || !newStream.getVideoTracks() || newStream.getVideoTracks().length === 0) {
+      throw new Error("Failed to obtain new screen sharing stream");
+    }
+    
+    const newVideoTrack = newStream.getVideoTracks()[0];
+    
+    // Stop old screen share track
+    if (state.hostStream) {
+      state.hostStream.getVideoTracks().forEach(track => {
+        if (track !== newVideoTrack) {
+          track.stop();
+        }
+      });
+    }
+    
+    // Replace tracks in all active connections
+    let successCount = 0;
+    let failCount = 0;
+    
+    for (const call of state.activeConnections) {
+      if (!call || !call.peerConnection) {
+        console.warn("Call or peerConnection not available for track replacement");
+        failCount++;
+        continue;
+      }
+      
+      try {
+        const peerConnection = call.peerConnection;
+        const senders = peerConnection.getSenders();
+        
+        // Find the video track sender
+        const videoSender = senders.find(sender => 
+          sender.track && sender.track.kind === 'video'
+        );
+        
+        if (videoSender) {
+          await videoSender.replaceTrack(newVideoTrack);
+          successCount++;
+          console.log("Successfully replaced video track for participant");
+        } else {
+          console.warn("No video sender found for this connection");
+          failCount++;
+        }
+      } catch (err) {
+        console.error("Error replacing track for connection:", err);
+        failCount++;
+      }
+    }
+    
+    // Update state.hostStream
+    state.hostStream = newStream;
+    
+    // Set up onended handler for new track
+    newVideoTrack.onended = () => {
+      console.log("User stopped sharing screen");
+      stopHosting();
+    };
+    
+    // Show success message
+    if (successCount > 0) {
+      if (failCount > 0) {
+        showAlert(`Screen changed successfully for ${successCount} participant(s). ${failCount} connection(s) failed to update.`, 'warning');
+      } else {
+        showAlert(`Screen changed successfully for all ${successCount} participant(s).`, 'success');
+      }
+    } else {
+      showAlert("Screen changed but no active connections to update.", 'info');
+    }
+    
+  } catch (err) {
+    // Handle user cancellation gracefully
+    if (err.name === "NotAllowedError" || err.name === "AbortError") {
+      // User cancelled or denied - don't show error, just return
+      console.log("User cancelled screen share change");
+      return;
+    }
+    
+    // Handle other errors
+    console.error("Error changing screen share:", err);
+    
+    const isFirefoxBrowser = isFirefox();
+    if (isFirefoxBrowser) {
+      if (err.message && (err.message.includes("can not be found here") || err.message.includes("The object can not be found here"))) {
+        showAlert("Screen sharing failed. Please grant Screen Recording permission in System Preferences > Security & Privacy > Privacy > Screen Recording.", 'error');
+      } else if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+        showAlert("Permission denied. Please allow screen sharing access.", 'error');
+      } else {
+        showAlert("Failed to change screen: " + (err.message || err.name || "Unknown error"), 'error');
+      }
+    } else {
+      if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+        showAlert("Permission denied. Please allow screen sharing access.", 'error');
+      } else {
+        showAlert("Failed to change screen: " + (err.message || err.name || "Unknown error"), 'error');
+      }
+    }
   }
 }
 
@@ -674,10 +830,18 @@ export async function host() {
       if (dom.shareLinkInput) dom.shareLinkInput.value = shareLink;
       if (dom.shareLinkContainer) dom.shareLinkContainer.classList.remove("hidden");
       
+      // Check if desktop/laptop (not tablet or smartphone)
+      const isDesktop = isDesktopOrLaptop();
+      
       if (isMobile || !hasDisplayMedia) {
         updateShareIdStatus(`Share Code: ${code} (Mobile Mode)${state.isPrivateSession ? ' 🔒 Private' : ''}`, "success");
       } else {
         updateShareIdStatus(`Share Code: ${code}${state.isPrivateSession ? ' 🔒 Private' : ''}`, "success");
+      }
+      
+      // Show change screen button only for desktop/laptop screen sharing (not tablets or smartphones)
+      if (isDesktop && hasDisplayMedia && dom.changeScreenContainer) {
+        dom.changeScreenContainer.classList.remove("hidden");
       }
       
       // Initialize participant list UI

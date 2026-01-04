@@ -15,6 +15,8 @@ export const dom = {
   closeSessionsListBtn: document.getElementById("closeSessionsListBtn"),
   backToFirstBtn: document.getElementById("backToFirstBtn"),
   hostBtn: document.getElementById("hostBtn"),
+  changeScreenBtn: document.getElementById("changeScreenBtn"),
+  changeScreenContainer: document.getElementById("changeScreenContainer"),
   sketchBtn: document.getElementById("sketchBtn"),
   imageBtn: document.getElementById("imageBtn"),
   lockBtn: document.getElementById("lockBtn"),
