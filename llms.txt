@@ -1,0 +1,28 @@
+# Muraly - AR Mural Visualization App
+
+## About
+Muraly is a free, web-based augmented reality application that allows users to visualize murals and wall art in real spaces using their device's camera. No installation required - works directly in any modern browser.
+
+## Key Features
+- AR Visualization: See murals projected onto real walls in real-time
+- Image & Sketch Mode: Upload images and convert to sketch outlines
+- Multi-Device Sharing: Share AR sessions with unlimited devices via peer-to-peer
+- Save & Load Sessions: Persist mural configurations
+- Video Recording: Record timelapse or full video of creation process
+- Touch Gestures: Intuitive controls for move, scale, rotate, and opacity
+
+## Technology
+- Web-based (HTML5, JavaScript)
+- WebRTC for peer-to-peer connections
+- Camera API for AR features
+- No backend required - fully client-side
+
+## Website
+https://muraly.codefrydev.in/
+
+## Contact
+Email: codefrydev@gmail.com
+
+## License
+Free, non-profit initiative supported by Codefrydev, Agurutwa Foundation
+
