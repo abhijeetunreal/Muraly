@@ -299,6 +299,11 @@ export function stopHosting() {
   if (dom.changeScreenContainer) {
     dom.changeScreenContainer.classList.add("hidden");
   }
+  
+  // Hide stop session button
+  if (dom.stopSessionContainer) {
+    dom.stopSessionContainer.classList.add("hidden");
+  }
 }
 
 export async function changeScreenShare() {
@@ -842,6 +847,11 @@ export async function host() {
       // Show change screen button only for desktop/laptop screen sharing (not tablets or smartphones)
       if (isDesktop && hasDisplayMedia && dom.changeScreenContainer) {
         dom.changeScreenContainer.classList.remove("hidden");
+      }
+      
+      // Show stop session button
+      if (dom.stopSessionContainer) {
+        dom.stopSessionContainer.classList.remove("hidden");
       }
       
       // Initialize participant list UI
