@@ -487,6 +487,90 @@ export function showNameInputDialog(message, placeholder = 'Enter your name', ma
   });
 }
 
+/**
+ * Show an approval dialog for participant join request
+ * @param {string} participantName - The participant's name
+ * @param {string} peerId - The participant's peer ID
+ * @param {boolean} pinValidated - Whether PIN was validated (for private sessions)
+ * @returns {Promise<boolean>} Resolves with true if approved, false if denied
+ */
+export function showApprovalDialog(participantName, peerId, pinValidated) {
+  return new Promise((resolve) => {
+    // Create approval container if it doesn't exist
+    let approvalContainer = document.getElementById('customApprovalContainer');
+    if (!approvalContainer) {
+      approvalContainer = document.createElement('div');
+      approvalContainer.id = 'customApprovalContainer';
+      document.body.appendChild(approvalContainer);
+    }
+
+    // Create backdrop overlay
+    const backdrop = document.createElement('div');
+    backdrop.className = 'custom-confirm-backdrop';
+    
+    // Create approval dialog
+    const approvalDialog = document.createElement('div');
+    approvalDialog.className = 'custom-confirm';
+    
+    // Shorten peer ID for display
+    const shortPeerId = peerId ? `${peerId.substring(0, 8)}...` : 'Unknown';
+    
+    // Build message with participant info
+    let message = `${escapeHtml(participantName || 'Unknown')} wants to join the session`;
+    if (pinValidated !== undefined) {
+      message += `\n\nPeer ID: ${shortPeerId}`;
+      if (pinValidated) {
+        message += `\nPIN: ✓ Validated`;
+      } else {
+        message += `\nPIN: Public session`;
+      }
+    }
+    
+    approvalDialog.innerHTML = `
+      <div class="custom-confirm-content">
+        <span class="custom-confirm-icon">👤</span>
+        <span class="custom-confirm-message" style="white-space: pre-line;">${message}</span>
+        <div class="custom-confirm-buttons">
+          <button class="custom-confirm-btn custom-confirm-cancel">Deny</button>
+          <button class="custom-confirm-btn custom-confirm-ok">Approve</button>
+        </div>
+      </div>
+    `;
+
+    // Add to container
+    approvalContainer.appendChild(backdrop);
+    approvalContainer.appendChild(approvalDialog);
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+      backdrop.classList.add('custom-confirm-show');
+      approvalDialog.classList.add('custom-confirm-show');
+    });
+
+    // Close function
+    const closeApprovalDialog = (result) => {
+      backdrop.classList.remove('custom-confirm-show');
+      approvalDialog.classList.remove('custom-confirm-show');
+      backdrop.classList.add('custom-confirm-hide');
+      approvalDialog.classList.add('custom-confirm-hide');
+      
+      setTimeout(() => {
+        backdrop.remove();
+        approvalDialog.remove();
+        resolve(result);
+      }, 300); // Match CSS animation duration
+    };
+
+    // Button handlers
+    const approveBtn = approvalDialog.querySelector('.custom-confirm-ok');
+    const denyBtn = approvalDialog.querySelector('.custom-confirm-cancel');
+    
+    approveBtn.addEventListener('click', () => closeApprovalDialog(true));
+    denyBtn.addEventListener('click', () => closeApprovalDialog(false));
+    backdrop.addEventListener('click', () => closeApprovalDialog(false));
+  });
+}
+
 // Escape HTML to prevent XSS
 function escapeHtml(text) {
   const div = document.createElement('div');

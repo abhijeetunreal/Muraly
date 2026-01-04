@@ -44,6 +44,7 @@ export const state = {
   call: null, // Keep for backward compatibility, but use activeConnections instead
   activeConnections: [], // Array of active PeerJS call objects
   participants: [], // Array of participant metadata: { peerId, friendlyName, connectedAt, call, dataConnection }
+  pendingParticipants: [], // Array of participants awaiting approval: { call, peerId, participantName, dataConnection, pinValidated }
   participantCounter: 0, // Counter for auto-generating participant names
   hostStream: null,
   isHosting: false,

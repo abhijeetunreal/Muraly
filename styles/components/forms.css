@@ -1,7 +1,7 @@
 .row {
   display: flex !important; 
-  gap: var(--gap-sm); 
-  margin-bottom: clamp(0.75rem, 2vw, 1rem);
+  gap: clamp(0.5rem, 1vw, 0.75rem); 
+  margin-bottom: clamp(0.5rem, 1vw, 0.625rem);
   align-items: center;
   flex-wrap: nowrap;
   width: 100%;
@@ -26,15 +26,15 @@
 
 .row input:hover,
 .row select:hover {
-  border-color: var(--border-accent);
+  border-color: var(--border-accent-lime-hover);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .row input:focus,
 .row select:focus {
-  border-color: var(--border-accent);
+  border-color: var(--border-accent-lime-hover);
   box-shadow: 
-    0 0 0 3px rgba(0, 212, 255, 0.2),
+    0 0 0 3px rgba(204, 255, 0, 0.2),
     0 4px 12px rgba(0, 0, 0, 0.25);
   transform: translateY(-1px);
   outline: none;
@@ -47,9 +47,9 @@
 
 label { 
   width: auto;
-  min-width: clamp(70px, 15vw, 90px);
+  min-width: clamp(60px, 12vw, 75px);
   flex: 0 0 auto;
-  font-size: var(--font-xs); 
+  font-size: clamp(0.7rem, 1.5vw, 0.8rem); 
   opacity: 1 !important;
   font-weight: 600;
   font-family: 'Space Grotesk', sans-serif;
@@ -84,7 +84,7 @@ input[type="range"] {
 
 input[type="range"]:hover {
   background: var(--bg-card-hover);
-  border-color: var(--border-accent);
+  border-color: var(--border-accent-lime-hover);
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -93,11 +93,11 @@ input[type="range"]::-webkit-slider-thumb {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--gradient-accent);
+  background: var(--gradient-lime-cyan);
   cursor: pointer;
   box-shadow: 
-    0 2px 8px rgba(0, 212, 255, 0.4),
-    0 0 0 2px rgba(0, 212, 255, 0.2);
+    0 2px 8px rgba(204, 255, 0, 0.5),
+    0 0 0 2px rgba(204, 255, 0, 0.3);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   border: 2px solid rgba(255, 255, 255, 0.3);
 }
@@ -108,11 +108,11 @@ input[type="range"]::-moz-range-thumb {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--gradient-accent);
+  background: var(--gradient-lime-cyan);
   cursor: pointer;
   box-shadow: 
-    0 2px 8px rgba(0, 212, 255, 0.4),
-    0 0 0 2px rgba(0, 212, 255, 0.2);
+    0 2px 8px rgba(204, 255, 0, 0.5),
+    0 0 0 2px rgba(204, 255, 0, 0.3);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   border: 2px solid rgba(255, 255, 255, 0.3);
 }
@@ -120,26 +120,26 @@ input[type="range"]::-moz-range-thumb {
 input[type="range"]::-webkit-slider-thumb:hover {
   transform: scale(1.25);
   box-shadow: 
-    0 4px 16px rgba(0, 212, 255, 0.5),
-    0 0 0 3px rgba(0, 212, 255, 0.3);
+    0 4px 16px rgba(204, 255, 0, 0.6),
+    0 0 0 3px rgba(204, 255, 0, 0.4);
 }
 
 input[type="range"]::-moz-range-thumb:hover {
   transform: scale(1.25);
   box-shadow: 
-    0 4px 16px rgba(0, 212, 255, 0.5),
-    0 0 0 3px rgba(0, 212, 255, 0.3);
+    0 4px 16px rgba(204, 255, 0, 0.6),
+    0 0 0 3px rgba(204, 255, 0, 0.4);
 }
 
 input[type="file"] { 
   flex: 1; 
-  min-height: var(--touch-target-min);
+  min-height: 36px;
   max-width: 100%;
   width: 100%;
   color: var(--text-primary) !important;
-  font-size: var(--font-xs);
+  font-size: clamp(0.75rem, 1.5vw, 0.85rem);
   font-family: 'Space Grotesk', sans-serif;
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: 0.5rem 0.75rem;
   border-radius: var(--radius-md);
   background: var(--bg-card);
   backdrop-filter: blur(12px);
@@ -178,9 +178,9 @@ input[type="file"]::file-selector-button {
 }
 
 input[type="file"]::file-selector-button:hover {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: #FFFFFF;
+  background: var(--neon-lime);
+  border-color: var(--neon-lime);
+  color: var(--dark-void);
 }
 
 /* Handle the filename text that appears after the button */
@@ -189,7 +189,7 @@ input[type="file"]::-webkit-file-upload-button {
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius-sm);
   background: var(--bg-card-hover);
-  border: 1px solid var(--border-accent);
+  border: 1px solid rgba(204, 255, 0, 0.4);
   color: var(--text-primary);
   font-size: var(--font-xs);
   font-family: 'Space Grotesk', sans-serif;
@@ -200,42 +200,42 @@ input[type="file"]::-webkit-file-upload-button {
 }
 
 input[type="file"]::-webkit-file-upload-button:hover {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: #FFFFFF;
+  background: var(--neon-lime);
+  border-color: var(--neon-lime);
+  color: var(--dark-void);
 }
 
 input[type="file"]:hover {
   background: var(--bg-card-hover);
-  border-color: var(--border-accent);
+  border-color: var(--border-accent-lime-hover);
   border-style: solid;
   box-shadow: 
     0 4px 16px rgba(0, 0, 0, 0.3),
-    0 0 0 1px var(--border-accent),
+    0 0 0 1px rgba(204, 255, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transform: translateY(-1px);
 }
 
 input[type="file"]:focus {
-  border-color: var(--primary);
+  border-color: var(--neon-lime);
   border-style: solid;
   box-shadow: 
-    0 0 0 3px rgba(0, 212, 255, 0.2),
+    0 0 0 3px rgba(204, 255, 0, 0.2),
     0 4px 16px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 select, input[type="number"] {
   color: var(--text-primary) !important;
-  font-size: var(--font-xs);
+  font-size: clamp(0.75rem, 1.5vw, 0.85rem);
   font-family: 'Space Grotesk', sans-serif;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
   background: var(--bg-card);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  padding: var(--spacing-sm) var(--spacing-md);
-  min-height: var(--touch-target-min);
+  padding: 0.5rem 0.75rem;
+  min-height: 36px;
   box-shadow: 
     0 2px 8px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -250,20 +250,20 @@ select, input[type="number"] {
 }
 
 select:focus, input[type="number"]:focus {
-  border-color: var(--primary);
+  border-color: var(--neon-lime);
   background: var(--bg-card-hover);
   box-shadow: 
-    0 0 0 3px rgba(0, 212, 255, 0.2),
+    0 0 0 3px rgba(204, 255, 0, 0.2),
     0 4px 16px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 select:hover, input[type="number"]:hover {
-  border-color: var(--border-accent);
+  border-color: var(--border-accent-lime-hover);
   background: var(--bg-card-hover);
   box-shadow: 
     0 2px 8px rgba(0, 0, 0, 0.25),
-    0 0 0 1px var(--border-accent),
+    0 0 0 1px rgba(204, 255, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 

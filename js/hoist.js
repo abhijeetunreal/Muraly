@@ -9,7 +9,7 @@ import { initImageUpload } from './modules/image.js';
 import { initUIControls } from './modules/ui-controls.js';
 import { initGestures } from './modules/gestures.js';
 import { startRenderer } from './modules/renderer.js';
-import { host } from './modules/hosting.js';
+import { host, changeScreenShare, stopHosting } from './modules/hosting.js';
 import { saveSession, loadSession, tryLoadFromLocalStorage } from './modules/session.js';
 import { startRecordingTimelapse, initRecording } from './modules/recording.js';
 import { startCamera } from './modules/camera.js';
@@ -40,6 +40,16 @@ function init() {
   // Set up host button
   if (dom.hostBtn) {
     dom.hostBtn.onclick = host;
+  }
+  
+  // Set up change screen button
+  if (dom.changeScreenBtn) {
+    dom.changeScreenBtn.onclick = changeScreenShare;
+  }
+  
+  // Set up stop session button
+  if (dom.stopSessionBtn) {
+    dom.stopSessionBtn.onclick = stopHosting;
   }
   
   // Set up session buttons
