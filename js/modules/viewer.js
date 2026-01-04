@@ -147,6 +147,11 @@ export function enterViewerMode(stream) {
   
   dom.remoteVideoContainer.classList.remove("hidden");
   
+  // Hide join screen now that stream is successfully received
+  if (dom.joinScreen) {
+    dom.joinScreen.classList.add("hidden");
+  }
+  
   if (dom.shareId) {
     dom.shareId.textContent = "Connected to host";
     dom.shareId.className = "success";

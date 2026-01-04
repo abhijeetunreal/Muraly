@@ -3,7 +3,7 @@ import { state } from '../state.js';
 import { dom } from '../dom.js';
 import { startCamera } from '../camera.js';
 import { isMobileDevice, isFirefox, isDesktopOrLaptop } from '../utils.js';
-import { registerSession } from '../discovery.js';
+import { registerSession, SESSION_TIMEOUT } from '../discovery.js';
 import { showAlert, showChoiceDialog, showPinInputDialog, showNameInputDialog, showApprovalDialog } from '../alert.js';
 import { updateParticipantsList } from '../ui-controls.js';
 import { createCompositeStream } from './stream.js';
@@ -329,14 +329,14 @@ export async function host() {
             type: 'name_request'
           }));
           
-          // Set timeout for name (1 minute)
+          // Set timeout for name (5 minutes - SESSION_TIMEOUT)
           nameTimeout = setTimeout(() => {
             if (!nameReceived) {
               console.log("Name not received, using auto-generated name");
               // Proceed with approval request (name will be auto-generated)
               requestHostApproval(incomingCall, peerId, null, dataConnection, false);
             }
-          }, 60000);
+          }, SESSION_TIMEOUT);
         }
       });
       
@@ -365,14 +365,14 @@ export async function host() {
                 type: 'name_request'
               }));
               
-              // Set timeout for name (1 minute)
+              // Set timeout for name (5 minutes - SESSION_TIMEOUT)
               nameTimeout = setTimeout(() => {
                 if (!nameReceived) {
                   console.log("Name not received after PIN validation, using auto-generated name");
                   // Proceed with approval request (name will be auto-generated, PIN was validated)
                   requestHostApproval(incomingCall, peerId, null, dataConnection, true);
                 }
-              }, 60000);
+              }, SESSION_TIMEOUT);
             } else {
               // PIN is incorrect
               console.log("Incorrect PIN provided");

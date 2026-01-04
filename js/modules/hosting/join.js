@@ -4,6 +4,8 @@ import { dom } from '../dom.js';
 import { showAlert, showPinInputDialog, showNameInputDialog } from '../alert.js';
 import { enterViewerMode } from '../viewer.js';
 import { updateShareIdStatus } from './control.js';
+import { createStatusTracker, destroyStatusTracker } from '../connection-status.js';
+import { SESSION_TIMEOUT } from '../discovery.js';
 
 export async function join(idOrLink, isPrivate = null) {
   // Clean up any existing peer
@@ -54,7 +56,47 @@ export async function join(idOrLink, isPrivate = null) {
   );
   // participantName can be null if user skipped/cancelled
   
-  updateShareIdStatus("Connecting...", "warning");
+  // Initialize connection status tracker
+  const statusTracker = createStatusTracker(SESSION_TIMEOUT);
+  statusTracker.setStage("Initializing peer connection...");
+  
+  // Set up status update callback
+  statusTracker.setStatusUpdateCallback((statusInfo) => {
+    updateShareIdStatus(statusInfo.stage, "warning", statusInfo);
+  });
+  
+  // Set up timeout callback
+  statusTracker.setTimeoutCallback(() => {
+    console.log("Connection timeout after 5 minutes");
+    statusTracker.stop();
+    updateShareIdStatus("Connection timed out", "error");
+    setTimeout(() => {
+      showAlert("Connection timed out after 5 minutes. Please check your network and try again.", 'error');
+      if (state.call) {
+        state.call.close();
+      }
+      if (dom.camera) dom.camera.classList.add("hidden");
+      if (dom.overlayCanvas) dom.overlayCanvas.classList.add("hidden");
+      if (dom.gridCanvas) dom.gridCanvas.classList.add("hidden");
+      if (dom.panel) dom.panel.classList.add("hidden");
+      if (dom.topBar) dom.topBar.classList.add("hidden");
+      if (dom.joinScreen) dom.joinScreen.classList.remove("hidden");
+      destroyStatusTracker();
+    }, 500);
+  });
+  
+  // Set up warning callback
+  statusTracker.setWarningCallback((remainingSeconds) => {
+    if (remainingSeconds === 30) {
+      showAlert(`Connection timeout warning: ${remainingSeconds} seconds remaining`, 'warning', 5000);
+    } else if (remainingSeconds === 10) {
+      showAlert(`Connection timeout warning: ${remainingSeconds} seconds remaining`, 'error', 5000);
+    }
+  });
+  
+  // Start tracking
+  statusTracker.start();
+  updateShareIdStatus("Initializing peer connection...", "warning");
   
   state.peer = new Peer({
     debug: 2,
@@ -68,6 +110,7 @@ export async function join(idOrLink, isPrivate = null) {
   
   state.peer.on("open", () => {
     console.log("Joining with code/ID:", id);
+    statusTracker.setStage("Connecting to host...");
     
     // Use the code/ID directly (should be 18 chars, it's a custom PeerJS ID)
     const peerIdToCall = id.trim();
@@ -75,9 +118,11 @@ export async function join(idOrLink, isPrivate = null) {
     // Set up data connection listener for PIN validation
     state.peer.on("connection", (dataConnection) => {
       console.log("Data connection received from host");
+      statusTracker.setStage("Establishing data connection...");
       
       dataConnection.on('open', () => {
         console.log("Data connection opened with host");
+        statusTracker.setStage("Data connection established");
         
         // Listen for PIN request
         dataConnection.on('data', (data) => {
@@ -86,6 +131,7 @@ export async function join(idOrLink, isPrivate = null) {
             
             if (message.type === 'pin_request') {
               // Host is requesting PIN - this session is private
+              statusTracker.setStage("Validating PIN...");
               if (joinPin) {
                 // Send PIN
                 dataConnection.send(JSON.stringify({
@@ -117,6 +163,8 @@ export async function join(idOrLink, isPrivate = null) {
                     }));
                     
                     // Show error message
+                    statusTracker.stop();
+                    destroyStatusTracker();
                     updateShareIdStatus("PIN required", "error");
                     setTimeout(() => {
                       showAlert("PIN is required to join this private session.", 'error');
@@ -142,9 +190,12 @@ export async function join(idOrLink, isPrivate = null) {
             } else if (message.type === 'pin_validated') {
               if (message.success) {
                 console.log("PIN validated by host");
+                statusTracker.setStage("PIN validated, waiting for name request...");
                 // PIN validated, wait for name request
               } else {
                 console.log("PIN rejected by host");
+                statusTracker.stop();
+                destroyStatusTracker();
                 updateShareIdStatus("Incorrect PIN", "error");
                 setTimeout(() => {
                   showAlert("Incorrect PIN. Connection rejected.", 'error');
@@ -161,6 +212,7 @@ export async function join(idOrLink, isPrivate = null) {
               }
             } else if (message.type === 'name_request') {
               // Host is requesting name - send it
+              statusTracker.setStage("Sending name to host...");
               dataConnection.send(JSON.stringify({
                 type: 'name_response',
                 name: participantName || null
@@ -169,15 +221,17 @@ export async function join(idOrLink, isPrivate = null) {
             } else if (message.type === 'approval_pending') {
               // Host is reviewing join request
               console.log("Waiting for host approval...");
-              updateShareIdStatus("Waiting for host approval...", "warning");
+              statusTracker.setStage("Waiting for host approval...");
             } else if (message.type === 'approval_approved') {
               // Host approved the join request
               console.log("Host approved join request");
-              updateShareIdStatus("Approved! Connecting...", "success");
+              statusTracker.setStage("Approved! Receiving stream...");
               // Continue normal flow - wait for stream
             } else if (message.type === 'approval_denied') {
               // Host denied the join request
               console.log("Host denied join request");
+              statusTracker.stop();
+              destroyStatusTracker();
               const reason = message.reason || "Host denied your request to join";
               updateShareIdStatus("Access denied", "error");
               setTimeout(() => {
@@ -232,11 +286,14 @@ export async function join(idOrLink, isPrivate = null) {
     // Small delay to ensure peer is fully ready
     setTimeout(() => {
       try {
+        statusTracker.setStage("Initiating call...");
         state.call = state.peer.call(peerIdToCall, stream);
         
         if (!state.call) {
           throw new Error("Could not initiate call");
         }
+        
+        statusTracker.setStage("Receiving stream...");
         
         state.call.on("stream", (remoteStream) => {
           console.log("Received remote stream");
@@ -244,11 +301,18 @@ export async function join(idOrLink, isPrivate = null) {
           if (stream) {
             stream.getTracks().forEach(track => track.stop());
           }
+          // Connection successful - stop tracker
+          statusTracker.stop();
+          statusTracker.setStage("Connected!");
+          updateShareIdStatus("Connected!", "success");
+          destroyStatusTracker();
           enterViewerMode(remoteStream);
         });
         
         state.call.on("close", () => {
           console.log("Call closed");
+          statusTracker.stop();
+          destroyStatusTracker();
           if (stream) {
             stream.getTracks().forEach(track => track.stop());
           }
@@ -261,6 +325,8 @@ export async function join(idOrLink, isPrivate = null) {
         
         state.call.on("error", (err) => {
           console.error("Call error:", err);
+          statusTracker.stop();
+          destroyStatusTracker();
           if (stream) {
             stream.getTracks().forEach(track => track.stop());
           }
@@ -272,6 +338,8 @@ export async function join(idOrLink, isPrivate = null) {
         });
       } catch (err) {
         console.error("Error initiating call:", err);
+        statusTracker.stop();
+        destroyStatusTracker();
         if (stream) {
           stream.getTracks().forEach(track => track.stop());
         }
@@ -291,6 +359,8 @@ export async function join(idOrLink, isPrivate = null) {
   
   state.peer.on("error", (err) => {
     console.error("Peer error:", err);
+    statusTracker.stop();
+    destroyStatusTracker();
     updateShareIdStatus("Connection error", "error");
     setTimeout(() => {
       showAlert("Connection error: " + err.message, 'error');

@@ -2,7 +2,7 @@
 // Peer-to-peer session discovery using a fixed discovery peer
 
 const DISCOVERY_PEER_ID = 'DISCOVERY';
-const SESSION_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+export const SESSION_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 
 let discoveryPeer = null;
 let discoveryDataConnection = null;

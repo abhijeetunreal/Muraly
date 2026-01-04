@@ -8,9 +8,21 @@ import { updateParticipantsList } from '../ui-controls.js';
 import { isFirefox, isDesktopOrLaptop } from '../utils.js';
 
 // Helper function to safely update shareId status (handles missing element)
-export function updateShareIdStatus(text, className = "") {
+export function updateShareIdStatus(text, className = "", statusInfo = null) {
   if (dom.shareId) {
-    dom.shareId.textContent = text;
+    let displayText = text;
+    
+    // If statusInfo is provided, format with elapsed time and remaining time
+    if (statusInfo && statusInfo.elapsedStr && statusInfo.remainingStr) {
+      displayText = `${statusInfo.stage || text} - Elapsed: ${statusInfo.elapsedStr} - Time remaining: ${statusInfo.remainingStr}`;
+      
+      // Add warning class if approaching timeout
+      if (statusInfo.isWarning) {
+        className = className ? `${className} timeout-warning` : 'timeout-warning';
+      }
+    }
+    
+    dom.shareId.textContent = displayText;
     dom.shareId.className = className;
   }
   console.log(`Status: ${text} (${className})`);
