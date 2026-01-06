@@ -89,8 +89,6 @@
     }
 </script>
 
-<link rel="stylesheet" href="styles/index.css">
-
 <!-- JSON-LD Structured Data -->
 <script type="application/ld+json">
 {
@@ -219,6 +217,417 @@
   ]
 }
 </script>
+
+<style>
+    body {
+        background-color: #0A0A0A;
+        color: #ffffff;
+        overflow-x: hidden;
+        cursor: default; 
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        body { cursor: none; }
+    }
+
+    /* Hide scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0A0A0A; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #CCFF00; }
+    .hide-scroll::-webkit-scrollbar { display: none; }
+    .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Custom Cursor */
+    .cursor-dot, .cursor-outline {
+        position: fixed; 
+        top: 0; 
+        left: 0;
+        transform: translate(-50%, -50%);
+        border-radius: 50%; 
+        z-index: 99999; 
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .cursor-dot { 
+        width: 8px; 
+        height: 8px; 
+        background-color: #CCFF00;
+    }
+    .cursor-outline {
+        width: 40px; 
+        height: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        background-color: transparent;
+    }
+    body:not(.no-cursor) .cursor-dot,
+    body:not(.no-cursor) .cursor-outline {
+        opacity: 1;
+    }
+
+    /* Paint Splatter */
+    .splatter {
+        position: fixed; pointer-events: none; z-index: 9990;
+        opacity: 0.8; filter: blur(1px);
+    }
+
+    /* Utility */
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .text-outline {
+        -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+        color: transparent;
+    }
+
+    /* Glitch Effect Class */
+    .glitch-text:hover {
+        animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+        color: #FF0055;
+        -webkit-text-stroke: 0;
+    }
+
+    /* Paper Texture for Charity Section */
+    .paper-texture {
+        background-color: #1a1a1a;
+        background-image: 
+            linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 20px 20px;
+    }
+
+    .torn-paper-top {
+        position: absolute; top: -20px; left: 0; width: 100%; height: 40px;
+        background: #1a1a1a;
+        -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 40" preserveAspectRatio="none"><path d="M0,40 L0,10 Q20,0 40,10 T80,10 T120,10 T160,10 T200,10 T240,10 T280,10 T320,10 T360,10 T400,10 T440,10 T480,10 T520,10 T560,10 T600,10 T640,10 T680,10 T720,10 T760,10 T800,10 T840,10 T880,10 T920,10 T960,10 T1000,10 L1000,40 Z" fill="black"/></svg>');
+        mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 40" preserveAspectRatio="none"><path d="M0,40 L0,10 Q20,0 40,10 T80,10 T120,10 T160,10 T200,10 T240,10 T280,10 T320,10 T360,10 T400,10 T440,10 T480,10 T520,10 T560,10 T600,10 T640,10 T680,10 T720,10 T760,10 T800,10 T840,10 T880,10 T920,10 T960,10 T1000,10 L1000,40 Z" fill="black"/></svg>');
+        -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+    }
+
+    /* Marquee Styles */
+    .marquee-wrapper {
+        overflow: visible;
+        padding: 20px 0;
+    }
+    
+    .marquee-container {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        padding: 8px 0;
+        mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    }
+
+    .marquee {
+        display: flex;
+        width: fit-content;
+        animation: marquee 20s linear infinite;
+        will-change: transform;
+    }
+
+    .marquee-reverse {
+        display: flex;
+        width: fit-content;
+        animation: marquee-reverse 20s linear infinite;
+        will-change: transform;
+    }
+
+    .marquee:hover,
+    .marquee-reverse:hover {
+        animation-play-state: paused;
+    }
+
+    @keyframes marquee {
+        from {
+            transform: translateX(0);
+        }
+        to {
+            transform: translateX(calc(-100% / 2));
+        }
+    }
+
+    @keyframes marquee-reverse {
+        from {
+            transform: translateX(calc(-100% / 2));
+        }
+        to {
+            transform: translateX(0);
+        }
+    }
+
+    .marquee-gradient-left {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 25%;
+        background: linear-gradient(to right, #0A0A0A, transparent);
+        pointer-events: none;
+        z-index: 10;
+    }
+
+    .marquee-gradient-right {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        width: 25%;
+        background: linear-gradient(to left, #0A0A0A, transparent);
+        pointer-events: none;
+        z-index: 10;
+    }
+
+    .marquee-card {
+        flex-shrink: 0;
+        width: 280px;
+        height: auto;
+        min-height: 180px;
+        margin-right: 1.5rem;
+        cursor: pointer;
+        overflow: visible;
+        border-radius: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.01);
+        backdrop-filter: blur(10px);
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .marquee-card:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(204, 255, 0, 0.3);
+        transform: translateY(-8px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        z-index: 10;
+    }
+
+    /* Resizable Navbar Styles */
+    .resizable-navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        width: 100%;
+    }
+
+    .navbar-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0;
+    }
+
+    @media (max-width: 640px) {
+        .navbar-container {
+            padding: 0 0.5rem;
+        }
+    }
+
+    .navbar-body {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.5rem;
+        background: rgba(10, 10, 10, 0.8);
+        backdrop-filter: blur(10px);
+        border-radius: 0.75rem;
+        margin: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .navbar-body:hover {
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .navbar-logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        letter-spacing: 0.1em;
+        color: white;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .navbar-logo .accent {
+        color: #CCFF00;
+    }
+
+    .navbar-items {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+    }
+
+    .navbar-items a {
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(255, 255, 255, 0.7);
+        transition: color 0.3s ease;
+        position: relative;
+    }
+
+    .navbar-items a:hover {
+        color: #CCFF00;
+    }
+
+    .navbar-items a.active {
+        color: #FF0055;
+        font-weight: 700;
+    }
+
+    .navbar-buttons {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .navbar-button {
+        padding: 0.5rem 1.25rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .navbar-button-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .navbar-button-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .navbar-button-primary {
+        background: white;
+        color: black;
+    }
+
+    .navbar-button-primary:hover {
+        background: #CCFF00;
+        transform: scale(1.05);
+    }
+
+    .mobile-nav {
+        display: none;
+    }
+
+    .mobile-nav-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.5rem;
+        background: rgba(10, 10, 10, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 0.75rem;
+        margin: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .mobile-nav-toggle {
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 0.25rem;
+        cursor: pointer;
+        background: transparent;
+        border: none;
+        padding: 0;
+    }
+
+    .mobile-nav-toggle span {
+        width: 100%;
+        height: 2px;
+        background: white;
+        transition: all 0.3s ease;
+        transform-origin: center;
+    }
+
+    .mobile-nav-toggle.open span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .mobile-nav-toggle.open span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .mobile-nav-toggle.open span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -6px);
+    }
+
+    .mobile-nav-menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(10, 10, 10, 0.98);
+        backdrop-filter: blur(20px);
+        z-index: 40;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        overflow-y: auto;
+    }
+
+    .mobile-nav-menu.open {
+        transform: translateX(0);
+    }
+
+    .mobile-nav-menu a {
+        font-size: 1.5rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        transition: color 0.3s ease;
+        padding: 0.5rem 0;
+        position: relative;
+    }
+
+    .mobile-nav-menu a:hover {
+        color: #CCFF00;
+    }
+
+    .mobile-nav-menu a.active {
+        color: #FF0055;
+        font-weight: 700;
+    }
+
+    @media (max-width: 768px) {
+        .navbar-body {
+            display: none;
+        }
+
+        .mobile-nav {
+            display: block;
+        }
+    }
+
+    @media (min-width: 769px) {
+        .mobile-nav {
+            display: none;
+        }
+    }
+</style>
 </head>
 <body class="font-grotesk antialiased selection:bg-neon-pink selection:text-white">
 
@@ -226,12 +635,54 @@
 <div class="fixed inset-0 bg-noise pointer-events-none z-0 opacity-40 mix-blend-overlay"></div>
 
 <!-- Custom Cursor -->
-<div class="cursor-dot"></div>
-<div class="cursor-outline"></div>
+<div class="cursor-dot hidden md:block"></div>
+<div class="cursor-outline hidden md:block"></div>
 
+<!-- Navigation -->
+<div class="resizable-navbar">
+    <div class="navbar-container">
+        <!-- Desktop Navigation -->
+        <div class="navbar-body">
+            <div class="navbar-logo">MURALY<span class="accent">.</span></div>
+            <div class="navbar-items">
+                <a href="#about">Manifesto</a>
+                <a href="#features">Tech</a>
+                <a href="#mission" class="active">The Mission</a>
+            </div>
+            <div class="navbar-buttons">
+                <span class="hidden md:block text-[10px] text-neon-lime border border-neon-lime px-2 py-1 rounded uppercase tracking-widest">100% Free Forever</span>
+                <a href="muraly.html" class="navbar-button navbar-button-primary">Launch App</a>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div class="mobile-nav">
+            <div class="mobile-nav-header">
+                <div class="navbar-logo">MURALY<span class="accent">.</span></div>
+                <button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            <div id="mobile-nav-menu" class="mobile-nav-menu">
+                <a href="#about" class="mobile-nav-link">Manifesto</a>
+                <a href="#features" class="mobile-nav-link">Tech</a>
+                <a href="#mission" class="mobile-nav-link active">Agurutwa</a>
+                <div class="flex flex-col gap-4 mt-4">
+                    <a href="muraly.html" class="navbar-button navbar-button-primary w-full text-center">Launch App</a>
+                    <div class="text-center mt-4">
+                        <p class="text-gray-500 text-sm uppercase tracking-widest mb-2">Always Free.</p>
+                        <p class="text-gray-500 text-sm uppercase tracking-widest">Powered by Heart.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Hero Section -->
-<header class="relative flex items-center justify-center overflow-hidden pt-20 md:pt-24 pb-12 md:pb-16" id="hero-section">
+<header class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 md:pt-0" id="hero-section">
   <!-- Living Background Blobs (Mouse Parallax) -->
   <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
     <div data-speed="0.05" class="parallax-blob absolute top-1/4 left-0 md:left-1/4 w-64 md:w-96 h-64 md:h-96 bg-neon-pink/20 rounded-full blur-[80px] md:blur-[100px]"></div>
@@ -244,11 +695,9 @@
       <p class="text-neon-lime uppercase tracking-[0.3em] text-xs md:text-sm transform translate-y-10" id="hero-subtitle">Augmented Reality Canvas</p>
     </div>
     
-    <h1 class="text-[18vw] md:text-[15vw] leading-[0.9] md:leading-[0.8] font-marker text-white mix-blend-overlay opacity-90 break-words cursor-default paint-title" id="hero-title" data-text="PAINT&#10;ALIVE">
-      <span class="paint-text">PAINT</span><br>
-      <span class="paint-text paint-text-alive">ALIVE</span>
-      <canvas id="sprayCanvas" class="spray-canvas"></canvas>
-      <div class="spray-paint-overlay"></div>
+    <h1 class="text-[18vw] md:text-[15vw] leading-[0.9] md:leading-[0.8] font-marker text-white mix-blend-overlay opacity-90 break-words glitch-text cursor-default" id="hero-title">
+      PAINT<br>
+      <span class="text-outline hover:text-white transition-colors duration-500">ALIVE</span>
     </h1>
     
     <div class="mt-8 md:mt-12 flex flex-col items-center gap-6 opacity-0 px-4" id="hero-cta">
@@ -268,15 +717,22 @@
       </div>
     </div>
   </div>
+
+  <!-- Scroll Indicator -->
+  <div class="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 animate-bounce">
+    <div class="w-[1px] h-10 md:h-16 bg-gradient-to-b from-transparent via-white to-transparent"></div>
+  </div>
 </header>
+
+
 
 <main>
 <!-- Phone Section (Alive) -->
-<section id="about" class="py-24 relative flex items-center overflow-hidden" style="overflow: hidden !important;">
-  <div class="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center" style="overflow: hidden;">
+<section id="about" class="min-h-screen py-24 relative flex items-center overflow-hidden">
+  <div class="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
     
     <!-- Floating Phone -->
-    <figure class="relative order-1 h-[600px] flex items-center justify-center w-full">
+    <div class="relative order-1 h-[600px] flex items-center justify-center w-full">
       <!-- Pulse Rings -->
       <div class="absolute inset-0 border border-white/10 rounded-[3rem] animate-[ping_3s_ease-in-out_infinite] scale-90 opacity-30 max-w-[300px] mx-auto"></div>
       
@@ -297,8 +753,7 @@
           </div>
         </div>
       </div>
-      <figcaption class="sr-only">AR mural visualization on mobile device showing live preview</figcaption>
-    </figure>
+    </div>
 
     <!-- Content -->
     <div id="features" class="order-2 text-center md:text-left space-y-8">
@@ -310,137 +765,181 @@
         Static images are dead. Muraly uses AR to breathe life into walls. Your art moves, reacts, and stays permanently anchored for the world to find.
       </p>
       <div class="grid grid-cols-1 xs:grid-cols-2 gap-4">
-        <article class="p-6 glass-panel rounded-2xl hover:bg-neon-lime/10 transition-colors border-l-4 border-neon-lime">
+        <div class="p-6 glass-panel rounded-2xl hover:bg-neon-lime/10 transition-colors border-l-4 border-neon-lime">
           <h3 class="font-bold text-xl mb-1 text-white">0.00$ Cost</h3>
           <p class="text-sm text-gray-500">Creativity shouldn't have a price tag.</p>
-        </article>
-        <article class="p-6 glass-panel rounded-2xl hover:bg-neon-pink/10 transition-colors border-l-4 border-neon-pink">
+        </div>
+        <div class="p-6 glass-panel rounded-2xl hover:bg-neon-pink/10 transition-colors border-l-4 border-neon-pink">
           <h3 class="font-bold text-xl mb-1 text-white">No Installation</h3>
           <p class="text-sm text-gray-500">Works directly in your browser.</p>
-        </article>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Features Section -->
-<section class="features py-24">
-  <div class="container mx-auto px-6">
-    <h2 class="section-title fade-in text-center mb-16">Powerful Features</h2>
-    <div class="features-grid">
-      <article class="feature-card fade-in">
-        <span class="feature-icon" aria-hidden="true">📱</span>
-        <h3>AR Visualization</h3>
-        <p>See your murals projected onto real walls in real-time using your device's camera. Perfect for planning and previewing before painting.</p>
-      </article>
-      
-      <article class="feature-card fade-in">
-        <span class="feature-icon" aria-hidden="true">🎨</span>
-        <h3>Image & Sketch Mode</h3>
-        <p>Upload any image and switch between full-color and sketch modes. Convert designs to outlines for easy tracing and reference.</p>
-      </article>
-      
-      <article class="feature-card fade-in">
-        <span class="feature-icon" aria-hidden="true">✋</span>
-        <h3>Intuitive Controls</h3>
-        <p>Move, scale, rotate, and adjust opacity with simple touch gestures. Lock positions when you're ready to start painting.</p>
-      </article>
-      
-      <article class="feature-card fade-in">
-        <span class="feature-icon" aria-hidden="true">👥</span>
-        <h3>Multi-Device Sharing</h3>
-        <p>Share your AR session with multiple devices simultaneously! One host can broadcast to unlimited viewers on phones, tablets, and computers - all in real-time. Perfect for teams, clients, and remote collaboration.</p>
-      </article>
-      
-      <article class="feature-card fade-in">
-        <span class="feature-icon" aria-hidden="true">💾</span>
-        <h3>Save & Load Sessions</h3>
-        <p>Save your mural configurations and load them later. Never lose your work and pick up exactly where you left off.</p>
-      </article>
-      
-      <article class="feature-card fade-in">
-        <span class="feature-icon" aria-hidden="true">🎬</span>
-        <h3>Video Recording</h3>
-        <p>Record timelapse or full video of your mural creation process. Perfect for documenting your work and sharing progress.</p>
-      </article>
-    </div>
-  </div>
-</section>
+
 
 <!-- Capabilities Section -->
-<section class="capabilities">
-  <div class="capabilities-content">
-    <h2 class="section-title fade-in">What You Can Do</h2>
-    <ul class="capability-list fade-in">
-      <li class="capability-item">
-        <span>Upload any image format (JPG, PNG, etc.)</span>
-      </li>
-      <li class="capability-item">
-        <span>Adjust image opacity for better visibility</span>
-      </li>
-      <li class="capability-item">
-        <span>Switch between image and sketch modes</span>
-      </li>
-      <li class="capability-item">
-        <span>Pinch to zoom and rotate with gestures</span>
-      </li>
-      <li class="capability-item">
-        <span>Drag to reposition your mural</span>
-      </li>
-      <li class="capability-item">
-        <span>Toggle grid overlay for alignment</span>
-      </li>
-      <li class="capability-item">
-        <span>Lock position to prevent accidental moves</span>
-      </li>
-      <li class="capability-item">
-        <span>Share to unlimited devices with simple 3-character codes</span>
-      </li>
-      <li class="capability-item">
-        <span>No installation - works instantly in any browser</span>
-      </li>
-      <li class="capability-item">
-        <span>Completely free - no payments or subscriptions</span>
-      </li>
-      <li class="capability-item">
-        <span>Record timelapse with custom intervals</span>
-      </li>
-      <li class="capability-item">
-        <span>Export full video recordings</span>
-      </li>
-      <li class="capability-item">
-        <span>Works on mobile and desktop</span>
-      </li>
-    </ul>
+<section class="py-24">
+  <div class="container mx-auto px-6">
+    <h2 class="text-4xl md:text-5xl font-marker text-center mb-16">What You Can Do</h2>
+    <div class="relative flex w-full flex-col items-center justify-center marquee-wrapper">
+      <div class="marquee-container">
+        <div class="marquee" id="capabilities-marquee-1">
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Upload Formats</h3>
+            <p class="text-sm text-gray-400">Upload any image format (JPG, PNG, etc.)</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Opacity Control</h3>
+            <p class="text-sm text-gray-400">Adjust image opacity for better visibility</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Mode Switching</h3>
+            <p class="text-sm text-gray-400">Switch between image and sketch modes</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Gesture Controls</h3>
+            <p class="text-sm text-gray-400">Pinch to zoom and rotate with gestures</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Drag & Drop</h3>
+            <p class="text-sm text-gray-400">Drag to reposition your mural</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Grid Overlay</h3>
+            <p class="text-sm text-gray-400">Toggle grid overlay for alignment</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Position Lock</h3>
+            <p class="text-sm text-gray-400">Lock position to prevent accidental moves</p>
+          </div>
+          <!-- Duplicate for seamless loop -->
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Upload Formats</h3>
+            <p class="text-sm text-gray-400">Upload any image format (JPG, PNG, etc.)</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Opacity Control</h3>
+            <p class="text-sm text-gray-400">Adjust image opacity for better visibility</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Mode Switching</h3>
+            <p class="text-sm text-gray-400">Switch between image and sketch modes</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Gesture Controls</h3>
+            <p class="text-sm text-gray-400">Pinch to zoom and rotate with gestures</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Drag & Drop</h3>
+            <p class="text-sm text-gray-400">Drag to reposition your mural</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Grid Overlay</h3>
+            <p class="text-sm text-gray-400">Toggle grid overlay for alignment</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Position Lock</h3>
+            <p class="text-sm text-gray-400">Lock position to prevent accidental moves</p>
+          </div>
+        </div>
+      </div>
+      <div class="marquee-container mt-4">
+        <div class="marquee-reverse" id="capabilities-marquee-2">
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Multi-Device Share</h3>
+            <p class="text-sm text-gray-400">Share to unlimited devices with simple 3-character codes</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">No Installation</h3>
+            <p class="text-sm text-gray-400">No installation - works instantly in any browser</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Completely Free</h3>
+            <p class="text-sm text-gray-400">Completely free - no payments or subscriptions</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Timelapse Recording</h3>
+            <p class="text-sm text-gray-400">Record timelapse with custom intervals</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Video Export</h3>
+            <p class="text-sm text-gray-400">Export full video recordings</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Cross-Platform</h3>
+            <p class="text-sm text-gray-400">Works on mobile and desktop</p>
+          </div>
+          <!-- Duplicate for seamless loop -->
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Multi-Device Share</h3>
+            <p class="text-sm text-gray-400">Share to unlimited devices with simple 3-character codes</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">No Installation</h3>
+            <p class="text-sm text-gray-400">No installation - works instantly in any browser</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Completely Free</h3>
+            <p class="text-sm text-gray-400">Completely free - no payments or subscriptions</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Timelapse Recording</h3>
+            <p class="text-sm text-gray-400">Record timelapse with custom intervals</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Video Export</h3>
+            <p class="text-sm text-gray-400">Export full video recordings</p>
+          </div>
+          <div class="marquee-card">
+            <h3 class="text-lg font-bold mb-2 text-white">Cross-Platform</h3>
+            <p class="text-sm text-gray-400">Works on mobile and desktop</p>
+          </div>
+        </div>
+      </div>
+      <div class="marquee-gradient-left"></div>
+      <div class="marquee-gradient-right"></div>
+    </div>
   </div>
 </section>
 
-<!-- How It Works -->
-<section class="how-it-works">
-  <h2 class="section-title fade-in">How It Works</h2>
-  <div class="steps">
-    <div class="step fade-in">
-      <div class="step-number">1</div>
-      <h3>Upload Your Design</h3>
-      <p>Choose an image file from your device. It can be a sketch, photo, or digital artwork.</p>
+
+
+<!-- Horizontal Scroll Showcase -->
+<section id="gallery" class="py-24 overflow-hidden">
+    <div class="mb-12 px-6 text-center container mx-auto">
+        <h2 class="text-4xl font-marker">Global Gallery</h2>
     </div>
     
-    <div class="step fade-in">
-      <div class="step-number">2</div>
-      <h3>Position & Adjust</h3>
-      <p>Use touch gestures to move, scale, and rotate your mural. Adjust opacity to see through to the wall.</p>
-    </div>
-    
-    <div class="step fade-in">
-      <div class="step-number">3</div>
-      <h3>Start Creating</h3>
-      <p>Lock your position and begin painting or installing. The AR overlay guides you every step of the way.</p>
-    </div>
-    
-    <div class="step fade-in">
-      <div class="step-number">4</div>
-      <h3>Share & Record</h3>
-      <p>Share your session with others or record the process. Save your work for future reference.</p>
+    <div class="flex gap-6 md:gap-8 px-6 overflow-x-auto pb-12 snap-x snap-mandatory hide-scroll" id="scroll-container">
+        <!-- Dynamic Cards -->
+        <div class="min-w-[85vw] md:min-w-[400px] h-[500px] relative rounded-3xl overflow-hidden group snap-center cursor-pointer flex-shrink-0 border border-white/10 hover:border-neon-lime/50 transition-colors duration-500">
+            <img src="https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Art">
+            <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
+            <div class="absolute bottom-0 left-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                <h3 class="text-3xl font-bold text-white group-hover:text-neon-lime transition-colors">Neon Dreams</h3>
+                <p class="text-sm text-gray-300">Brooklyn • Free Wall</p>
+            </div>
+        </div>
+
+        <div class="min-w-[85vw] md:min-w-[400px] h-[500px] relative rounded-3xl overflow-hidden group snap-center cursor-pointer flex-shrink-0 border border-white/10 hover:border-neon-pink/50 transition-colors duration-500">
+            <img src="https://images.unsplash.com/photo-1517713982677-4b66332f98de?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Art">
+            <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
+            <div class="absolute bottom-0 left-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                <h3 class="text-3xl font-bold text-white group-hover:text-neon-pink transition-colors">Cyber Samurai</h3>
+                <p class="text-sm text-gray-300">Tokyo • Shibuya Crossing</p>
+            </div>
+        </div>
+         
+         <!-- Submit Card -->
+         <div class="min-w-[85vw] md:min-w-[400px] h-[500px] relative rounded-3xl overflow-hidden group snap-center cursor-pointer flex-shrink-0 border-2 border-dashed border-gray-700 flex flex-col items-center justify-center bg-white/5 hover:bg-white/10 transition-colors">
+            <div class="w-20 h-20 rounded-full bg-neon-lime mb-6 flex items-center justify-center text-black group-hover:scale-110 transition-transform">
+                <i data-lucide="plus" class="w-10 h-10"></i>
+            </div>
+            <h3 class="text-2xl font-bold">Add Your Mark</h3>
+            <p class="text-gray-500 mt-2">Join the revolution</p>
     </div>
   </div>
 </section>
@@ -473,14 +972,14 @@
             <i data-lucide="heart" class="fill-current w-5 h-5"></i>
             <span>Donate to Agurutwa</span>
           </button>
-          <button type="button" class="px-8 py-4 rounded-full border border-white/20 hover:bg-white/10 transition-colors font-bold" aria-label="Learn more about Agurutwa partnership">
+          <a href="#" class="px-8 py-4 rounded-full border border-white/20 hover:bg-white/10 transition-colors font-bold">
             Learn More
-          </button>
+          </a>
         </div>
       </div>
 
       <!-- Visual -->
-      <figure class="md:w-1/2 relative mt-12 md:mt-0">
+      <div class="md:w-1/2 relative mt-12 md:mt-0">
         <div class="absolute inset-0 bg-gradient-to-tr from-neon-pink/20 to-neon-cyan/20 blur-[60px] animate-pulse"></div>
         <!-- Collage Style Image -->
         <div class="relative transform rotate-3 hover:rotate-0 transition-transform duration-700">
@@ -492,8 +991,7 @@
             #EducationForAll
           </div>
         </div>
-        <figcaption class="sr-only">Agurutwa Foundation supports education for underprivileged children</figcaption>
-      </figure>
+      </div>
     </div>
   </div>
 </section>
@@ -517,31 +1015,237 @@
         <h3 class="text-2xl font-bold">Painting the world, <br>one wall at a time.</h3>
         <p class="text-gray-500 max-w-sm">Muraly is a non-profit initiative supported by Codefrydev and Agurutwa Foundation.</p>
       </div>
-      <nav aria-label="Legal navigation">
+      <div>
         <h4 class="font-bold mb-4 text-neon-pink">Legal</h4>
         <ul class="space-y-2 text-gray-400 text-sm">
           <li><a href="privacy-policy.html" class="hover:text-white">Privacy Policy</a></li>
           <li><a href="terms-and-conditions.html" class="hover:text-white">Terms of Use</a></li>
           <li><a href="https://muraly.codefrydev.in/#mission" class="hover:text-white" aria-label="View donation transparency information">Donation Transparency</a></li>
         </ul>
-      </nav>
-      <nav aria-label="Social media links">
+      </div>
+      <div>
         <h4 class="font-bold mb-4 text-neon-cyan">Connect</h4>
         <div class="flex gap-4">
-          <a href="https://instagram.com/muraly" target="_blank" rel="noopener noreferrer" aria-label="Follow Muraly on Instagram" class="w-10 h-10 rounded-full bg-white/5 hover:bg-neon-lime hover:text-black flex items-center justify-center transition-all"><i data-lucide="instagram" class="w-5 h-5" aria-hidden="true"></i><span class="sr-only">Instagram</span></a>
-          <a href="https://twitter.com/muraly" target="_blank" rel="noopener noreferrer" aria-label="Follow Muraly on Twitter" class="w-10 h-10 rounded-full bg-white/5 hover:bg-neon-lime hover:text-black flex items-center justify-center transition-all"><i data-lucide="twitter" class="w-5 h-5" aria-hidden="true"></i><span class="sr-only">Twitter</span></a>
-          <a href="https://muraly.codefrydev.in/" aria-label="Visit Muraly homepage" class="w-10 h-10 rounded-full bg-white/5 hover:bg-neon-lime hover:text-black flex items-center justify-center transition-all"><i data-lucide="globe" class="w-5 h-5" aria-hidden="true"></i><span class="sr-only">Homepage</span></a>
+          <a href="https://instagram.com/muraly" target="_blank" rel="noopener noreferrer" aria-label="Follow Muraly on Instagram" class="w-10 h-10 rounded-full bg-white/5 hover:bg-neon-lime hover:text-black flex items-center justify-center transition-all"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+          <a href="https://twitter.com/muraly" target="_blank" rel="noopener noreferrer" aria-label="Follow Muraly on Twitter" class="w-10 h-10 rounded-full bg-white/5 hover:bg-neon-lime hover:text-black flex items-center justify-center transition-all"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+          <a href="https://muraly.codefrydev.in/" aria-label="Visit Muraly homepage" class="w-10 h-10 rounded-full bg-white/5 hover:bg-neon-lime hover:text-black flex items-center justify-center transition-all"><i data-lucide="globe" class="w-5 h-5"></i></a>
         </div>
-      </nav>
+      </div>
     </div>
     <div class="flex justify-between items-end border-t border-white/10 pt-8 text-xs text-gray-600 uppercase tracking-widest">
       <p>&copy; <time datetime="2026">2026</time> Codefrydev, Agurutwa Foundation.</p>
-      <p>Built with ❤️</p>
+      <p>Built with ❤️ for Agurutwa.</p>
     </div>
   </div>
 </footer>
 
-<script type="module" src="js/index.js"></script>
+<script>
+    lucide.createIcons();
+
+    // 1. Mouse Parallax Effect (The "Alive" Feeling)
+    document.addEventListener('mousemove', (e) => {
+        const x = (window.innerWidth - e.pageX * 2) / 100;
+        const y = (window.innerHeight - e.pageY * 2) / 100;
+
+        document.querySelectorAll('.parallax-blob').forEach(el => {
+            const speed = el.getAttribute('data-speed');
+            const xPos = x * speed * 100;
+            const yPos = y * speed * 100;
+            
+            // Smooth transition using GSAP
+            gsap.to(el, {
+                x: xPos,
+                y: yPos,
+                duration: 1.5,
+                ease: "power2.out"
+            });
+        });
+    });
+
+    // 2. Mobile Menu Logic
+    const mobileNavToggle = document.getElementById('mobile-nav-toggle');
+    const mobileNavMenu = document.getElementById('mobile-nav-menu');
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+    const allNavLinks = document.querySelectorAll('.navbar-items a, .mobile-nav-link');
+    let isMobileMenuOpen = false;
+
+    // Smooth scrolling for all nav links
+    allNavLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            if (href && href.startsWith('#')) {
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) {
+                    const offset = 100; // Account for navbar height
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        });
+    });
+
+    if (mobileNavToggle && mobileNavMenu) {
+        mobileNavToggle.addEventListener('click', () => {
+            isMobileMenuOpen = !isMobileMenuOpen;
+            mobileNavMenu.classList.toggle('open', isMobileMenuOpen);
+            mobileNavToggle.classList.toggle('open', isMobileMenuOpen);
+            document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
+        });
+
+        mobileNavLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                isMobileMenuOpen = false;
+                mobileNavMenu.classList.remove('open');
+                mobileNavToggle.classList.remove('open');
+                document.body.style.overflow = '';
+            });
+        });
+
+        // Close menu when clicking outside
+        mobileNavMenu.addEventListener('click', (e) => {
+            if (e.target === mobileNavMenu) {
+                isMobileMenuOpen = false;
+                mobileNavMenu.classList.remove('open');
+                mobileNavToggle.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
+    // 3. Custom Cursor & Interaction
+    const cursorDot = document.querySelector('.cursor-dot');
+    const cursorOutline = document.querySelector('.cursor-outline');
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    if (!isTouchDevice && cursorDot && cursorOutline) {
+        let mouseX = 0;
+        let mouseY = 0;
+        let outlineX = 0;
+        let outlineY = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Update dot immediately
+            cursorDot.style.left = `${mouseX}px`;
+            cursorDot.style.top = `${mouseY}px`;
+            
+            // Animate outline with lag for organic feel
+            gsap.to(cursorOutline, {
+                left: mouseX,
+                top: mouseY,
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+
+        // Interactive Element Hover
+        document.querySelectorAll('a, button, .marquee-card').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                gsap.to(cursorOutline, { 
+                    scale: 1.5, 
+                    backgroundColor: 'rgba(255,255,255,0.1)', 
+                    borderColor: 'rgba(204, 255, 0, 0.5)',
+                    duration: 0.3 
+                });
+                gsap.to(cursorDot, { scale: 0, duration: 0.3 });
+            });
+            el.addEventListener('mouseleave', () => {
+                gsap.to(cursorOutline, { 
+                    scale: 1, 
+                    backgroundColor: 'transparent',
+                    borderColor: 'rgba(255, 255, 255, 0.5)',
+                    duration: 0.3 
+                });
+                gsap.to(cursorDot, { scale: 1, duration: 0.3 });
+            });
+        });
+    } else if (isTouchDevice) {
+        // Hide cursor on touch devices
+        if (cursorDot) cursorDot.style.display = 'none';
+        if (cursorOutline) cursorOutline.style.display = 'none';
+    }
+
+    // 4. Splatter Effect on Click
+    window.addEventListener('mousedown', createSplatter);
+    window.addEventListener('touchstart', (e) => createSplatter(e.touches[0]), {passive: true});
+
+    function createSplatter(e) {
+        if(e.target.closest('button') || e.target.closest('a')) return;
+
+        const colors = ['#FF0055', '#CCFF00', '#00FFFF'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const size = Math.random() * 30 + 10;
+        
+        const splatter = document.createElement('div');
+        splatter.classList.add('splatter');
+        splatter.style.backgroundColor = color;
+        splatter.style.left = `${e.clientX}px`;
+        splatter.style.top = `${e.clientY}px`;
+        splatter.style.width = `${size}px`;
+        splatter.style.height = `${size}px`;
+        splatter.style.borderRadius = `${Math.random()*50+30}% ${Math.random()*50+30}% ${Math.random()*50+30}% ${Math.random()*50+30}%`;
+        
+        document.body.appendChild(splatter);
+
+        gsap.fromTo(splatter, 
+            { scale: 0, opacity: 1, rotation: Math.random() * 90 },
+            { scale: Math.random() * 2 + 1, opacity: 0, rotation: 0, duration: 0.8, ease: "power2.out", onComplete: () => splatter.remove() }
+        );
+    }
+
+    // 5. GSAP Scroll & Reveal Animations
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Hero Reveal
+    const heroTl = gsap.timeline();
+    heroTl.to("#hero-subtitle", { y: 0, duration: 0.8, ease: "power3.out", delay: 0.2 })
+          .from("#hero-title", { opacity: 0, scale: 0.9, duration: 1, ease: "power2.out" }, "-=0.4")
+          .to("#hero-cta", { opacity: 1, y: 0, duration: 0.8 }, "-=0.5");
+
+    // Marquee Infinite Scroll
+    const marquee = document.getElementById('marquee');
+    if (marquee) {
+        gsap.to("#marquee", { xPercent: -50, repeat: -1, duration: 15, ease: "linear" });
+    }
+
+    // Floating Phone "Alive" Animation (Vertical Float)
+    const boxFloat = document.querySelector(".box-float");
+    if (boxFloat) {
+        gsap.to(".box-float", {
+            y: -20,
+            duration: 2,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut"
+        });
+    }
+
+    // Gallery Items Stagger In
+    const galleryItems = document.querySelectorAll('#gallery .group');
+    if (galleryItems.length > 0) {
+        gsap.utils.toArray('#gallery .group').forEach((item, i) => {
+            gsap.from(item, {
+                scrollTrigger: { trigger: "#gallery", start: "top 85%" },
+                y: 100, opacity: 0, duration: 0.8, delay: i * 0.15, ease: "back.out(1.7)"
+            });
+        });
+    }
+
+    // Charity Section Reveal
+    const missionSection = document.getElementById('mission');
+    if (missionSection) {
+        gsap.from("#mission h2, #mission p", {
+            scrollTrigger: { trigger: "#mission", start: "top 75%" },
+            y: 30, opacity: 0, duration: 1, stagger: 0.2, ease: "power3.out"
+        });
+    }
+</script>
 
 </body>
 </html>
