@@ -120,6 +120,24 @@
   line-height: 1;
 }
 
+/* Loading Spinner */
+.custom-alert-spinner {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #00FFFF;
+  border-radius: 50%;
+  animation: alertSpinner 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes alertSpinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .custom-alert-message {
   flex: 1;
   font-size: clamp(0.875rem, 2vw, 1rem);

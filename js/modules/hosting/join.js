@@ -1,7 +1,7 @@
 // ================= JOIN CORE =================
 import { state } from '../state.js';
 import { dom } from '../dom.js';
-import { showAlert, showPinInputDialog, showNameInputDialog } from '../alert.js';
+import { showAlert, showPinInputDialog, showNameInputDialog, closeAllAlerts } from '../alert.js';
 import { enterViewerMode } from '../viewer.js';
 import { updateShareIdStatus } from './control.js';
 import { createStatusTracker, destroyStatusTracker } from '../connection-status.js';
@@ -55,6 +55,9 @@ export async function join(idOrLink, isPrivate = null) {
     30
   );
   // participantName can be null if user skipped/cancelled
+  
+  // Show informative feedback after name dialog - user is now waiting for host approval
+  showAlert("Waiting for host approval...", 'info', 0); // 0 = no auto-dismiss, will be replaced by status updates
   
   // Initialize connection status tracker
   const statusTracker = createStatusTracker(SESSION_TIMEOUT);
@@ -226,6 +229,11 @@ export async function join(idOrLink, isPrivate = null) {
               // Host approved the join request
               console.log("Host approved join request");
               statusTracker.setStage("Approved! Receiving stream...");
+              // Close the waiting message and show approved message that fades away
+              closeAllAlerts();
+              setTimeout(() => {
+                showAlert("Approved", 'success', 3000); // 3 seconds, then fade away
+              }, 350); // Wait for close animation to start
               // Continue normal flow - wait for stream
             } else if (message.type === 'approval_denied') {
               // Host denied the join request

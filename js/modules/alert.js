@@ -3,6 +3,8 @@
 
 let alertQueue = [];
 let isShowingAlert = false;
+let currentAlert = null;
+let currentCloseAlert = null;
 
 /**
  * Show a custom alert popup
@@ -42,7 +44,31 @@ export function showAlert(message, type = 'info', timeout = null) {
   });
 }
 
+/**
+ * Close all currently displayed alerts
+ */
+export function closeAllAlerts() {
+  const alertContainer = document.getElementById('customAlertContainer');
+  if (alertContainer) {
+    const alerts = alertContainer.querySelectorAll('.custom-alert');
+    alerts.forEach(alert => {
+      alert.classList.remove('custom-alert-show');
+      alert.classList.add('custom-alert-hide');
+      setTimeout(() => alert.remove(), 300);
+    });
+  }
+  alertQueue = [];
+  isShowingAlert = false;
+  currentAlert = null;
+  currentCloseAlert = null;
+}
+
 function displayAlert({ message, type, timeout, resolve }) {
+  // Close any existing alert first
+  if (currentAlert && currentCloseAlert) {
+    currentCloseAlert();
+  }
+  
   isShowingAlert = true;
 
   // Create alert container if it doesn't exist
@@ -65,17 +91,25 @@ function displayAlert({ message, type, timeout, resolve }) {
     success: '✓'
   };
   
+  // Check if this is a loading/waiting message - use spinner
+  const isLoading = message.includes('Waiting for host') || message.includes('Connecting');
+  const iconHtml = isLoading 
+    ? '<span class="custom-alert-spinner"></span>'
+    : `<span class="custom-alert-icon">${iconMap[type] || iconMap.info}</span>`;
+  
   // Create content
   alert.innerHTML = `
     <div class="custom-alert-content">
-      <span class="custom-alert-icon">${iconMap[type] || iconMap.info}</span>
+      ${iconHtml}
       <span class="custom-alert-message">${escapeHtml(message)}</span>
-      <button class="custom-alert-close" aria-label="Close">×</button>
     </div>
   `;
 
   // Add to container
   alertContainer.appendChild(alert);
+  
+  // Store reference to current alert
+  currentAlert = alert;
 
   // Trigger animation
   requestAnimationFrame(() => {
@@ -90,6 +124,10 @@ function displayAlert({ message, type, timeout, resolve }) {
     setTimeout(() => {
       alert.remove();
       isShowingAlert = false;
+      if (currentAlert === alert) {
+        currentAlert = null;
+        currentCloseAlert = null;
+      }
       resolve();
       
       // Show next alert in queue if any
@@ -99,19 +137,13 @@ function displayAlert({ message, type, timeout, resolve }) {
       }
     }, 300); // Match CSS animation duration
   };
-
-  // Close button click
-  const closeBtn = alert.querySelector('.custom-alert-close');
-  closeBtn.addEventListener('click', closeAlert);
+  
+  // Store close function reference
+  currentCloseAlert = closeAlert;
 
   // Auto-dismiss
   if (timeout > 0) {
-    const timeoutId = setTimeout(closeAlert, timeout);
-    
-    // Clear timeout if user clicks close
-    closeBtn.addEventListener('click', () => {
-      clearTimeout(timeoutId);
-    });
+    setTimeout(closeAlert, timeout);
   }
 }
 
