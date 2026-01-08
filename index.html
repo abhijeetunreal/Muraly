@@ -1417,27 +1417,23 @@
      <div class="radial-menu-container" id="menuContainer" style="pointer-events: auto;">
       <!-- SATELLITE 1: RESET -->
       <button class="satellite" id="btn-reset" title="Reset Canvas">
-        <span class="value-badge">Reset</span>
         <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
       </button>
 
       <!-- SATELLITE 2: SIZE -->
       <button class="satellite" id="btn-size">
-        <span class="value-badge" id="val-size">Size: 40</span>
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
         <svg class="scroll-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14l-4-4h8l-4 4zm0-10l4 4H8l4-4z"/></svg>
       </button>
 
       <!-- SATELLITE 3: DENSITY -->
       <button class="satellite" id="btn-density">
-        <span class="value-badge" id="val-density">Density: 50</span>
         <svg viewBox="0 0 24 24"><path d="M4.5 11h-2V9h2v2zm0-4h-2V5h2v2zm0 8h-2v-2h2v2zm4-8h-2V5h2v2zm0 4h-2V9h2v2zm0 8h-2v-2h2v2zm0-4h-2v-2h2v2zm4-8h-2V5h2v2zm0 12h-2v-2h2v2zm0-8h-2V9h2v2zm0 4h-2v-2h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V9h2v2z"/></svg>
         <svg class="scroll-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14l-4-4h8l-4 4zm0-10l4 4H8l4-4z"/></svg>
       </button>
 
       <!-- SATELLITE 4: COLOR -->
       <button class="satellite" id="btn-color" style="border-color: #00ffcc;">
-        <span class="value-badge">Color</span>
         <div id="colorInputWrapper">
           <input type="color" id="colorPicker" value="#00ffcc">
         </div>
@@ -2246,8 +2242,7 @@
         const btnDensity = document.getElementById('btn-density');
         const btnColor = document.getElementById('btn-color');
         
-        const valSize = document.getElementById('val-size');
-        const valDensity = document.getElementById('val-density');
+        // Value badges removed
 
         let isDrawing = false;
         let lastX = 0;
@@ -2428,15 +2423,13 @@
         let isDragging = false;
         let dragButton = null;
 
-        if (btnSize && valSize) {
+        if (btnSize) {
             // Helper to update Size via Scroll
             btnSize.addEventListener('wheel', (e) => {
                 e.preventDefault();
                 const delta = Math.sign(e.deltaY) * -5;
                 
                 sprayRadius = Math.max(5, Math.min(100, sprayRadius + delta));
-                
-                valSize.textContent = `Size: ${sprayRadius}`;
                 
                 const scale = 0.5 + (sprayRadius / 100);
                 const svg = btnSize.querySelector('svg');
@@ -2475,8 +2468,6 @@
                 
                 sprayRadius = Math.max(5, Math.min(100, touchStartValue + change));
                 
-                valSize.textContent = `Size: ${Math.round(sprayRadius)}`;
-                
                 // Visual feedback: scale the internal icon
                 const scale = 0.5 + (sprayRadius / 100);
                 const svg = btnSize.querySelector('svg');
@@ -2494,15 +2485,13 @@
             }, { passive: false });
         }
 
-        if (btnDensity && valDensity) {
+        if (btnDensity) {
             // Helper to update Density via Scroll
             btnDensity.addEventListener('wheel', (e) => {
                 e.preventDefault();
                 const delta = Math.sign(e.deltaY) * -10;
                 
                 sprayDensity = Math.max(10, Math.min(300, sprayDensity + delta));
-                
-                valDensity.textContent = `Density: ${sprayDensity}`;
             });
 
             // Touch drag for Density
@@ -2536,8 +2525,6 @@
                 const change = deltaY * sensitivity;
                 
                 sprayDensity = Math.max(10, Math.min(300, touchStartValue + change));
-                
-                valDensity.textContent = `Density: ${Math.round(sprayDensity)}`;
             }, { passive: false });
 
             btnDensity.addEventListener('touchend', (e) => {
