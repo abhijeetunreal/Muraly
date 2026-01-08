@@ -631,11 +631,12 @@
         color: black !important;
     }
 
+    /* Hide desktop navbar on all screen sizes */
+    .navbar-body {
+        display: none;
+    }
+    
     @media (max-width: 768px) {
-        .navbar-body {
-            display: none;
-        }
-
         .mobile-nav {
             display: block;
         }
@@ -673,6 +674,436 @@
             font-size: 0.7rem;
             padding: 0.35rem 0.75rem;
         }
+    }
+
+    /* Manifesto Carousel Styles */
+    @keyframes slideUp {
+        from {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .animate-slideUp {
+        animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Image Scale Animation */
+    .scale-active {
+        transform: scale(1.1);
+    }
+    
+    .scale-idle {
+        transform: scale(1.0);
+    }
+
+    /* Spray Paint Canvas Styles */
+    #paintCanvas {
+        touch-action: none;
+        pointer-events: auto;
+    }
+
+    .cursor-spray {
+        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="%23ff0055" stroke="white" stroke-width="1.5"><path d="M19 22H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h2V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2zm-7-17h-2v2h2V5zM7 9v11h10V9H7z"/></svg>') 16 16, crosshair;
+    }
+
+    /* Radial Menu Styles */
+    .radial-menu-container {
+        position: relative;
+        width: 50px;
+        height: 50px;
+        z-index: 50;
+        margin: 0 auto;
+        margin-top: clamp(3rem, 8vw, 4rem);
+        margin-bottom: clamp(1rem, 3vw, 2rem);
+    }
+    
+    #hero-title {
+        margin-bottom: clamp(2rem, 6vw, 3rem) !important;
+    }
+    
+    /* Responsive container sizes */
+    @media (min-width: 640px) {
+        .radial-menu-container {
+            width: 55px;
+            height: 55px;
+        }
+    }
+    
+    @media (min-width: 768px) {
+        .radial-menu-container {
+            width: 60px;
+            height: 60px;
+        }
+    }
+    
+    @media (min-width: 1024px) {
+        .radial-menu-container {
+            width: 65px;
+            height: 65px;
+        }
+    }
+    
+    /* Responsive spacing to prevent overlap */
+    /* Extra small screens */
+    @media (max-width: 360px) {
+        .radial-menu-container {
+            margin-top: 7rem !important;
+            margin-bottom: 3rem !important;
+        }
+        
+        #hero-title {
+            margin-bottom: 5rem !important;
+        }
+    }
+    
+    /* Small mobile */
+    @media (min-width: 361px) and (max-width: 480px) {
+        .radial-menu-container {
+            margin-top: 6rem !important;
+            margin-bottom: 3rem !important;
+        }
+        
+        #hero-title {
+            margin-bottom: 4.5rem !important;
+        }
+    }
+    
+    /* Medium mobile */
+    @media (min-width: 481px) and (max-width: 640px) {
+        .radial-menu-container {
+            margin-top: 5rem !important;
+            margin-bottom: 3rem !important;
+        }
+        
+        #hero-title {
+            margin-bottom: 4rem !important;
+        }
+    }
+    
+    /* Tablets */
+    @media (min-width: 641px) and (max-width: 768px) {
+        .radial-menu-container {
+            margin-top: 4rem !important;
+            margin-bottom: 2.5rem !important;
+        }
+        
+        #hero-title {
+            margin-bottom: 3rem !important;
+        }
+    }
+    
+    /* Intermediate tablet/desktop - critical range where overlap occurs */
+    @media (min-width: 769px) and (max-width: 900px) {
+        .radial-menu-container {
+            margin-top: 4.5rem !important;
+            margin-bottom: 2.5rem !important;
+        }
+        
+        #hero-title {
+            margin-bottom: 3.5rem !important;
+        }
+    }
+    
+    @media (min-width: 901px) and (max-width: 1000px) {
+        .radial-menu-container {
+            margin-top: 4rem !important;
+            margin-bottom: 2.5rem !important;
+        }
+        
+        #hero-title {
+            margin-bottom: 3rem !important;
+        }
+    }
+    
+    @media (min-width: 1001px) and (max-width: 1100px) {
+        .radial-menu-container {
+            margin-top: 3.5rem !important;
+            margin-bottom: 2rem !important;
+        }
+        
+        #hero-title {
+            margin-bottom: 2.75rem !important;
+        }
+    }
+    
+    @media (min-width: 1101px) and (max-width: 1200px) {
+        .radial-menu-container {
+            margin-top: 3rem !important;
+            margin-bottom: 2rem !important;
+        }
+        
+        #hero-title {
+            margin-bottom: 2.5rem !important;
+        }
+    }
+    
+    @media (min-width: 1201px) and (max-width: 1280px) {
+        .radial-menu-container {
+            margin-top: 2.75rem !important;
+            margin-bottom: 1.75rem !important;
+        }
+        
+        #hero-title {
+            margin-bottom: 2.25rem !important;
+        }
+    }
+    
+    /* Medium desktop */
+    @media (min-width: 1025px) and (max-width: 1100px) {
+        .radial-menu-container {
+            margin-top: 3rem !important;
+            margin-bottom: 2rem !important;
+        }
+        
+        #hero-title {
+            margin-bottom: 2.5rem !important;
+        }
+    }
+    
+    /* Large desktop */
+    @media (min-width: 1281px) {
+        .radial-menu-container {
+            margin-top: 2rem !important;
+            margin-bottom: 1rem !important;
+        }
+        
+        #hero-title {
+            margin-bottom: 1.5rem !important;
+        }
+    }
+    
+    /* Fallback for absolute positioning if needed */
+    .radial-menu-container.absolute {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        margin: 0;
+    }
+
+    .main-fab {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #ff0055;
+        color: white;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        position: relative;
+        z-index: 20;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    /* Responsive button sizes */
+    @media (min-width: 640px) {
+        .main-fab {
+            width: 55px;
+            height: 55px;
+            font-size: 22px;
+        }
+    }
+    
+    @media (min-width: 768px) {
+        .main-fab {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+        }
+    }
+    
+    @media (min-width: 1024px) {
+        .main-fab {
+            width: 65px;
+            height: 65px;
+            font-size: 26px;
+        }
+    }
+
+    .main-fab:hover {
+        transform: scale(1.1);
+    }
+    
+    .main-fab.active {
+        transform: rotate(45deg);
+        background: #333;
+    }
+
+    .satellite {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #444;
+        color: white;
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #555;
+        cursor: pointer;
+        transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.3s;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 10;
+    }
+    
+    /* Responsive satellite sizes */
+    @media (min-width: 640px) {
+        .satellite {
+            width: 46px;
+            height: 46px;
+            top: 4.5px;
+            left: 4.5px;
+        }
+    }
+    
+    @media (min-width: 768px) {
+        .satellite {
+            width: 50px;
+            height: 50px;
+            top: 5px;
+            left: 5px;
+        }
+    }
+    
+    @media (min-width: 1024px) {
+        .satellite {
+            width: 54px;
+            height: 54px;
+            top: 5.5px;
+            left: 5.5px;
+        }
+    }
+
+    .satellite:hover {
+        background: #555;
+        border-color: #ff0055;
+    }
+
+    .radial-menu-container.open .satellite {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .radial-menu-container.open .satellite:nth-child(1) {
+        transform: translate(-90px, -20px);
+    }
+    .radial-menu-container.open .satellite:nth-child(1):hover {
+        transform: translate(-90px, -20px) scale(1.1);
+    }
+
+    .radial-menu-container.open .satellite:nth-child(2) {
+        transform: translate(-50px, -80px);
+    }
+    .radial-menu-container.open .satellite:nth-child(2):hover {
+        transform: translate(-50px, -80px) scale(1.1);
+    }
+
+    .radial-menu-container.open .satellite:nth-child(3) {
+        transform: translate(50px, -80px);
+    }
+    .radial-menu-container.open .satellite:nth-child(3):hover {
+        transform: translate(50px, -80px) scale(1.1);
+    }
+
+    .radial-menu-container.open .satellite:nth-child(4) {
+        transform: translate(90px, -20px);
+    }
+    .radial-menu-container.open .satellite:nth-child(4):hover {
+        transform: translate(90px, -20px) scale(1.1);
+    }
+
+    .satellite svg {
+        width: 20px;
+        height: 20px;
+        fill: currentColor;
+        pointer-events: none;
+    }
+    
+    /* Responsive satellite icon sizes */
+    @media (min-width: 640px) {
+        .satellite svg {
+            width: 22px;
+            height: 22px;
+        }
+    }
+    
+    @media (min-width: 768px) {
+        .satellite svg {
+            width: 24px;
+            height: 24px;
+        }
+    }
+    
+    @media (min-width: 1024px) {
+        .satellite svg {
+            width: 26px;
+            height: 26px;
+        }
+    }
+
+    .value-badge {
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #ff0055;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: bold;
+        opacity: 0;
+        transition: opacity 0.2s;
+        pointer-events: none;
+        white-space: nowrap;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    
+    .satellite:hover .value-badge {
+        opacity: 1;
+    }
+
+    #colorInputWrapper {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        position: relative;
+    }
+    input[type="color"] {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        cursor: pointer;
+        border: none;
+        padding: 0;
+    }
+    
+    .scroll-icon {
+        position: absolute;
+        bottom: -15px;
+        width: 12px;
+        height: 12px;
+        fill: #aaa;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+    .satellite:hover .scroll-icon {
+        opacity: 1;
     }
 </style>
 </head>
@@ -737,17 +1168,57 @@
     <div data-speed="0.12" class="parallax-blob absolute top-1/2 left-1/2 w-32 h-32 bg-neon-lime/20 rounded-full blur-[60px]"></div>
   </div>
   
-  <div class="relative z-10 text-center px-4 w-full max-w-7xl mx-auto">
+  <!-- Spray Paint Canvas -->
+  <canvas id="paintCanvas" class="absolute inset-0 w-full h-full" style="z-index: 6; pointer-events: auto; cursor: crosshair;"></canvas>
+  
+  <div class="relative z-10 text-center px-4 w-full max-w-7xl mx-auto" style="pointer-events: none;">
     <div class="inline-block mb-4 overflow-hidden">
       <p class="text-neon-lime uppercase tracking-[0.3em] text-xs md:text-sm transform translate-y-10" id="hero-subtitle">Augmented Reality Canvas</p>
     </div>
     
-    <h1 class="text-[18vw] md:text-[15vw] leading-[0.9] md:leading-[0.8] font-marker text-white mix-blend-overlay opacity-90 break-words glitch-text cursor-default" id="hero-title">
-      PAINT<br>
-      <span class="text-outline hover:text-white transition-colors duration-500">ALIVE</span>
-    </h1>
+     <div class="relative">
+       <h1 class="text-[18vw] md:text-[15vw] leading-[0.9] md:leading-[0.8] font-marker text-white mix-blend-overlay opacity-90 break-words glitch-text cursor-default pointer-events-none" id="hero-title" style="opacity: 0;">
+         PAINT<br>ALIVE
+       </h1>
+     </div>
+     
+     <!-- Radial Paint Menu -->
+     <div class="radial-menu-container" id="menuContainer" style="pointer-events: auto;">
+      <!-- SATELLITE 1: RESET -->
+      <button class="satellite" id="btn-reset" title="Reset Canvas">
+        <span class="value-badge">Reset</span>
+        <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+      </button>
+
+      <!-- SATELLITE 2: SIZE -->
+      <button class="satellite" id="btn-size">
+        <span class="value-badge" id="val-size">Size: 40</span>
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+        <svg class="scroll-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14l-4-4h8l-4 4zm0-10l4 4H8l4-4z"/></svg>
+      </button>
+
+      <!-- SATELLITE 3: DENSITY -->
+      <button class="satellite" id="btn-density">
+        <span class="value-badge" id="val-density">Density: 50</span>
+        <svg viewBox="0 0 24 24"><path d="M4.5 11h-2V9h2v2zm0-4h-2V5h2v2zm0 8h-2v-2h2v2zm4-8h-2V5h2v2zm0 4h-2V9h2v2zm0 8h-2v-2h2v2zm0-4h-2v-2h2v2zm4-8h-2V5h2v2zm0 12h-2v-2h2v2zm0-8h-2V9h2v2zm0 4h-2v-2h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V9h2v2z"/></svg>
+        <svg class="scroll-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14l-4-4h8l-4 4zm0-10l4 4H8l4-4z"/></svg>
+      </button>
+
+      <!-- SATELLITE 4: COLOR -->
+      <button class="satellite" id="btn-color" style="border-color: #00ffcc;">
+        <span class="value-badge">Color</span>
+        <div id="colorInputWrapper">
+          <input type="color" id="colorPicker" value="#00ffcc">
+        </div>
+      </button>
+
+      <!-- MAIN FAB -->
+      <button class="main-fab" id="mainFab" title="Open Paint Tools">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+      </button>
+    </div>
     
-    <div class="mt-8 md:mt-12 flex flex-col items-center gap-6 opacity-0 px-4" id="hero-cta">
+    <div class="mt-8 md:mt-12 flex flex-col items-center gap-6 opacity-0 px-4" id="hero-cta" style="pointer-events: auto;">
       <p class="max-w-xs md:max-w-lg text-gray-300 text-center text-sm md:text-lg leading-relaxed font-light">
         A visualization tool designed for hobbyists and beginners—no professional art experience needed. <span class="text-white font-bold">Completely Free.</span> <br> 
         Project any artwork onto your real canvas and draw with confidence. It helps you trace, visualize, and create beautiful artwork.
@@ -774,53 +1245,52 @@
 
 
 <main>
-<!-- Phone Section (Alive) -->
-<section id="about" class="min-h-screen py-24 relative flex items-center overflow-hidden">
-  <div class="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
-    
-    <!-- Floating Phone -->
-    <div class="relative order-1 h-[600px] flex items-center justify-center w-full">
-      <!-- Pulse Rings -->
-      <div class="absolute inset-0 border border-white/10 rounded-[3rem] animate-[ping_3s_ease-in-out_infinite] scale-90 opacity-30 max-w-[300px] mx-auto"></div>
-      
-      <div class="relative w-full max-w-[280px] md:max-w-[300px] h-[550px] md:h-[600px] bg-black rounded-[2.5rem] border-8 border-gray-800 shadow-2xl overflow-hidden z-10 box-float mx-auto">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/2/28/Odissi_murals_in_Bhubaneswar.gif" class="w-full h-full object-cover opacity-90" alt="Odissi Murals displayed in AR on mobile device">
-        <div class="absolute inset-0 flex flex-col justify-between p-6">
-          <div class="flex justify-between items-center">
-            <i data-lucide="menu" class="text-white"></i>
-            <span class="bg-red-500 w-2 h-2 rounded-full animate-pulse"></span>
-          </div>
-          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full">
-            <h2 class="font-marker text-5xl text-neon-pink drop-shadow-[0_0_10px_rgba(255,0,85,0.8)] rotate-[-10deg] animate-pulse">LIVE</h2>
-          </div>
-          <div class="glass-panel p-2 rounded-full flex justify-between items-center">
-             <div class="w-8 h-8 rounded-full bg-neon-cyan animate-pulse"></div>
-             <div class="w-8 h-8 rounded-full bg-neon-pink border-2 border-white"></div>
-             <div class="w-8 h-8 rounded-full bg-neon-lime animate-pulse"></div>
-          </div>
-        </div>
-      </div>
-    </div>
+<!-- Manifesto Carousel Section -->
+<section id="about" class="relative min-h-screen overflow-hidden bg-black">
+  <!-- Main Visual Layer (Images) -->
+  <div id="manifesto-slides-container" class="absolute inset-0 w-full h-full">
+    <!-- Slides will be injected here by JS -->
+  </div>
 
-    <!-- Content -->
-    <div id="features" class="order-2 text-center md:text-left space-y-8">
-      <h2 class="text-5xl md:text-7xl font-grotesk font-bold leading-tight">
-        Alive. <br>
-        <span class="text-neon-pink font-marker">Untamed.</span>
-      </h2>
-      <p class="text-xl text-gray-400 font-light leading-relaxed">
-        Muraly empowers anyone—regardless of drawing or painting experience—to create with confidence. Simply project your chosen artwork onto a real canvas using augmented reality, and let our guided visualization help you draw, trace, and bring your vision to life step by step.
-      </p>
-      <div class="grid grid-cols-1 xs:grid-cols-2 gap-4">
-        <div class="p-6 glass-panel rounded-2xl hover:bg-neon-lime/10 transition-colors border-l-4 border-neon-lime">
-          <h3 class="font-bold text-xl mb-1 text-white">0.00$ Cost</h3>
-          <p class="text-sm text-gray-500">Creativity shouldn't have a price tag.</p>
-        </div>
-        <div class="p-6 glass-panel rounded-2xl hover:bg-neon-pink/10 transition-colors border-l-4 border-neon-pink">
-          <h3 class="font-bold text-xl mb-1 text-white">No Installation</h3>
-          <p class="text-sm text-gray-500">Works directly in your browser.</p>
+  <!-- Swiss Layout Grid Overlay -->
+  <div class="absolute inset-0 z-20 pointer-events-none">
+    <div class="w-full h-full max-w-[1800px] mx-auto p-6 md:p-12 grid grid-cols-12 grid-rows-6">
+      
+      <!-- Top Right Counter -->
+      <div class="col-span-12 row-span-1 flex justify-end items-start pt-2">
+        <div id="manifesto-counter" class="text-white text-6xl md:text-9xl font-bold tracking-tighter opacity-20 select-none transition-all duration-500 font-marker">
+          01
         </div>
       </div>
+
+      <!-- Spacer -->
+      <div class="col-span-12 row-span-3"></div>
+
+      <!-- Bottom Content Area -->
+      <div class="col-span-12 md:col-span-8 row-span-2 flex flex-col justify-end pb-8 md:pb-12 pointer-events-auto">
+        <div class="overflow-hidden">
+          <div id="manifesto-text-content" class="animate-slideUp">
+            <!-- Dynamic Text Content -->
+            <div class="flex items-center gap-3 mb-4">
+              <span id="manifesto-category-line" class="h-[2px] w-8 bg-neon-pink transition-colors duration-500"></span>
+              <span id="manifesto-category-text" class="text-white/80 uppercase tracking-[0.2em] text-sm font-medium font-marker">The Vision</span>
+            </div>
+
+            <h1 id="manifesto-main-title" class="text-6xl md:text-8xl lg:text-9xl font-bold text-white tracking-tighter leading-[0.9] mb-8 font-marker">
+              Trace Anywhere
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Right Controls -->
+      <div class="col-span-12 md:col-span-4 row-span-2 flex flex-col justify-end items-end pb-12 pointer-events-auto">
+        <!-- Indicators -->
+        <div id="manifesto-indicators" class="flex gap-1 mt-8">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -966,8 +1436,8 @@
             <img src="https://caleidoscope.in/wp-content/uploads/2019/10/Street-Art-in-India-Graffiti-U.F.O-1024x682.jpg" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Art">
             <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
             <div class="absolute bottom-0 left-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                <h3 class="text-3xl font-bold text-white group-hover:text-neon-lime transition-colors">Neon Dreams</h3>
-                <p class="text-sm text-gray-300">Brooklyn • Free Wall</p>
+                <h3 class="text-3xl font-bold text-white group-hover:text-neon-lime transition-colors font-marker">Neon Dreams</h3>
+                <p class="text-sm text-gray-300 font-marker">Brooklyn • Free Wall</p>
             </div>
     </div>
     
@@ -975,8 +1445,8 @@
             <img src="https://gpjs3bucket.s3.amazonaws.com/wp-content/uploads/2019/08/26131534/GPJNews_Mexico_MG_UrbanArt4-48_web.jpg" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Art">
             <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
             <div class="absolute bottom-0 left-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                <h3 class="text-3xl font-bold text-white group-hover:text-neon-pink transition-colors">Cyber Samurai</h3>
-                <p class="text-sm text-gray-300">Tokyo • Shibuya Crossing</p>
+                <h3 class="text-3xl font-bold text-white group-hover:text-neon-pink transition-colors font-marker">Cyber Samurai</h3>
+                <p class="text-sm text-gray-300 font-marker">Tokyo • Shibuya Crossing</p>
             </div>
     </div>
     
@@ -1000,7 +1470,7 @@
       <!-- Text Content -->
       <div class="md:w-1/2 space-y-8">
         <div class="inline-block bg-neon-pink text-white px-3 py-1 text-xs font-bold uppercase tracking-widest mb-2 rotate-2">Our Partner</div>
-        <h2 class="text-5xl md:text-6xl font-bold font-grotesk leading-none">
+        <h2 class="text-5xl md:text-6xl font-bold font-marker leading-none">
           Painting a <br>
           <span class="text-transparent bg-clip-text bg-gradient-to-r from-neon-lime to-neon-cyan">Better Future.</span>
         </h2>
@@ -1300,6 +1770,524 @@
             scrollTrigger: { trigger: "#mission", start: "top 75%" },
             y: 30, opacity: 0, duration: 1, stagger: 0.2, ease: "power3.out"
         });
+    }
+
+    // Manifesto Carousel
+    const manifestoSlides = [
+        {
+            id: 1,
+            image: "https://raw.githubusercontent.com/abhijeetunreal/Muraly/refs/heads/main/assets/trace.png",
+            title: "Trace Anywhere",
+            category: "The Vision",
+            icon: "smartphone",
+            color: "bg-neon-pink"
+        },
+        {
+            id: 2,
+            image: "https://raw.githubusercontent.com/abhijeetunreal/Muraly/refs/heads/main/assets/outdoor.png",
+            title: "Outdoor Mode",
+            category: "No WiFi Needed",
+            icon: "sun",
+            color: "bg-neon-cyan"
+        },
+        {
+            id: 3,
+            image: "https://raw.githubusercontent.com/abhijeetunreal/Muraly/refs/heads/main/assets/track.png",
+            title: "Precision Lock",
+            category: "AR Anchors",
+            icon: "anchor",
+            color: "bg-neon-pink"
+        },
+        {
+            id: 4,
+            image: "https://raw.githubusercontent.com/abhijeetunreal/Muraly/refs/heads/main/assets/timelapse.png",
+            title: "Timelapse",
+            category: "Auto-Record",
+            icon: "play",
+            color: "bg-neon-lime"
+        },
+        {
+            id: 5,
+            image: "https://raw.githubusercontent.com/abhijeetunreal/Muraly/refs/heads/main/assets/scale.png",
+            title: "Infinite Scale",
+            category: "Canvas to Wall",
+            icon: "layers",
+            color: "bg-neon-lime"
+        }
+    ];
+
+    let manifestoCurrentIndex = 0;
+    let manifestoAutoPlayInterval;
+
+    // Elements
+    const manifestoSlidesContainer = document.getElementById('manifesto-slides-container');
+    const manifestoCounterEl = document.getElementById('manifesto-counter');
+    const manifestoTextContentEl = document.getElementById('manifesto-text-content');
+    const manifestoCategoryLine = document.getElementById('manifesto-category-line');
+    const manifestoCategoryText = document.getElementById('manifesto-category-text');
+    const manifestoMainTitle = document.getElementById('manifesto-main-title');
+    const manifestoIconContainer = document.getElementById('manifesto-icon-container');
+    const manifestoIndicatorsContainer = document.getElementById('manifesto-indicators');
+
+    // Initialize Manifesto Carousel
+    function initManifestoCarousel() {
+        if (!manifestoSlidesContainer) return;
+
+        // Render Images
+        manifestoSlides.forEach((slide, index) => {
+            const imgDiv = document.createElement('div');
+            imgDiv.className = `absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`;
+            imgDiv.id = `manifesto-slide-img-${index}`;
+            
+            // Inner Image with transform class for zoom effect
+            imgDiv.innerHTML = `
+                <img src="${slide.image}" 
+                     alt="${slide.title}" 
+                     class="w-full h-full object-cover transition-transform duration-[10000ms] ease-linear scale-idle"
+                     style="filter: brightness(0.85) contrast(1.1)"
+                >
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-90"></div>
+            `;
+            manifestoSlidesContainer.appendChild(imgDiv);
+
+            // Render Indicator
+            const indicator = document.createElement('div');
+            indicator.className = `h-1 cursor-pointer transition-all duration-500 ${index === 0 ? 'w-12 bg-white' : 'w-4 bg-white/20 hover:bg-white/40'}`;
+            indicator.onclick = () => manifestoGoToSlide(index);
+            manifestoIndicatorsContainer.appendChild(indicator);
+        });
+
+        // Trigger initial zoom
+        setTimeout(() => {
+            const firstImg = document.querySelector(`#manifesto-slide-img-0 img`);
+            if (firstImg) {
+                firstImg.classList.remove('scale-idle');
+                firstImg.classList.add('scale-active');
+            }
+        }, 50);
+
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Start Autoplay
+        manifestoStartAutoPlay();
+    }
+
+    function manifestoUpdateSlide(newIndex) {
+        const oldIndex = manifestoCurrentIndex;
+        manifestoCurrentIndex = newIndex;
+
+        // 1. Update Images (Opacity & Zoom)
+        const oldSlide = document.getElementById(`manifesto-slide-img-${oldIndex}`);
+        const newSlide = document.getElementById(`manifesto-slide-img-${manifestoCurrentIndex}`);
+        
+        if (oldSlide && newSlide) {
+            const oldImg = oldSlide.querySelector('img');
+            const newImg = newSlide.querySelector('img');
+
+            // Fade out old
+            oldSlide.classList.remove('opacity-100', 'z-10');
+            oldSlide.classList.add('opacity-0', 'z-0');
+            if (oldImg) {
+                oldImg.classList.remove('scale-active');
+                oldImg.classList.add('scale-idle');
+            }
+
+            // Fade in new
+            newSlide.classList.remove('opacity-0', 'z-0');
+            newSlide.classList.add('opacity-100', 'z-10');
+            // Trigger zoom slightly after fade starts
+            setTimeout(() => {
+                if (newImg) {
+                    newImg.classList.remove('scale-idle');
+                    newImg.classList.add('scale-active');
+                }
+            }, 50);
+        }
+
+        // 2. Update Counter
+        if (manifestoCounterEl) {
+            manifestoCounterEl.textContent = `0${manifestoCurrentIndex + 1}`;
+        }
+
+        // 3. Update Text Content with Animation Reset
+        if (manifestoTextContentEl) {
+            // Remove animation class to reset
+            manifestoTextContentEl.classList.remove('animate-slideUp');
+            void manifestoTextContentEl.offsetWidth; // Trigger reflow
+
+            // Update data
+            const slideData = manifestoSlides[manifestoCurrentIndex];
+            if (manifestoCategoryLine) {
+                manifestoCategoryLine.className = `h-[2px] w-8 transition-colors duration-500 ${slideData.color}`;
+            }
+            if (manifestoCategoryText) {
+                manifestoCategoryText.textContent = slideData.category;
+            }
+            if (manifestoMainTitle) {
+                manifestoMainTitle.textContent = slideData.title;
+            }
+            
+            // Update Icon
+            if (manifestoIconContainer) {
+                manifestoIconContainer.innerHTML = `<i data-lucide="${slideData.icon}" class="w-5 h-5"></i>`;
+                lucide.createIcons();
+            }
+
+            // Re-add animation class
+            manifestoTextContentEl.classList.add('animate-slideUp');
+        }
+
+        // 4. Update Indicators
+        if (manifestoIndicatorsContainer) {
+            Array.from(manifestoIndicatorsContainer.children).forEach((ind, idx) => {
+                if (idx === manifestoCurrentIndex) {
+                    ind.className = 'h-1 cursor-pointer transition-all duration-500 w-12 bg-white';
+                } else {
+                    ind.className = 'h-1 cursor-pointer transition-all duration-500 w-4 bg-white/20 hover:bg-white/40';
+                }
+            });
+        }
+    }
+
+    function manifestoNextSlide() {
+        const newIndex = manifestoCurrentIndex === manifestoSlides.length - 1 ? 0 : manifestoCurrentIndex + 1;
+        manifestoUpdateSlide(newIndex);
+    }
+
+    function manifestoPrevSlide() {
+        const newIndex = manifestoCurrentIndex === 0 ? manifestoSlides.length - 1 : manifestoCurrentIndex - 1;
+        manifestoUpdateSlide(newIndex);
+    }
+
+    function manifestoGoToSlide(index) {
+        manifestoUpdateSlide(index);
+        manifestoResetAutoPlay();
+    }
+
+    // AutoPlay Logic
+    function manifestoStartAutoPlay() {
+        manifestoAutoPlayInterval = setInterval(manifestoNextSlide, 6000);
+    }
+
+    function manifestoResetAutoPlay() {
+        clearInterval(manifestoAutoPlayInterval);
+        manifestoStartAutoPlay();
+    }
+
+    // Event Listeners
+    const manifestoNextBtn = document.getElementById('manifesto-next-btn');
+    const manifestoPrevBtn = document.getElementById('manifesto-prev-btn');
+
+    if (manifestoNextBtn) {
+        manifestoNextBtn.addEventListener('click', () => {
+            manifestoNextSlide();
+            manifestoResetAutoPlay();
+        });
+    }
+
+    if (manifestoPrevBtn) {
+        manifestoPrevBtn.addEventListener('click', () => {
+            manifestoPrevSlide();
+            manifestoResetAutoPlay();
+        });
+    }
+
+    // Initialize on page load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initManifestoCarousel);
+    } else {
+        initManifestoCarousel();
+    }
+
+    // Spray Paint Canvas Functionality
+    const paintCanvas = document.getElementById('paintCanvas');
+    if (paintCanvas) {
+        const ctx = paintCanvas.getContext('2d', { willReadFrequently: true });
+        
+        // UI Elements
+        const menuContainer = document.getElementById('menuContainer');
+        const mainFab = document.getElementById('mainFab');
+        const colorPicker = document.getElementById('colorPicker');
+        const resetBtn = document.getElementById('btn-reset');
+        
+        const btnSize = document.getElementById('btn-size');
+        const btnDensity = document.getElementById('btn-density');
+        const btnColor = document.getElementById('btn-color');
+        
+        const valSize = document.getElementById('val-size');
+        const valDensity = document.getElementById('val-density');
+
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        
+        // Configuration
+        let sprayColor = colorPicker ? colorPicker.value : '#00ffcc';
+        let sprayRadius = 40;
+        let sprayDensity = 50;
+
+        // --- RADIAL MENU LOGIC ---
+        
+        if (mainFab && menuContainer) {
+            // Toggle Main Menu
+            mainFab.addEventListener('click', (e) => {
+                e.stopPropagation();
+                menuContainer.classList.toggle('open');
+                mainFab.classList.toggle('active');
+            });
+
+            // Close menu when clicking canvas
+            paintCanvas.addEventListener('click', (e) => {
+                if (!menuContainer.contains(e.target)) {
+                    menuContainer.classList.remove('open');
+                    mainFab.classList.remove('active');
+                }
+            });
+        }
+
+        // --- SCROLL INTERACTION ---
+
+        if (btnSize && valSize) {
+            // Helper to update Size via Scroll
+            btnSize.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = Math.sign(e.deltaY) * -5;
+                
+                sprayRadius = Math.max(5, Math.min(100, sprayRadius + delta));
+                
+                valSize.textContent = `Size: ${sprayRadius}`;
+                
+                const scale = 0.5 + (sprayRadius / 100);
+                const svg = btnSize.querySelector('svg');
+                if (svg) svg.style.transform = `scale(${scale})`;
+            });
+        }
+
+        if (btnDensity && valDensity) {
+            // Helper to update Density via Scroll
+            btnDensity.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = Math.sign(e.deltaY) * -10;
+                
+                sprayDensity = Math.max(10, Math.min(300, sprayDensity + delta));
+                
+                valDensity.textContent = `Density: ${sprayDensity}`;
+            });
+        }
+
+        // Update Colors
+        if (colorPicker && btnColor) {
+            colorPicker.addEventListener('input', (e) => {
+                sprayColor = e.target.value;
+                btnColor.style.borderColor = sprayColor;
+            });
+        }
+        
+        // Reset
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                drawInitialText();
+            });
+        }
+
+        // --- CANVAS LOGIC ---
+
+        function resizeCanvas() {
+            const heroSection = document.getElementById('hero-section');
+            if (!heroSection) return;
+            
+            const rect = heroSection.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            
+            // Set display size (CSS pixels)
+            paintCanvas.style.width = rect.width + 'px';
+            paintCanvas.style.height = rect.height + 'px';
+            
+            // Set actual size in memory (device pixels)
+            paintCanvas.width = rect.width * dpr;
+            paintCanvas.height = rect.height * dpr;
+            
+            // Reset transform and scale for DPR
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.scale(dpr, dpr);
+            
+            drawInitialText();
+        }
+
+        function drawInitialText() {
+            if (!ctx) return;
+            
+            const rect = paintCanvas.getBoundingClientRect();
+            const canvasWidth = rect.width;
+            const canvasHeight = rect.height;
+            
+            // Clear canvas
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+            ctx.save();
+            // Dynamic vertical offset based on screen width to prevent overlap
+            // For intermediate sizes (714px - 1281px), use larger offset
+            let verticalOffset;
+            if (canvasWidth >= 714 && canvasWidth <= 900) {
+                verticalOffset = canvasHeight * 0.18; // More space for smaller intermediate sizes
+            } else if (canvasWidth > 900 && canvasWidth <= 1100) {
+                verticalOffset = canvasHeight * 0.15; // Medium space
+            } else if (canvasWidth > 1100 && canvasWidth <= 1281) {
+                verticalOffset = canvasHeight * 0.13; // Less space needed
+            } else {
+                verticalOffset = canvasHeight * 0.12; // Default for other sizes
+            }
+            
+            ctx.translate(canvasWidth / 2, canvasHeight / 2 - verticalOffset);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            const fontSize = Math.min(canvasWidth / 6, 180); 
+            ctx.font = `${fontSize}px "Permanent Marker", cursive`;
+            
+            const text1 = "PAINT";
+            const text2 = "ALIVE";
+            
+            // Calculate line height (approximately 1.2x font size for line spacing)
+            const lineHeight = fontSize * 1.2;
+            const offsetY = -lineHeight / 2;
+            
+            // Draw "PAINT" in Custom Color on first line
+            ctx.fillStyle = 'rgb(255, 0, 85)';
+            ctx.fillText(text1, 0, offsetY);
+            
+            // Draw "ALIVE" in White on second line
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(text2, 0, offsetY + lineHeight);
+            
+            ctx.restore();
+
+            // Set composite operation so spray only appears on text
+            ctx.globalCompositeOperation = 'source-atop';
+        }
+
+        function spray(x, y) {
+            if (!ctx) return;
+            
+            // Ensure we're using source-atop so spray only appears on text
+            ctx.globalCompositeOperation = 'source-atop';
+            ctx.fillStyle = sprayColor;
+            
+            for (let i = 0; i < sprayDensity; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const radius = Math.sqrt(Math.random()) * sprayRadius;
+                const offsetX = Math.cos(angle) * radius;
+                const offsetY = Math.sin(angle) * radius;
+                
+                ctx.globalAlpha = Math.random() * 0.5 + 0.1; 
+                ctx.fillRect(x + offsetX, y + offsetY, 2, 2);
+            }
+            ctx.globalAlpha = 1.0; 
+        }
+
+        paintCanvas.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            const rect = paintCanvas.getBoundingClientRect();
+            isDrawing = true;
+            lastX = e.clientX - rect.left;
+            lastY = e.clientY - rect.top;
+            spray(lastX, lastY);
+        });
+
+        paintCanvas.addEventListener('mousemove', (e) => {
+            const rect = paintCanvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Cursor Check - check at actual pixel coordinates
+            try {
+                const pixelX = Math.floor(x * dpr);
+                const pixelY = Math.floor(y * dpr);
+                const pixel = ctx.getImageData(pixelX, pixelY, 1, 1).data;
+                if (pixel[3] > 0) {
+                    paintCanvas.classList.add('cursor-spray');
+                } else {
+                    paintCanvas.classList.remove('cursor-spray');
+                }
+            } catch (err) {
+                // Ignore errors when checking pixels outside canvas
+            }
+
+            if (!isDrawing) return;
+            
+            const dist = Math.hypot(x - lastX, y - lastY);
+            const steps = Math.ceil(dist / (sprayRadius / 4)); 
+            
+            for(let i=0; i<steps; i++) {
+                const t = i / steps;
+                const sprayX = lastX + (x - lastX) * t;
+                const sprayY = lastY + (y - lastY) * t;
+                spray(sprayX, sprayY);
+            }
+
+            lastX = x;
+            lastY = y;
+            spray(x, y); 
+        });
+
+        window.addEventListener('mouseup', () => isDrawing = false);
+        window.addEventListener('mouseout', () => isDrawing = false);
+
+        paintCanvas.addEventListener('touchstart', (e) => {
+            e.preventDefault(); 
+            const rect = paintCanvas.getBoundingClientRect();
+            isDrawing = true;
+            const touch = e.touches[0];
+            lastX = touch.clientX - rect.left;
+            lastY = touch.clientY - rect.top;
+            spray(lastX, lastY);
+        }, { passive: false });
+
+        paintCanvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!isDrawing) return;
+            const rect = paintCanvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            const dist = Math.hypot(x - lastX, y - lastY);
+            const steps = Math.ceil(dist / (sprayRadius / 4));
+            
+            for(let i=0; i<steps; i++) {
+                const t = i / steps;
+                const sprayX = lastX + (x - lastX) * t;
+                const sprayY = lastY + (y - lastY) * t;
+                spray(sprayX, sprayY);
+            }
+            lastX = x;
+            lastY = y;
+            spray(x, y);
+        }, { passive: false });
+
+        window.addEventListener('touchend', () => isDrawing = false);
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Wait for fonts to load, then initialize canvas
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(() => {
+                resizeCanvas();
+            });
+        } else {
+            // Fallback if fonts API not available
+            setTimeout(() => {
+                resizeCanvas();
+            }, 100);
+        }
+
+        // Continuous spray while drawing
+        setInterval(() => {
+            if (isDrawing) {
+                spray(lastX, lastY);
+            }
+        }, 30);
     }
 </script>
 
