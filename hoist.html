@@ -23,6 +23,15 @@
 <meta name="msapplication-TileColor" content="#0A0A0A" />
 <link rel="icon" href="https://codefrydev.in/favicon-32x32.png" />
 
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VM01Q3R43D"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-VM01Q3R43D');
+</script>
+
 <!-- Open Graph -->
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://muraly.codefrydev.in/hoist.html" />
@@ -194,7 +203,37 @@
       <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </button>
-
+  
+  <!-- Sharing Section - Collaboration -->
+  <div class="panel-section">
+    <h3 class="section-title">Sharing</h3>
+    <div class="row">
+      <button id="hostBtn" class="primary">Host Session</button>
+    </div>
+    <div class="row hidden" id="changeScreenContainer">
+      <button id="changeScreenBtn" class="primary">
+        <i data-lucide="monitor" class="icon"></i>
+        <span>Change Screen</span>
+      </button>
+    </div>
+    <div class="row hidden" id="stopSessionContainer">
+      <button id="stopSessionBtn" class="danger">
+        <i data-lucide="square" class="icon"></i>
+        <span>Stop Session</span>
+      </button>
+    </div>
+    <div id="shareLinkContainer" class="hidden">
+      <div id="shareLink">
+        <input type="text" id="shareLinkInput" readonly placeholder="Share link will appear here" aria-label="Share link">
+        <button id="copyBtn">Copy</button>
+      </div>
+    </div>
+    <div id="shareId"></div>
+    <div id="participantsContainer" class="hidden">
+      <h4 class="participants-title">Connected Participants</h4>
+      <div id="participantsList"></div>
+    </div>
+  </div>
   <!-- Content Section - What you're working with -->
   <div class="panel-section">
     <h3 class="section-title">Content</h3>
@@ -255,36 +294,6 @@
     </div>
   </div>
 
-  <!-- Sharing Section - Collaboration -->
-  <div class="panel-section">
-    <h3 class="section-title">Sharing</h3>
-    <div class="row">
-      <button id="hostBtn" class="primary">Host Session</button>
-    </div>
-    <div class="row hidden" id="changeScreenContainer">
-      <button id="changeScreenBtn" class="primary">
-        <i data-lucide="monitor" class="icon"></i>
-        <span>Change Screen</span>
-      </button>
-    </div>
-    <div class="row hidden" id="stopSessionContainer">
-      <button id="stopSessionBtn" class="danger">
-        <i data-lucide="square" class="icon"></i>
-        <span>Stop Session</span>
-      </button>
-    </div>
-    <div id="shareLinkContainer" class="hidden">
-      <div id="shareLink">
-        <input type="text" id="shareLinkInput" readonly placeholder="Share link will appear here" aria-label="Share link">
-        <button id="copyBtn">Copy</button>
-      </div>
-    </div>
-    <div id="shareId"></div>
-    <div id="participantsContainer" class="hidden">
-      <h4 class="participants-title">Connected Participants</h4>
-      <div id="participantsList"></div>
-    </div>
-  </div>
 
   <!-- Recording Section - Export/Capture -->
   <div class="panel-section">
