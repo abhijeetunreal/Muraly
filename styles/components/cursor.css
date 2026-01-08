@@ -1,6 +1,7 @@
-/* Custom cursor only on desktop with mouse */
+/* Custom cursor only on desktop with mouse - only hide default cursor if custom cursor is working */
 @media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
-  body { cursor: none; }
+  body.custom-cursor-active { cursor: none; }
+  body:not(.custom-cursor-active) { cursor: default; }
 }
 
 /* Custom Cursor */

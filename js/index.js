@@ -46,10 +46,32 @@ document.addEventListener('mousemove', (e) => {
   });
 });
 
-// 2. Custom Cursor & Interaction
+// 2. Custom Cursor & Interaction with fallback detection
 const cursorDot = document.querySelector('.cursor-dot');
 const cursorOutline = document.querySelector('.cursor-outline');
 const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+// Function to check if custom cursor is actually working
+function checkCustomCursorWorking() {
+  if (!cursorDot || !cursorOutline) return false;
+  
+  // Check if elements are in the DOM and have computed styles
+  const dotRect = cursorDot.getBoundingClientRect();
+  const outlineRect = cursorOutline.getBoundingClientRect();
+  
+  // Check if elements are actually visible (not hidden by display:none or opacity:0)
+  const dotStyle = window.getComputedStyle(cursorDot);
+  const outlineStyle = window.getComputedStyle(cursorOutline);
+  
+  const dotVisible = dotStyle.display !== 'none' && 
+                     dotStyle.visibility !== 'hidden' && 
+                     parseFloat(dotStyle.opacity) > 0;
+  const outlineVisible = outlineStyle.display !== 'none' && 
+                          outlineStyle.visibility !== 'hidden' && 
+                          parseFloat(outlineStyle.opacity) > 0;
+  
+  return dotVisible && outlineVisible;
+}
 
 if (!isTouchDevice && cursorDot && cursorOutline) {
   // Initialize cursor visibility and position
@@ -62,7 +84,25 @@ if (!isTouchDevice && cursorDot && cursorOutline) {
   cursorOutline.style.left = '50%';
   cursorOutline.style.top = '50%';
   
+  // Check if custom cursor is working after a short delay
+  setTimeout(() => {
+    if (checkCustomCursorWorking()) {
+      // Custom cursor is working - hide default cursor
+      document.body.classList.add('custom-cursor-active');
+    } else {
+      // Custom cursor not working - restore default cursor and hide custom elements
+      document.body.classList.remove('custom-cursor-active');
+      cursorDot.style.display = 'none';
+      cursorOutline.style.display = 'none';
+      return; // Exit early, don't set up mouse tracking
+    }
+  }, 100);
+  
+  let cursorWorking = true;
+  
   window.addEventListener('mousemove', (e) => {
+    if (!cursorWorking) return;
+    
     cursorDot.style.left = `${e.clientX}px`;
     cursorDot.style.top = `${e.clientY}px`;
     cursorDot.style.display = 'block';
@@ -82,23 +122,39 @@ if (!isTouchDevice && cursorDot && cursorOutline) {
     }
     cursorOutline.style.display = 'block';
     cursorOutline.style.opacity = '1';
+    
+    // Periodic check to ensure cursor is still working
+    if (Math.random() < 0.01) { // Check 1% of the time to avoid performance issues
+      if (!checkCustomCursorWorking()) {
+        cursorWorking = false;
+        document.body.classList.remove('custom-cursor-active');
+        cursorDot.style.display = 'none';
+        cursorOutline.style.display = 'none';
+      }
+    }
   });
 
   // Interactive Element Hover
   document.querySelectorAll('a, button').forEach(el => {
     el.addEventListener('mouseenter', () => {
+      if (!cursorWorking) return;
       if (typeof gsap !== 'undefined') {
         gsap.to(cursorOutline, { scale: 1.5, backgroundColor: 'rgba(255,255,255,0.1)', duration: 0.3 });
         gsap.to(cursorDot, { scale: 0, duration: 0.3 });
       }
     });
     el.addEventListener('mouseleave', () => {
+      if (!cursorWorking) return;
       if (typeof gsap !== 'undefined') {
         gsap.to(cursorOutline, { scale: 1, backgroundColor: 'transparent', duration: 0.3 });
         gsap.to(cursorDot, { scale: 1, duration: 0.3 });
       }
     });
   });
+} else if (isTouchDevice) {
+  // Hide cursor on touch devices
+  if (cursorDot) cursorDot.style.display = 'none';
+  if (cursorOutline) cursorOutline.style.display = 'none';
 }
 
 // 4. Splatter Effect on Click
